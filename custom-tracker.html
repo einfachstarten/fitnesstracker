@@ -23,6 +23,7 @@
         }
 
         .calendar-day {
+            position: relative;
             aspect-ratio: 1;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
@@ -35,8 +36,38 @@
         }
         .calendar-day.today { border-color: #3b82f6; background: #eff6ff; }
         .calendar-day.completed { border-color: #22c55e; background: #f0fdf4; }
+        .calendar-day.scheduled { border-color: #f59e0b; background: #fef3c7; }
         .calendar-day.past { opacity: 0.5; cursor: not-allowed; }
         .calendar-day:hover:not(.past) { border-color: #93c5fd; }
+        .day-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 6px;
+            height: 6px;
+            background: #f59e0b;
+            border-radius: 50%;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-width: 320px;
+            width: 90%;
+            margin: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -170,6 +201,9 @@
                 this.userData = {};
                 this.currentPlan = null;
                 this.selectedDay = null;
+                this.selectedDate = null;
+                this.showDayModal = false;
+                this.actionHistory = [];
                 this.weeklyData = this.loadWeeklyData();
                 this.completedExercises = {};
                 this.completedDays = {};
@@ -683,6 +717,7 @@
             }
 
             async toggleDay(workoutIndex) {
+                this.saveStateSnapshot('toggleDay');
                 const currentWeek = this.weeklyData.currentWeek;
                 const weekData = this.weeklyData.weeks[currentWeek];
                 const workout = weekData.workouts[workoutIndex];
@@ -762,23 +797,27 @@
             renderWeekCalendar(weekString, weekData) {
                 const { start, end } = this.getWeekBounds(weekString);
                 const days = [];
+                const today = new Date();
+                const todayStr = today.toISOString().split('T')[0];
 
                 for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                     const dateStr = d.toISOString().split('T')[0];
                     const workout = weekData.workouts.find(w => w.date === dateStr);
-                    const isToday = dateStr === new Date().toISOString().split('T')[0];
+                    const isToday = dateStr === todayStr;
+                    console.log('Today calculated as:', todayStr, 'checking against:', dateStr);
                     const isPast = d < new Date().setHours(0,0,0,0);
 
                     days.push(`
-                      <div class="calendar-day ${workout?.isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''} ${isPast && !workout ? 'past' : ''}" 
+                      <div class="calendar-day ${this.getDayStateClass(workout, isToday, isPast)}" 
                            onclick="app.handleDayClick('${dateStr}')">
-                        <div class="text-xs text-center p-1">
-                          <div class="font-medium">${d.toLocaleDateString('de-DE', {weekday: 'short'})}</div>
+                        <div class="day-header">
+                          <div class="font-medium text-xs">${d.toLocaleDateString('de-DE', {weekday: 'short'})}</div>
                           <div class="text-lg font-bold">${d.getDate()}</div>
                         </div>
-                        <div class="text-center text-xl">
-                          ${workout ? (workout.isCompleted ? '✅' : '🏋️') : ''}
+                        <div class="day-content">
+                          ${this.getDayIcon(workout)}
                         </div>
+                        ${workout && !workout.isCompleted ? '<div class="day-indicator"></div>' : ''}
                       </div>
                     `);
                 }
@@ -793,7 +832,7 @@
                         ${days.join('')}
                       </div>
                       <div class="text-center">
-                        <button onclick="app.addWorkoutToday()" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">
+                        <button onclick="app.handleDayClick('${todayStr}')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">
                           + Training für heute
                         </button>
                       </div>
@@ -803,14 +842,9 @@
             }
 
             handleDayClick(dateStr) {
-                const workout = this.getWorkoutForDate(dateStr);
-                if (workout) {
-                    this.selectedDay = this.getWorkoutIndex(workout);
-                    this.currentView = 'day';
-                    this.render();
-                } else {
-                    this.addWorkoutToDay(dateStr);
-                }
+                this.selectedDate = dateStr;
+                this.showDayModal = true;
+                this.render();
             }
 
             addWorkoutToday() {
@@ -819,6 +853,7 @@
             }
 
             addWorkoutToDay(dateStr) {
+                this.saveStateSnapshot('addWorkout');
                 const weekString = this.getISOWeek(new Date(dateStr));
                 const weekData = this.weeklyData.weeks[weekString];
 
@@ -868,20 +903,39 @@
                 return Math.round((completed / totalExercises) * 100);
             }
 
+            getDayStateClass(workout, isToday, isPast) {
+                let classes = [];
+                if (isToday) classes.push('today');
+                if (workout?.isCompleted) classes.push('completed');
+                else if (workout) classes.push('scheduled');
+                if (isPast && !workout) classes.push('past');
+                return classes.join(' ');
+            }
+
+            getDayIcon(workout) {
+                if (!workout) return '';
+                if (workout.isCompleted) return '✅';
+                return '📋';
+            }
+
             render() {
                 const app = document.getElementById('app');
-                
+
+                let content = '';
                 switch (this.currentView) {
                     case 'setup':
-                        app.innerHTML = this.renderSetup();
+                        content = this.renderSetup();
                         break;
                     case 'overview':
-                        app.innerHTML = this.renderOverview();
+                        content = this.renderOverview();
                         break;
                     case 'day':
-                        app.innerHTML = this.renderDay();
+                        content = this.renderDay();
                         break;
                 }
+
+                content += this.renderDayModal();
+                app.innerHTML = content;
             }
 
             renderSyncStatus() {
@@ -1356,6 +1410,102 @@
                         </div>
                     </div>
                 `;
+            }
+
+            renderDayModal() {
+                if (!this.showDayModal) return '';
+
+                const workout = this.getWorkoutForDate(this.selectedDate);
+                const dayName = new Date(this.selectedDate).toLocaleDateString('de-DE', {weekday: 'long', day: 'numeric', month: 'numeric'});
+
+                return `
+                    <div class="modal-overlay" onclick="app.closeDayModal()">
+                      <div class="modal-content" onclick="event.stopPropagation()">
+                        <h3 class="font-bold text-lg mb-4">${dayName}</h3>
+                        ${workout ? `
+                          <div class="space-y-3">
+                            <div class="p-3 bg-blue-50 rounded-lg">
+                              <div class="font-semibold">📋 ${workout.planDay}</div>
+                              <div class="text-sm text-gray-600">${workout.exercises.length} Übungen</div>
+                              <div class="text-xs text-gray-500">Status: ${workout.isCompleted ? '✅ Abgeschlossen' : '⏳ Offen'}</div>
+                            </div>
+
+                            <div class="flex space-x-2">
+                              <button onclick="app.viewWorkout()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold">
+                                ${workout.isCompleted ? '👁️ Anzeigen' : '🏋️ Trainieren'}
+                              </button>
+                              <button onclick="app.removeWorkout()" class="px-4 bg-red-100 text-red-700 py-2 rounded-lg font-semibold">🗑️</button>
+                            </div>
+                          </div>
+                        ` : `
+                          <div class="space-y-3">
+                            <p class="text-gray-600">Noch kein Training für diesen Tag geplant.</p>
+                            <button onclick="app.addWorkoutToSelectedDay()" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold">➕ Training hinzufügen</button>
+                          </div>
+                        `}
+
+                        <button onclick="app.closeDayModal()" class="w-full mt-4 py-2 border border-gray-300 rounded-lg">Schließen</button>
+                      </div>
+                    </div>
+                `;
+            }
+
+            closeDayModal() {
+                this.showDayModal = false;
+                this.selectedDate = null;
+                this.render();
+            }
+
+            addWorkoutToSelectedDay() {
+                this.addWorkoutToDay(this.selectedDate);
+                this.closeDayModal();
+            }
+
+            viewWorkout() {
+                const workout = this.getWorkoutForDate(this.selectedDate);
+                this.selectedDay = this.getWorkoutIndex(workout);
+                this.currentView = 'day';
+                this.closeDayModal();
+            }
+
+            removeWorkout() {
+                this.saveStateSnapshot('removeWorkout');
+                const weekString = this.getISOWeek(new Date(this.selectedDate));
+                const weekData = this.weeklyData.weeks[weekString];
+                const workoutIndex = weekData.workouts.findIndex(w => w.date === this.selectedDate);
+                if (workoutIndex > -1) {
+                    const workout = weekData.workouts[workoutIndex];
+                    if (workout.isCompleted) {
+                        weekData.completed--;
+                    }
+                    weekData.workouts.splice(workoutIndex, 1);
+                    this.saveWeeklyData();
+                }
+                this.closeDayModal();
+            }
+
+            saveStateSnapshot(action) {
+                this.actionHistory.push({
+                    action,
+                    weeklyData: JSON.parse(JSON.stringify(this.weeklyData)),
+                    timestamp: Date.now()
+                });
+                if (this.actionHistory.length > 10) {
+                    this.actionHistory.shift();
+                }
+            }
+
+            restoreState(snapshot) {
+                this.weeklyData = snapshot.weeklyData;
+                this.saveWeeklyData();
+            }
+
+            undo() {
+                const lastAction = this.actionHistory.pop();
+                if (lastAction) {
+                    this.restoreState(lastAction);
+                    this.render();
+                }
             }
 
             renderDay() {
