@@ -243,7 +243,6 @@
                 const url = `${this.baseURL}${endpoint}`;
                 
                 try {
-                    console.log('API Request:', options.method || 'GET', url);
                     
                     const response = await fetch(url, {
                         headers: {
@@ -260,7 +259,6 @@
                     }
 
                     const data = await response.json();
-                    console.log('API Response:', data);
                     return data;
                 } catch (error) {
                     console.warn('API request failed, using localStorage fallback:', error);
@@ -333,6 +331,7 @@
         // Main App
         class CustomFitnessApp {
             constructor() {
+                this.debug = false; // Set to true for debugging
                 this.api = new FitnessAPI();
                 this.currentView = 'setup';
                 this.setupStep = 1;
@@ -437,11 +436,7 @@
             }
 
             nextStep() {
-                console.log('nextStep called, current step:', this.setupStep);
-                console.log('Current userData:', this.userData);
-
                 if (this.isTransitioning) {
-                    console.log('Already transitioning, ignoring click');
                     return;
                 }
 
@@ -453,8 +448,6 @@
 
                 this.isTransitioning = true;
                 this.setupStep++;
-
-                console.log('Moving to step:', this.setupStep);
                 this.render();
 
                 setTimeout(() => {
@@ -493,28 +486,21 @@
             }
 
             setExperience(experience) {
-                console.log('setExperience called:', experience);
                 this.userData.experience = experience;
-                console.log('Experience set to:', this.userData.experience);
                 this.render();
             }
 
             setFrequency(frequency) {
-                console.log('setFrequency called:', frequency);
                 this.userData.frequency = frequency;
-                console.log('Frequency set to:', this.userData.frequency);
                 this.render();
             }
 
             setDuration(duration) {
-                console.log('setDuration called:', duration);
                 this.userData.duration = duration;
-                console.log('Duration set to:', this.userData.duration);
                 this.render();
             }
 
             toggleGoal(goal) {
-                console.log('toggleGoal called:', goal);
                 if (!this.userData.goals) this.userData.goals = [];
 
                 const index = this.userData.goals.indexOf(goal);
@@ -523,13 +509,10 @@
                 } else {
                     this.userData.goals.push(goal);
                 }
-
-                console.log('Goals after toggle:', this.userData.goals);
                 this.render();
             }
 
             toggleEquipment(equipment) {
-                console.log('toggleEquipment called:', equipment);
                 if (!this.userData.equipment) this.userData.equipment = [];
 
                 const index = this.userData.equipment.indexOf(equipment);
@@ -538,13 +521,10 @@
                 } else {
                     this.userData.equipment.push(equipment);
                 }
-
-                console.log('Equipment after toggle:', this.userData.equipment);
                 this.render();
             }
 
             toggleFocus(focus) {
-                console.log('toggleFocus called:', focus);
                 if (!this.userData.focus) this.userData.focus = [];
 
                 const index = this.userData.focus.indexOf(focus);
@@ -553,13 +533,10 @@
                 } else {
                     this.userData.focus.push(focus);
                 }
-
-                console.log('Focus after toggle:', this.userData.focus);
                 this.render();
             }
 
             async completeSetup() {
-                console.log('Completing setup with data:', this.userData);
 
                 this.currentPlan = this.generateIntelligentPlan();
 
@@ -569,10 +546,8 @@
                 localStorage.setItem('fitness_current_plan', JSON.stringify(this.currentPlan));
 
                 try {
-                    const result = await this.api.createUser(this.userData);
-                    console.log('User created via API:', result);
+                    await this.api.createUser(this.userData);
                 } catch (error) {
-                    console.log('API not available, using localStorage only:', error);
                 }
 
                 this.currentView = 'overview';
@@ -902,7 +877,6 @@
                     const dateStr = d.toISOString().split('T')[0];
                     const workout = weekData.workouts.find(w => w.date === dateStr);
                     const isToday = dateStr === todayStr;
-                    console.log('Today calculated as:', todayStr, 'checking against:', dateStr);
                     const isPast = d < new Date().setHours(0,0,0,0);
 
                     days.push(`
@@ -1539,10 +1513,6 @@
                             </button>
                         </div>
                         
-                        <!-- DEBUG INFO -->
-                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
-                            Debug: Goals=${JSON.stringify(goals)}, Valid=${isValid}
-                        </div>
                     </div>
                 `;
             }
@@ -1577,10 +1547,6 @@
                             </button>
                         </div>
                         
-                        <!-- DEBUG INFO -->
-                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
-                            Debug: Experience="${experience}", Valid=${isValid}
-                        </div>
                     </div>
                 `;
             }
@@ -1616,10 +1582,6 @@
                             </button>
                         </div>
                         
-                        <!-- DEBUG INFO -->
-                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
-                            Debug: Equipment=${JSON.stringify(equipment)}, Valid=${isValid}
-                        </div>
                     </div>
                 `;
             }
@@ -1655,10 +1617,6 @@
                             </button>
                         </div>
                         
-                        <!-- DEBUG INFO -->
-                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
-                            Debug: Focus=${JSON.stringify(focus)}, Valid=${isValid}
-                        </div>
                     </div>
                 `;
             }
@@ -1710,10 +1668,6 @@
                             </button>
                         </div>
                         
-                        <!-- DEBUG INFO -->
-                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
-                            Debug: Frequency="${frequency}", Duration="${duration}", Valid=${isValid}
-                        </div>
                     </div>
                 `;
             }

@@ -324,6 +324,7 @@
         // Main App (Simplified for production)
         class CustomFitnessApp {
             constructor() {
+                this.debug = false; // Set to true for debugging
                 this.api = new FitnessAPI();
                 this.currentView = 'setup';
                 this.setupStep = 1;
@@ -439,7 +440,6 @@
             }
 
             toggleGoal(goal) {
-                console.log('Toggling goal:', goal, 'Current goals:', this.userData.goals);
                 if (!this.userData.goals) this.userData.goals = [];
                 const goals = this.userData.goals;
                 const index = goals.indexOf(goal);
@@ -449,7 +449,6 @@
                     goals.push(goal);
                 }
                 this.userData.goals = [...goals];
-                console.log('Updated goals:', this.userData.goals);
                 this.render();
             }
 
