@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Custom Fitness Tracker">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
+    <title>Custom Fitness Tracker - Intelligenter Assistent</title>
+    
+    <!-- Inline CSS statt Tailwind CDN -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            overscroll-behavior: contain;
+            line-height: 1.6;
+        }
+        
+        .container { max-width: 28rem; margin: 0 auto; background: white; min-height: 100vh; }
+        .gradient-header { background: linear-gradient(to right, #2563eb, #3730a3); color: white; padding: 1rem; }
+        .gradient-button { background: linear-gradient(to right, #2563eb, #3730a3); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .gradient-button:hover { background: linear-gradient(to right, #1d4ed8, #312e81); }
+        .gradient-button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .flex { display: flex; }
+        .flex-1 { flex: 1; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-x-3 > * + * { margin-left: 0.75rem; }
+        
+        .text-center { text-align: center; }
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-6xl { font-size: 3.75rem; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-blue-100 { color: #dbeafe; }
+        .text-blue-500 { color: #3b82f6; }
+        .text-blue-600 { color: #2563eb; }
+        .text-blue-700 { color: #1d4ed8; }
+        .text-blue-800 { color: #1e40af; }
+        .text-green-600 { color: #16a34a; }
+        .text-green-700 { color: #15803d; }
+        .text-green-800 { color: #166534; }
+        
+        .bg-white { background-color: white; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-green-50 { background-color: #f0fdf4; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .bg-gray-200 { background-color: #e5e7eb; }
+        .bg-blue-500 { background-color: #3b82f6; }
+        .bg-green-500 { background-color: #22c55e; }
+        
+        .border { border: 1px solid #d1d5db; }
+        .border-2 { border: 2px solid #d1d5db; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .border-gray-300 { border-color: #d1d5db; }
+        .border-blue-200 { border-color: #bfdbfe; }
+        .border-blue-300 { border-color: #93c5fd; }
+        .border-blue-500 { border-color: #3b82f6; }
+        .border-green-200 { border-color: #bbf7d0; }
+        .border-l-4 { border-left: 4px solid; }
+        
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-full { border-radius: 9999px; }
+        
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-3 { padding: 0 0.75rem; }
+        .py-1 { padding: 0.25rem 0; }
+        .py-3 { padding: 0.75rem 0; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        .mr-4 { margin-right: 1rem; }
+        .ml-4 { margin-left: 1rem; }
+        
+        .w-full { width: 100%; }
+        .w-4 { width: 1rem; }
+        .w-5 { width: 1.25rem; }
+        .w-8 { width: 2rem; }
+        .h-2 { height: 0.5rem; }
+        .h-3 { height: 0.75rem; }
+        .h-4 { height: 1rem; }
+        .h-5 { height: 1.25rem; }
+        .h-8 { height: 2rem; }
+        .min-h-screen { min-height: 100vh; }
+        
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        .transition-all { transition: all 0.3s; }
+        .cursor-pointer { cursor: pointer; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        
+        input, button { font-family: inherit; }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .card:hover { border-color: #93c5fd; }
+        .card.selected { border-color: #3b82f6; background-color: #eff6ff; }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+            height: 0.5rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(to right, #3b82f6, #1e40af);
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 9999px;
+        }
+        
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+        
+        .status-online { background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 0.5rem; }
+        .status-offline { background-color: #fefce8; border-left: 4px solid #eab308; padding: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading state -->
+        <div class="container flex flex-col items-center justify-center" style="min-height: 100vh;">
+            <div class="text-center">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🧙‍♂️</div>
+                <div class="text-lg font-semibold text-gray-800 mb-2">Intelligenter Trainingsplan-Assistent</div>
+                <div class="text-sm text-gray-600">Wird geladen...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Client (Same as before)
+        class FitnessAPI {
+            constructor(baseURL = './debug-api.php') {
+                this.baseURL = baseURL;
+                this.userId = localStorage.getItem('fitness_user_id');
+                this.testConnection();
+            }
+
+            async testConnection() {
+                try {
+                    const response = await fetch(this.baseURL);
+                    const data = await response.json();
+                    console.log('API Health Check:', data);
+                } catch (error) {
+                    console.warn('API not available, will use localStorage fallback:', error);
+                }
+            }
+
+            async request(endpoint, options = {}) {
+                try {
+                    const url = `${this.baseURL}${endpoint}`;
+                    const response = await fetch(url, {
+                        headers: { 'Content-Type': 'application/json', ...options.headers },
+                        ...options
+                    });
+
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    console.warn('API request failed, using localStorage fallback');
+                    return this.getLocalFallback(endpoint);
+                }
+            }
+
+            getLocalFallback(endpoint) {
+                const localKey = `fitness_${endpoint.replace(/\//g, '_')}`;
+                const data = localStorage.getItem(localKey);
+                return data ? JSON.parse(data) : null;
+            }
+
+            saveLocalFallback(endpoint, data) {
+                const localKey = `fitness_${endpoint.replace(/\//g, '_')}`;
+                localStorage.setItem(localKey, JSON.stringify(data));
+            }
+
+            async getPlan() {
+                if (!this.userId) return null;
+                return await this.request(`/users/${this.userId}/plan`);
+            }
+
+            async createUser(userData) {
+                const result = await this.request('/users/create', {
+                    method: 'POST',
+                    body: JSON.stringify(userData)
+                });
+
+                if (result && result.id) {
+                    this.userId = result.id;
+                    localStorage.setItem('fitness_user_id', result.id);
+                    this.saveLocalFallback('/users/create', userData);
+                }
+                return result;
+            }
+
+            async saveSession(sessionData) {
+                const sessions = JSON.parse(localStorage.getItem('fitness_sessions') || '[]');
+                sessions.push({ ...sessionData, timestamp: new Date().toISOString() });
+                localStorage.setItem('fitness_sessions', JSON.stringify(sessions));
+                return { success: true };
+            }
+
+            async getSessions() {
+                return JSON.parse(localStorage.getItem('fitness_sessions') || '[]');
+            }
+        }
+
+        // Main App (Simplified for production)
+        class CustomFitnessApp {
+            constructor() {
+                this.api = new FitnessAPI();
+                this.currentView = 'setup';
+                this.setupStep = 1;
+                this.userData = {};
+                this.currentPlan = null;
+                this.selectedDay = null;
+                this.completedExercises = {};
+                this.completedDays = {};
+                this.exerciseDatabase = this.loadExerciseDatabase();
+                this.init();
+            }
+
+            async init() {
+                // Check for existing data
+                const localUserData = localStorage.getItem('fitness_user_data');
+                const localPlan = localStorage.getItem('fitness_current_plan');
+                
+                if (localUserData && localPlan) {
+                    this.userData = JSON.parse(localUserData);
+                    this.currentPlan = JSON.parse(localPlan);
+                    await this.loadSessions();
+                    this.currentView = 'overview';
+                }
+                
+                this.render();
+            }
+
+            loadExerciseDatabase() {
+                return {
+                    "Eigengewicht": [
+                        { "name": "Liegestütz", "zielgruppe": ["Oberkörper", "Ganzkörper"], "schwierigkeit": "Anfänger" },
+                        { "name": "Kniebeuge", "zielgruppe": ["Unterkörper", "Ganzkörper"], "schwierigkeit": "Anfänger" },
+                        { "name": "Klimmzug", "zielgruppe": ["Oberkörper", "Ganzkörper"], "schwierigkeit": "Fortgeschritten" },
+                        { "name": "Unterarmstütz", "zielgruppe": ["Core", "Ganzkörper"], "schwierigkeit": "Anfänger" },
+                        { "name": "Burpee", "zielgruppe": ["Ganzkörper", "Cardio"], "schwierigkeit": "Fortgeschritten" }
+                    ],
+                    "Kurzhanteln": [
+                        { "name": "Kurzhantel-Bankdrücken", "zielgruppe": ["Oberkörper"], "schwierigkeit": "Anfänger" },
+                        { "name": "Schulterdrücken", "zielgruppe": ["Oberkörper"], "schwierigkeit": "Anfänger" },
+                        { "name": "Bizeps-Curl", "zielgruppe": ["Arme"], "schwierigkeit": "Anfänger" },
+                        { "name": "Einarmiges Rudern", "zielgruppe": ["Oberkörper"], "schwierigkeit": "Anfänger" }
+                    ],
+                    "Langhanteln": [
+                        { "name": "Kniebeuge (Langhantel)", "zielgruppe": ["Unterkörper"], "schwierigkeit": "Fortgeschritten" },
+                        { "name": "Kreuzheben", "zielgruppe": ["Ganzkörper"], "schwierigkeit": "Fortgeschritten" },
+                        { "name": "Bankdrücken", "zielgruppe": ["Oberkörper"], "schwierigkeit": "Fortgeschritten" }
+                    ],
+                    "Gym-Geräte": [
+                        { "name": "Beinpresse", "zielgruppe": ["Unterkörper"], "schwierigkeit": "Anfänger" },
+                        { "name": "Latziehen", "zielgruppe": ["Oberkörper"], "schwierigkeit": "Anfänger" },
+                        { "name": "Brustpresse", "zielgruppe": ["Oberkörper"], "schwierigkeit": "Anfänger" }
+                    ]
+                };
+            }
+
+            async loadSessions() {
+                const sessions = await this.api.getSessions();
+                this.completedExercises = {};
+                this.completedDays = {};
+                
+                sessions.forEach(session => {
+                    if (session.completed_exercises) {
+                        session.completed_exercises.forEach(exerciseIndex => {
+                            this.completedExercises[`${session.day_index}-${exerciseIndex}`] = true;
+                        });
+                    }
+                    this.completedDays[session.day_index] = session.is_completed;
+                });
+            }
+
+            setUserData(key, value) {
+                this.userData[key] = value;
+                this.render(); // Re-render to update button state
+            }
+
+            nextStep() {
+                this.setupStep++;
+                this.render();
+            }
+
+            previousStep() {
+                if (this.setupStep > 1) {
+                    this.setupStep--;
+                    this.render();
+                }
+            }
+
+            toggleArray(array, item) {
+                const index = array.indexOf(item);
+                if (index > -1) {
+                    array.splice(index, 1);
+                } else {
+                    array.push(item);
+                }
+                this.render();
+            }
+
+            toggleGoal(goal) {
+                const goals = this.userData.goals || [];
+                this.toggleArray(goals, goal);
+                this.userData.goals = goals;
+            }
+
+            toggleEquipment(equipment) {
+                const equipments = this.userData.equipment || [];
+                this.toggleArray(equipments, equipment);
+                this.userData.equipment = equipments;
+            }
+
+            toggleFocus(focus) {
+                const focuses = this.userData.focus || [];
+                this.toggleArray(focuses, focus);
+                this.userData.focus = focuses;
+            }
+
+            async completeSetup() {
+                this.currentPlan = this.generateIntelligentPlan();
+                
+                localStorage.setItem('fitness_user_data', JSON.stringify(this.userData));
+                localStorage.setItem('fitness_current_plan', JSON.stringify(this.currentPlan));
+                
+                this.currentView = 'overview';
+                this.render();
+            }
+
+            generateIntelligentPlan() {
+                const { frequency, equipment, focus, duration, experience, goals } = this.userData;
+                
+                // Collect available exercises
+                let availableExercises = [];
+                equipment.forEach(eq => {
+                    if (this.exerciseDatabase[eq]) {
+                        availableExercises = availableExercises.concat(this.exerciseDatabase[eq]);
+                    }
+                });
+
+                // Filter by focus and experience
+                availableExercises = availableExercises.filter(exercise => {
+                    const matchesFocus = focus.some(f => exercise.zielgruppe.includes(f));
+                    const matchesExperience = exercise.schwierigkeit === experience || 
+                        (experience === 'Fortgeschritten' && exercise.schwierigkeit === 'Anfänger') ||
+                        (experience === 'Profi' && ['Anfänger', 'Fortgeschritten'].includes(exercise.schwierigkeit));
+                    return matchesFocus && matchesExperience;
+                });
+
+                const plan = {};
+                const trainingDays = parseInt(frequency);
+                
+                for (let i = 0; i < trainingDays; i++) {
+                    const dayName = `Tag ${i + 1}`;
+                    const exerciseCount = duration === '30min' ? 4 : duration === '45min' ? 6 : 8;
+                    const dayExercises = this.shuffleArray([...availableExercises]).slice(0, exerciseCount);
+                    
+                    plan[dayName] = {
+                        title: `💪 Training ${i + 1}`,
+                        exercises: dayExercises.map(ex => `${ex.name}: ${this.getRepScheme(experience, goals)}`),
+                        exercise_details: dayExercises,
+                        duration: duration,
+                        focus: focus.join(', '),
+                        difficulty: experience
+                    };
+                }
+
+                return plan;
+            }
+
+            getRepScheme(experience, goals) {
+                if (goals.includes('Muskelaufbau')) {
+                    return experience === 'Anfänger' ? '2x8-10' : experience === 'Fortgeschritten' ? '3x8-12' : '4x6-10';
+                } else if (goals.includes('Kraft')) {
+                    return experience === 'Anfänger' ? '3x5-6' : '3x3-5';
+                }
+                return '3x8-12';
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            async toggleExercise(dayIndex, exerciseIndex) {
+                const key = `${dayIndex}-${exerciseIndex}`;
+                this.completedExercises[key] = !this.completedExercises[key];
+                await this.api.saveSession({
+                    dayIndex,
+                    completedExercises: Object.keys(this.completedExercises)
+                        .filter(k => k.startsWith(`${dayIndex}-`) && this.completedExercises[k])
+                        .map(k => parseInt(k.split('-')[1])),
+                    isCompleted: this.completedDays[dayIndex] || false
+                });
+                this.render();
+            }
+
+            async toggleDay(dayIndex) {
+                this.completedDays[dayIndex] = !this.completedDays[dayIndex];
+                await this.api.saveSession({
+                    dayIndex,
+                    completedExercises: [],
+                    isCompleted: this.completedDays[dayIndex]
+                });
+                this.render();
+            }
+
+            getCompletionPercentage(dayIndex, day) {
+                if (!day || !day.exercises) return 0;
+                const totalExercises = day.exercises.length;
+                let completed = 0;
+                
+                for (let i = 0; i < totalExercises; i++) {
+                    const key = `${dayIndex}-${i}`;
+                    if (this.completedExercises[key]) completed++;
+                }
+                
+                return Math.round((completed / totalExercises) * 100);
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                
+                switch (this.currentView) {
+                    case 'setup':
+                        app.innerHTML = this.renderSetup();
+                        break;
+                    case 'overview':
+                        app.innerHTML = this.renderOverview();
+                        break;
+                    case 'day':
+                        app.innerHTML = this.renderDay();
+                        break;
+                }
+            }
+
+            renderSetup() {
+                const steps = [
+                    this.renderStep1_Welcome(),
+                    this.renderStep2_Goals(),
+                    this.renderStep3_Experience(),
+                    this.renderStep4_Equipment(),
+                    this.renderStep5_Focus(),
+                    this.renderStep6_Schedule(),
+                    this.renderStep7_Summary()
+                ];
+
+                return `
+                    <div class="container">
+                        <div class="gradient-header">
+                            <h1 class="text-xl font-bold">🧙‍♂️ Trainingsplan-Assistent</h1>
+                            <p class="text-blue-100">Schritt ${this.setupStep} von 7</p>
+                            <div class="progress-bar mt-2">
+                                <div class="progress-fill" style="width: ${(this.setupStep / 7) * 100}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            ${steps[this.setupStep - 1]}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep1_Welcome() {
+                return `
+                    <div class="text-center space-y-6">
+                        <div class="text-6xl">🏋️‍♀️</div>
+                        <h2 class="text-2xl font-bold text-gray-800">Willkommen!</h2>
+                        <p class="text-gray-600">Ich erstelle dir einen personalisierten Trainingsplan.</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2" style="display: block;">Wie heißt du?</label>
+                                <input type="text" 
+                                       value="${this.userData.name || ''}"
+                                       oninput="app.setUserData('name', this.value)"
+                                       placeholder="Dein Name">
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-700 mb-2" style="display: block;">Alter (optional)</label>
+                                <input type="number" min="12" max="100"
+                                       value="${this.userData.age || ''}"
+                                       oninput="app.setUserData('age', parseInt(this.value) || null)"
+                                       placeholder="Dein Alter">
+                            </div>
+                        </div>
+
+                        <button onclick="app.nextStep()" 
+                                class="gradient-button w-full"
+                                ${!this.userData.name ? 'disabled' : ''}>
+                            Weiter →
+                        </button>
+                    </div>
+                `;
+            }
+
+            renderStep2_Goals() {
+                const goals = this.userData.goals || [];
+                const goalOptions = [
+                    { id: 'Muskelaufbau', icon: '💪', title: 'Muskelaufbau' },
+                    { id: 'Kraft', icon: '🏋️', title: 'Kraft steigern' },
+                    { id: 'Ausdauer', icon: '🏃', title: 'Ausdauer' },
+                    { id: 'Gesundheit', icon: '❤️', title: 'Gesundheit' }
+                ];
+
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🎯</div>
+                            <h2 class="text-xl font-bold text-gray-800">Was ist dein Hauptziel?</h2>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${goalOptions.map(goal => `
+                                <div class="card ${goals.includes(goal.id) ? 'selected' : ''}" onclick="app.toggleGoal('${goal.id}')">
+                                    <div class="flex items-center">
+                                        <div class="text-2xl mr-4">${goal.icon}</div>
+                                        <div class="font-semibold text-gray-800">${goal.title}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" class="border border-gray-300 text-gray-700 rounded-lg font-semibold py-3 flex-1">← Zurück</button>
+                            <button onclick="app.nextStep()" class="gradient-button flex-1" ${goals.length === 0 ? 'disabled' : ''}>Weiter →</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep3_Experience() {
+                const experience = this.userData.experience || '';
+                const levels = [
+                    { id: 'Anfänger', icon: '🌱', title: 'Anfänger' },
+                    { id: 'Fortgeschritten', icon: '💪', title: 'Fortgeschritten' },
+                    { id: 'Profi', icon: '🏆', title: 'Erfahren' }
+                ];
+
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">📊</div>
+                            <h2 class="text-xl font-bold text-gray-800">Trainingserfahrung?</h2>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${levels.map(level => `
+                                <div class="card ${experience === level.id ? 'selected' : ''}" onclick="app.setUserData('experience', '${level.id}'); app.render();">
+                                    <div class="flex items-center">
+                                        <div class="text-2xl mr-4">${level.icon}</div>
+                                        <div class="font-semibold text-gray-800">${level.title}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" class="border border-gray-300 text-gray-700 rounded-lg font-semibold py-3 flex-1">← Zurück</button>
+                            <button onclick="app.nextStep()" class="gradient-button flex-1" ${!experience ? 'disabled' : ''}>Weiter →</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep4_Equipment() {
+                const equipment = this.userData.equipment || [];
+                const equipmentOptions = [
+                    { id: 'Eigengewicht', icon: '🤸', title: 'Eigengewicht' },
+                    { id: 'Kurzhanteln', icon: '🏋️', title: 'Kurzhanteln' },
+                    { id: 'Langhanteln', icon: '🎯', title: 'Langhantel' },
+                    { id: 'Gym-Geräte', icon: '⚙️', title: 'Fitnessstudio' }
+                ];
+
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🏋️‍♂️</div>
+                            <h2 class="text-xl font-bold text-gray-800">Welche Ausrüstung?</h2>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${equipmentOptions.map(eq => `
+                                <div class="card ${equipment.includes(eq.id) ? 'selected' : ''}" onclick="app.toggleEquipment('${eq.id}')">
+                                    <div class="flex items-center">
+                                        <div class="text-2xl mr-4">${eq.icon}</div>
+                                        <div class="font-semibold text-gray-800">${eq.title}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" class="border border-gray-300 text-gray-700 rounded-lg font-semibold py-3 flex-1">← Zurück</button>
+                            <button onclick="app.nextStep()" class="gradient-button flex-1" ${equipment.length === 0 ? 'disabled' : ''}>Weiter →</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep5_Focus() {
+                const focus = this.userData.focus || [];
+                const focusOptions = [
+                    { id: 'Ganzkörper', icon: '🤸', title: 'Ganzkörper' },
+                    { id: 'Oberkörper', icon: '💪', title: 'Oberkörper' },
+                    { id: 'Unterkörper', icon: '🦵', title: 'Unterkörper' },
+                    { id: 'Core', icon: '🔥', title: 'Core/Bauch' }
+                ];
+
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🎯</div>
+                            <h2 class="text-xl font-bold text-gray-800">Welche Bereiche?</h2>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${focusOptions.map(f => `
+                                <div class="card ${focus.includes(f.id) ? 'selected' : ''}" onclick="app.toggleFocus('${f.id}')">
+                                    <div class="flex items-center">
+                                        <div class="text-2xl mr-4">${f.icon}</div>
+                                        <div class="font-semibold text-gray-800">${f.title}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" class="border border-gray-300 text-gray-700 rounded-lg font-semibold py-3 flex-1">← Zurück</button>
+                            <button onclick="app.nextStep()" class="gradient-button flex-1" ${focus.length === 0 ? 'disabled' : ''}>Weiter →</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep6_Schedule() {
+                const frequency = this.userData.frequency || '';
+                const duration = this.userData.duration || '';
+                
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">📅</div>
+                            <h2 class="text-xl font-bold text-gray-800">Zeitplan?</h2>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-3">Häufigkeit pro Woche</h3>
+                            <div class="grid-2">
+                                ${['2', '3', '4', '5'].map(days => `
+                                    <div class="card text-center ${frequency === days ? 'selected' : ''}" onclick="app.setUserData('frequency', '${days}'); app.render();">
+                                        <div class="text-xl font-bold">${days}x</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-3">Dauer pro Einheit</h3>
+                            <div class="space-y-2">
+                                ${[
+                                    { id: '30min', title: '30 Minuten' },
+                                    { id: '45min', title: '45 Minuten' },
+                                    { id: '60min', title: '60 Minuten' }
+                                ].map(dur => `
+                                    <div class="card ${duration === dur.id ? 'selected' : ''}" onclick="app.setUserData('duration', '${dur.id}'); app.render();">
+                                        <div class="font-semibold text-gray-800">${dur.title}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" class="border border-gray-300 text-gray-700 rounded-lg font-semibold py-3 flex-1">← Zurück</button>
+                            <button onclick="app.nextStep()" class="gradient-button flex-1" ${!frequency || !duration ? 'disabled' : ''}>Weiter →</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep7_Summary() {
+                const { name, goals, experience, equipment, focus, frequency, duration } = this.userData;
+                
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">📋</div>
+                            <h2 class="text-xl font-bold text-gray-800">Perfekt, ${name}!</h2>
+                        </div>
+                        
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <div class="text-sm space-y-2">
+                                <div><strong>Ziele:</strong> ${(goals || []).join(', ')}</div>
+                                <div><strong>Erfahrung:</strong> ${experience}</div>
+                                <div><strong>Equipment:</strong> ${(equipment || []).join(', ')}</div>
+                                <div><strong>Fokus:</strong> ${(focus || []).join(', ')}</div>
+                                <div><strong>Plan:</strong> ${frequency}x/Woche, ${duration}</div>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" class="border border-gray-300 text-gray-700 rounded-lg font-semibold py-3 flex-1">← Zurück</button>
+                            <button onclick="app.completeSetup()" class="gradient-button flex-1">🎉 Plan erstellen!</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderOverview() {
+                if (!this.currentPlan) return '<div>Lade Plan...</div>';
+                
+                const planDays = Object.keys(this.currentPlan);
+                const completedDaysCount = Object.values(this.completedDays).filter(Boolean).length;
+                const totalProgress = Math.round((completedDaysCount / planDays.length) * 100);
+                
+                return `
+                    <div class="container" style="background: linear-gradient(to bottom right, #eff6ff, #e0e7ff); min-height: 100vh;">
+                        <div class="bg-white shadow-lg">
+                            <div class="gradient-header">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <h1 class="text-xl font-bold">💪 ${this.userData.name}'s Plan</h1>
+                                        <p class="text-blue-100">Personalisiert für dich</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold">${totalProgress}%</div>
+                                        <div class="text-xs text-blue-100">Fortschritt</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="progress-bar mt-4">
+                                    <div class="progress-fill" style="width: ${totalProgress}%; background: white;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4">
+                            <div class="space-y-3">
+                                ${planDays.map((dayName, index) => {
+                                    const day = this.currentPlan[dayName];
+                                    const isCompleted = this.completedDays[index];
+                                    const completionPercentage = this.getCompletionPercentage(index, day);
+                                    
+                                    return `
+                                        <div class="bg-white rounded-lg shadow-md p-4 border-2 cursor-pointer transition-all hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200'}" 
+                                             onclick="app.selectedDay=${index}; app.currentView='day'; app.render();">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${isCompleted ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'}">
+                                                        ${index + 1}
+                                                    </div>
+                                                    <div>
+                                                        <h3 class="font-semibold text-gray-800">${dayName}</h3>
+                                                        <p class="text-xs text-gray-500">${day.difficulty}</p>
+                                                    </div>
+                                                </div>
+                                                ${isCompleted ? '<div style="color: #22c55e;">✓</div>' : ''}
+                                            </div>
+                                            
+                                            <div class="mb-2">
+                                                <h4 class="text-sm font-medium text-gray-700">${day.title}</h4>
+                                                <p class="text-xs text-gray-500">${day.duration}</p>
+                                            </div>
+                                            
+                                            <div class="flex items-center">
+                                                <div class="progress-bar flex-1 mr-3">
+                                                    <div class="progress-fill" style="width: ${completionPercentage}%; background: ${isCompleted ? '#22c55e' : '#3b82f6'};"></div>
+                                                </div>
+                                                <span class="text-xs font-semibold text-gray-600">${completionPercentage}%</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            
+                            <div class="mt-6 p-4 bg-white rounded-lg shadow-md text-center">
+                                <div class="text-2xl mb-2">🎯</div>
+                                <h3 class="font-semibold text-gray-800 mb-2">Dein Profil</h3>
+                                <button onclick="localStorage.clear(); location.reload();" class="text-xs text-blue-600">🔄 Neuen Plan erstellen</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderDay() {
+                if (!this.currentPlan || this.selectedDay === null) return '<div>Fehler</div>';
+                
+                const dayName = Object.keys(this.currentPlan)[this.selectedDay];
+                const day = this.currentPlan[dayName];
+                const completionPercentage = this.getCompletionPercentage(this.selectedDay, day);
+                
+                return `
+                    <div class="container" style="background: linear-gradient(to bottom right, #eff6ff, #e0e7ff); min-height: 100vh;">
+                        <div class="bg-white shadow-lg">
+                            <div class="gradient-header">
+                                <button onclick="app.currentView='overview'; app.render();" class="text-blue-100 mb-2">← Zurück</button>
+                                <h1 class="text-xl font-bold">${dayName}</h1>
+                                <p class="text-blue-100">${day.title}</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4">
+                            <div class="bg-white rounded-lg shadow-md p-4">
+                                <div class="flex justify-between items-center mb-3">
+                                    <h2 class="text-lg font-semibold text-gray-800">${day.title}</h2>
+                                    <span class="text-sm text-gray-600">${day.duration}</span>
+                                </div>
+                                
+                                <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                                    <p class="text-xs text-blue-700">🎯 ${day.focus} • 📊 ${day.difficulty}</p>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm text-gray-600">Fortschritt</span>
+                                        <span class="text-sm font-semibold text-blue-600">${completionPercentage}%</span>
+                                    </div>
+                                    <div class="progress-bar h-3">
+                                        <div class="progress-fill" style="width: ${completionPercentage}%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    ${day.exercises.map((exercise, index) => {
+                                        const isCompleted = this.completedExercises[`${this.selectedDay}-${index}`];
+                                        
+                                        return `
+                                            <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
+                                                <div class="flex items-center p-3 cursor-pointer" onclick="app.toggleExercise(${this.selectedDay}, ${index})">
+                                                    <div class="mr-3">
+                                                        ${isCompleted ? '<div style="color: #22c55e;">✓</div>' : '<div style="color: #9ca3af;">○</div>'}
+                                                    </div>
+                                                    <span class="flex-1 text-sm font-medium ${isCompleted ? 'text-gray-500' : 'text-gray-800'}" style="${isCompleted ? 'text-decoration: line-through;' : ''}">${exercise}</span>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+
+                                <button onclick="app.toggleDay(${this.selectedDay})" class="w-full mt-6 py-3 rounded-lg font-bold text-lg ${this.completedDays[this.selectedDay] ? 'bg-green-500 text-white' : 'gradient-button'}">
+                                    ${this.completedDays[this.selectedDay] ? '🎉 Tag geschafft!' : '✅ Tag abschließen'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new CustomFitnessApp();
+        });
+    </script>
+</body>
+</html>

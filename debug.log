@@ -10,3 +10,13 @@ Parsed path: []
 Parsed path: ["users","create"]
 2025-07-10 13:39:55 - POST /demos/fitnesstracker/debug-api.php/users/user_686fa68b564db/plan
 Parsed path: ["users","user_686fa68b564db","plan"]
+2025-07-10 14:31:19 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 14:31:19 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 14:31:20 - GET /demos/fitnesstracker/debug-api.php/users/user_686fa68b564db
+Parsed path: ["users","user_686fa68b564db"]
+2025-07-10 14:37:25 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 14:41:46 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
