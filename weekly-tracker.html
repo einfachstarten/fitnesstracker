@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Fitness Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    .calendar-week {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin: 1rem 0;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .calendar-day.today { border-color: #3b82f6; background: #eff6ff; }
+    .calendar-day.completed { border-color: #22c55e; background: #f0fdf4; }
+    .calendar-day:hover { border-color: #93c5fd; }
+    </style>
+</head>
+<body class="bg-gray-100">
+<div id="app" class="max-w-md mx-auto p-4"></div>
+<script>
+function getISOWeek(date){
+  const d=new Date(date);d.setHours(0,0,0,0);d.setDate(d.getDate()+3-(d.getDay()+6)%7);
+  const week1=new Date(d.getFullYear(),0,4);
+  const week=Math.round(((d-week1)/86400000-3+(week1.getDay()+6)%7)/7)+1;
+  return `${d.getFullYear()}-W${String(week).padStart(2,'0')}`;
+}
+function getWeekBounds(weekString){
+  const [year,week]=weekString.split('-W').map(Number);
+  const jan4=new Date(year,0,4);
+  const weekStart=new Date(jan4.getTime()+(week-1)*7*86400000);
+  weekStart.setDate(weekStart.getDate()-(jan4.getDay()+6)%7);
+  return {start:weekStart,end:new Date(weekStart.getTime()+6*86400000)};
+}
+function getActivePlanDay(weekData,index){
+  const planDays=Object.keys(app.currentPlan);
+  return planDays[index%planDays.length];
+}
+function renderCalendarWeek(weekString,weekData){
+  const {start,end}=getWeekBounds(weekString);
+  const days=[];
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    const dateStr=d.toISOString().split('T')[0];
+    const workout=weekData.workouts.find(w=>w.date===dateStr);
+    const isToday=dateStr===new Date().toISOString().split('T')[0];
+    days.push(`<div class="calendar-day ${workout?.isCompleted?'completed':''} ${isToday?'today':''}" data-date="${dateStr}">
+      <div class="day-header">
+        <span class="day-name">${d.toLocaleDateString('de-DE',{weekday:'short'})}</span>
+        <span class="day-number">${d.getDate()}</span>
+      </div>
+      <div class="day-content">${workout?(workout.isCompleted?'✅':'🏋️'):''}</div>
+    </div>`);
+  }
+  return `<div class="calendar-week">
+    <div class="week-header">
+      <h3>Woche ${weekString.split('-W')[1]} (${start.getDate()}.${start.getMonth()+1} - ${end.getDate()}.${end.getMonth()+1})</h3>
+      <div class="week-progress">[${weekData.completed}/${weekData.target} ✅]</div>
+    </div>
+    <div class="calendar-grid">${days.join('')}</div>
+    <div class="week-actions"><button onclick="app.addWorkoutToDay(event)" class="add-workout-btn">+ Training hinzufügen</button></div>
+  </div>`;
+}
+class WeeklyTracker{
+  constructor(){
+    this.currentPlan={'Tag 1':{exercises:['Push Ups','Squats']},'Tag 2':{exercises:['Pull Ups','Lunges']},'Tag 3':{exercises:['Plank','Burpees']}};
+    this.weeklyData=this.loadWeeklyData();
+    this.currentView='calendar';
+    this.selectedWorkout=null;
+    this.render();
+    document.getElementById('app').addEventListener('click',(e)=>{
+      if(e.target.classList.contains('calendar-day')){
+        this.addWorkoutToDay({target:e.target});
+      }
+    });
+  }
+  initializeWeeklyData(){
+    const currentWeek=getISOWeek(new Date());
+    return{weeklyGoal:3,currentWeek,weeks:{[currentWeek]:{...getWeekBounds(currentWeek),target:3,completed:0,workouts:[],isWeekCompleted:false}}};
+  }
+  loadWeeklyData(){
+    const data=localStorage.getItem('weeklyTrainingData');
+    return data?JSON.parse(data):this.initializeWeeklyData();
+  }
+  saveWeeklyData(){
+    localStorage.setItem('weeklyTrainingData',JSON.stringify(this.weeklyData));
+  }
+  addWorkoutToDay(event){
+    const date=event.target.dataset.date;
+    const weekString=getISOWeek(date);
+    if(!this.weeklyData.weeks[weekString]){
+      this.weeklyData.weeks[weekString]={...getWeekBounds(weekString),target:this.weeklyData.weeklyGoal,completed:0,workouts:[],isWeekCompleted:false};
+    }
+    const weekData=this.weeklyData.weeks[weekString];
+    const nextPlanDay=getActivePlanDay(weekData,weekData.workouts.length);
+    const workout={id:`workout_${Date.now()}`,date,dayName:new Date(date).toLocaleDateString('de-DE',{weekday:'long'}),planDay:nextPlanDay,exercises:this.currentPlan[nextPlanDay].exercises,completedExercises:[],isCompleted:true,timestamp:new Date().toISOString()};
+    weekData.workouts.push(workout);weekData.completed++;this.saveWeeklyData();this.render();
+  }
+  render(){
+    const container=document.getElementById('app');
+    container.innerHTML=renderCalendarWeek(this.weeklyData.currentWeek,this.weeklyData.weeks[this.weeklyData.currentWeek]);
+  }
+}
+const app=new WeeklyTracker();
+</script>
+</body>
+</html>
