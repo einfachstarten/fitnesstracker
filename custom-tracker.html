@@ -207,13 +207,16 @@
                 this.weeklyData = this.loadWeeklyData();
                 this.completedExercises = {};
                 this.completedDays = {};
+                this.expandedExercises = {};
                 this.apiStatus = 'unknown'; // unknown, working, offline
-                this.exerciseDatabase = this.loadExerciseDatabase();
+                this.exerciseDatabase = {};
                 
                 this.init();
             }
 
             async init() {
+                this.exerciseDatabase = await this.loadExerciseDatabase();
+
                 // Test API connection
                 try {
                     await this.api.testConnection();
@@ -244,213 +247,23 @@
                 this.render();
             }
 
-            loadExerciseDatabase() {
+            async loadExerciseDatabase() {
+                try {
+                    const response = await fetch('./exercises.json');
+                    if (!response.ok) throw new Error('Failed to load exercises.json');
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error('Failed to load exercises.json, using fallback:', error);
+                    return this.getFallbackExerciseDatabase();
+                }
+            }
+
+            getFallbackExerciseDatabase() {
                 return {
                     "Eigengewicht": [
-                        {
-                            "name": "Liegestütz",
-                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Kniebeuge (ohne Gewicht)",
-                            "muskelgruppen": ["Beine", "Gesäß"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Klimmzug",
-                            "muskelgruppen": ["Rücken", "Bizeps"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Dips",
-                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Ausfallschritt (ohne Gewicht)",
-                            "muskelgruppen": ["Beine", "Gesäß"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Unterarmstütz (Plank)",
-                            "muskelgruppen": ["Rumpf", "Rücken"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Core", "Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Burpee",
-                            "muskelgruppen": ["Ganzkörper"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Ganzkörper", "Cardio"]
-                        },
-                        {
-                            "name": "Bergsteiger (Mountain Climber)",
-                            "muskelgruppen": ["Rumpf", "Beine", "Schultern"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Ganzkörper", "Cardio"]
-                        },
-                        {
-                            "name": "Crunch",
-                            "muskelgruppen": ["Bauch"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Core"]
-                        },
-                        {
-                            "name": "Hüftheben (Brücke)",
-                            "muskelgruppen": ["Gesäß", "Beine"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
-                        }
-                    ],
-                    "Kurzhanteln": [
-                        {
-                            "name": "Kurzhantel-Bankdrücken",
-                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Schulterdrücken mit Kurzhanteln",
-                            "muskelgruppen": ["Schultern", "Trizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Seitheben mit Kurzhanteln",
-                            "muskelgruppen": ["Schultern"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Bizeps-Curl (Kurzhanteln)",
-                            "muskelgruppen": ["Bizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Arme"]
-                        },
-                        {
-                            "name": "Trizeps-Kickback",
-                            "muskelgruppen": ["Trizeps"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Oberkörper", "Arme"]
-                        },
-                        {
-                            "name": "Einarmiges Kurzhantel-Rudern",
-                            "muskelgruppen": ["Rücken", "Bizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Goblet Squat",
-                            "muskelgruppen": ["Beine", "Gesäß", "Rumpf"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Rumänisches Kreuzheben mit Kurzhanteln",
-                            "muskelgruppen": ["Beine", "Gesäß", "Rücken"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
-                        }
-                    ],
-                    "Langhanteln": [
-                        {
-                            "name": "Kniebeuge (Langhantel)",
-                            "muskelgruppen": ["Beine", "Gesäß", "Rücken"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Kreuzheben",
-                            "muskelgruppen": ["Beine", "Gesäß", "Rücken"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Ganzkörper"]
-                        },
-                        {
-                            "name": "Bankdrücken (Langhantel)",
-                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Überkopfdrücken (Military Press)",
-                            "muskelgruppen": ["Schultern", "Trizeps"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Langhantelrudern (vorgebeugt)",
-                            "muskelgruppen": ["Rücken", "Bizeps"],
-                            "schwierigkeit": "Fortgeschritten",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Bizeps-Curls (Langhantel)",
-                            "muskelgruppen": ["Bizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Arme"]
-                        }
-                    ],
-                    "Gym-Geräte": [
-                        {
-                            "name": "Beinpresse",
-                            "muskelgruppen": ["Beine", "Gesäß"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Beinstrecker",
-                            "muskelgruppen": ["Beine"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Unterkörper"]
-                        },
-                        {
-                            "name": "Beincurl",
-                            "muskelgruppen": ["Beine"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Unterkörper"]
-                        },
-                        {
-                            "name": "Brustpresse (Maschine)",
-                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Latziehen",
-                            "muskelgruppen": ["Rücken", "Bizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Schulterpresse (Maschine)",
-                            "muskelgruppen": ["Schultern", "Trizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Rudern am Kabelzug",
-                            "muskelgruppen": ["Rücken", "Bizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
-                        },
-                        {
-                            "name": "Trizepsdrücken am Kabel",
-                            "muskelgruppen": ["Trizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Arme"]
-                        },
-                        {
-                            "name": "Bizepscurls am Kabel",
-                            "muskelgruppen": ["Bizeps"],
-                            "schwierigkeit": "Anfänger",
-                            "zielgruppe": ["Oberkörper", "Arme"]
-                        }
+                        { "name": "Liegestütz", "muskelgruppen": ["Brust", "Trizeps"], "ausführung": "Klassische Liegestütze, Körper gerade halten", "schwierigkeit": "Anfänger" },
+                        { "name": "Kniebeuge", "muskelgruppen": ["Beine", "Gesäß"], "ausführung": "Füße schulterbreit, Knie in Richtung Zehenspitzen", "schwierigkeit": "Anfänger" }
                     ]
                 };
             }
@@ -549,21 +362,27 @@
 
             generateIntelligentPlan() {
                 const { frequency, equipment, focus, duration, experience, goals } = this.userData;
-                
+                const equipmentMapping = this.getEquipmentMapping();
+
                 // Sammle verfügbare Übungen basierend auf Equipment
                 let availableExercises = [];
                 equipment.forEach(eq => {
-                    if (this.exerciseDatabase[eq]) {
-                        availableExercises = availableExercises.concat(this.exerciseDatabase[eq]);
+                    const jsonCategory = equipmentMapping[eq];
+                    if (this.exerciseDatabase[jsonCategory]) {
+                        availableExercises = availableExercises.concat(
+                            this.exerciseDatabase[jsonCategory].map(ex => ({
+                                ...ex,
+                                category: jsonCategory,
+                                zielgruppe: this.mapMuscleGroupsToTargets(ex.muskelgruppen)
+                            }))
+                        );
                     }
                 });
 
                 // Filtere nach Fokus und Erfahrung
                 availableExercises = availableExercises.filter(exercise => {
                     const matchesFocus = focus.some(f => exercise.zielgruppe.includes(f));
-                    const matchesExperience = exercise.schwierigkeit === experience || 
-                        (experience === 'Fortgeschritten' && exercise.schwierigkeit === 'Anfänger') ||
-                        (experience === 'Profi' && ['Anfänger', 'Fortgeschritten'].includes(exercise.schwierigkeit));
+                    const matchesExperience = this.matchesExperienceLevel(exercise.schwierigkeit, experience);
                     return matchesFocus && matchesExperience;
                 });
 
@@ -618,7 +437,7 @@
 
             selectExercisesForDay(availableExercises, dayFocus, duration) {
                 // Filtere Übungen für den spezifischen Tag
-                let dayExercises = availableExercises.filter(exercise => 
+                let dayExercises = availableExercises.filter(exercise =>
                     dayFocus.some(focus => exercise.zielgruppe.includes(focus))
                 );
 
@@ -635,6 +454,49 @@
                 // Shuffle und wähle aus
                 dayExercises = this.shuffleArray([...dayExercises]);
                 return dayExercises.slice(0, exerciseCount);
+            }
+
+            getEquipmentMapping() {
+                return {
+                    'Eigengewicht': 'Eigengewicht',
+                    'Kurzhanteln': 'Kurzhanteln',
+                    'Langhanteln': 'Langhanteln',
+                    'Gym-Geräte': 'Gym-Geräte'
+                };
+            }
+
+            mapMuscleGroupsToTargets(muskelgruppen) {
+                const mapping = {
+                    'Brust': ['Oberkörper', 'Ganzkörper'],
+                    'Trizeps': ['Oberkörper', 'Arme', 'Ganzkörper'],
+                    'Bizeps': ['Oberkörper', 'Arme', 'Ganzkörper'],
+                    'Rücken': ['Oberkörper', 'Ganzkörper'],
+                    'Schultern': ['Oberkörper', 'Ganzkörper'],
+                    'Beine': ['Unterkörper', 'Ganzkörper'],
+                    'Gesäß': ['Unterkörper', 'Ganzkörper'],
+                    'Bauch': ['Core', 'Ganzkörper'],
+                    'Rumpf': ['Core', 'Ganzkörper']
+                };
+
+                let targets = new Set();
+                muskelgruppen.forEach(muscle => {
+                    const muscleTargets = mapping[muscle] || ['Ganzkörper'];
+                    muscleTargets.forEach(t => targets.add(t));
+                });
+
+                return Array.from(targets);
+            }
+
+            matchesExperienceLevel(exerciseDifficulty, userExperience) {
+                const difficultyLevels = {
+                    'Anfänger': 1,
+                    'Fortgeschritten': 2,
+                    'Profi': 3
+                };
+
+                const exerciseLevel = difficultyLevels[exerciseDifficulty] || 1;
+                const userLevel = difficultyLevels[userExperience] || 1;
+                return exerciseLevel <= userLevel;
             }
 
             getDayTitle(dayFocus) {
@@ -674,6 +536,23 @@
                     [array[i], array[j]] = [array[j], array[i]];
                 }
                 return array;
+            }
+
+            findExerciseDetail(exerciseString) {
+                const exerciseName = exerciseString.split(':')[0].trim();
+                for (const category in this.exerciseDatabase) {
+                    const exercise = this.exerciseDatabase[category].find(ex =>
+                        ex.name === exerciseName || ex.name.includes(exerciseName)
+                    );
+                    if (exercise) return exercise;
+                }
+                return null;
+            }
+
+            toggleExerciseExpansion(dayIndex, exerciseIndex) {
+                const key = `${dayIndex}-${exerciseIndex}`;
+                this.expandedExercises[key] = !this.expandedExercises[key];
+                this.render();
             }
 
             async toggleExercise(dayIndex, exerciseIndex) {
@@ -1557,19 +1436,58 @@
                                 <div class="space-y-3">
                                     ${day.exercises.map((exercise, index) => {
                                         const isCompleted = this.completedExercises[`${this.selectedDay}-${index}`];
-                                        
+                                        const exerciseDetail = this.findExerciseDetail(exercise);
+                                        const isExpanded = this.expandedExercises[`${this.selectedDay}-${index}`];
+
                                         return `
-                                            <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
-                                                <div class="flex items-center p-3 cursor-pointer hover:border-blue-300" onclick="app.toggleExercise(${this.selectedDay}, ${index})">
-                                                    <div class="mr-3">
-                                                        ${isCompleted ? 
-                                                            '<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
-                                                            '<svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"></circle></svg>'
-                                                        }
-                                                    </div>
-                                                    <span class="flex-1 text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}">${exercise}</span>
-                                                </div>
+                                          <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
+                                            <div class="flex items-center p-3">
+                                              <button onclick="app.toggleExercise(${this.selectedDay}, ${index})" class="mr-3">
+                                                ${isCompleted ?
+                                                    '<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
+                                                    '<svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"></circle></svg>'
+                                                }
+                                              </button>
+                                              <div class="flex-1">
+                                                <span class="text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}">${exercise}</span>
+                                                ${exerciseDetail ? `
+                                                  <div class="text-xs text-blue-600 mt-1">
+                                                    🎯 ${exerciseDetail.muskelgruppen.join(', ')} • 📊 ${exerciseDetail.schwierigkeit}
+                                                  </div>
+                                                ` : ''}
+                                              </div>
+                                              ${exerciseDetail ? `
+                                                <button onclick="app.toggleExerciseExpansion(${this.selectedDay}, ${index})" class="ml-2 p-1">
+                                                  <svg class="h-4 w-4 text-blue-600 transition-transform ${isExpanded ? 'rotate-180' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                  </svg>
+                                                </button>
+                                              ` : ''}
                                             </div>
+
+                                            ${exerciseDetail && isExpanded ? `
+                                              <div class="px-3 pb-3">
+                                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3">
+                                                  <div class="flex items-start">
+                                                    <svg class="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <div>
+                                                      <div class="text-xs font-semibold text-blue-800 mb-1">Ausführung:</div>
+                                                      <p class="text-xs text-blue-800 leading-relaxed">${exerciseDetail.ausführung}</p>
+
+                                                      <div class="text-xs font-semibold text-blue-800 mt-2 mb-1">Zielmuskeln:</div>
+                                                      <div class="flex flex-wrap gap-1">
+                                                        ${exerciseDetail.muskelgruppen.map(muscle => `
+                                                          <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">${muscle}</span>
+                                                        `).join('')}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            ` : ''}
+                                          </div>
                                         `;
                                     }).join('')}
                                 </div>
