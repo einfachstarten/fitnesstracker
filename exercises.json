@@ -1,0 +1,691 @@
+{
+  "Eigengewicht": [
+    {
+      "name": "Liegestütz",
+      "muskelgruppen": [
+        "Brust (großer Brustmuskel)",
+        "Trizeps",
+        "Vordere Schulter (Deltamuskel)"
+      ],
+      "ausführung": "Aus der Bauchlage stützt man sich mit den Händen schulterbreit auf dem Boden ab. Der Körper bleibt gerade. Die Arme beugen, um den Oberkörper kontrolliert abzusenken, dann wieder strecken, bis die Ellbogen fast durchgestreckt sind.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Kniebeuge (ohne Gewicht)",
+      "muskelgruppen": [
+        "Beine (Quadrizeps, Oberschenkelrückseite)",
+        "Gesäß"
+      ],
+      "ausführung": "Mit schulterbreitem Stand senkt man den Körper ab, indem man die Hüfte nach hinten und unten bewegt, als würde man sich auf einen Stuhl setzen. Die Knie bleiben hinter den Zehenspitzen. Sobald die Oberschenkel ungefähr parallel zum Boden sind, drückt man sich über die Fersen zurück nach oben.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Klimmzug",
+      "muskelgruppen": [
+        "Rücken (Latissimus, Trapezmuskeln)",
+        "Bizeps",
+        "unterer Rückenstrecker (stabilisierend)"
+      ],
+      "ausführung": "Im weiten Obergriff an einer Klimmzugstange hangeln. Aus gehängter Position den Körper nach oben ziehen, bis das Kinn über die Stange reicht, dabei den Rücken und Bizeps kraftvoll einsetzen. Anschließend kontrolliert wieder absenken bis die Arme gestreckt sind.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Klimmzug (Untergriff, Chin-Up)",
+      "muskelgruppen": [
+        "Rücken (Latissimus, Trapez)",
+        "Bizeps",
+        "Unterarm"
+      ],
+      "ausführung": "Wie beim Klimmzug, jedoch mit engem Untergriff (Handflächen zeigen zum Körper). Aus der hängenden Position den Körper hochziehen, wobei durch den Untergriff die Bizeps-Muskulatur stärker beansprucht wird. Langsam wieder in die Streckung der Arme zurückkehren.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Dips",
+      "muskelgruppen": [
+        "Brust",
+        "Trizeps",
+        "Schultern"
+      ],
+      "ausführung": "An Parallelbarren oder zwei stabilen Stützen den Körper mit gestreckten Armen halten. Durch Beugen der Arme den Körper absenken, bis die Oberarme etwa waagerecht sind. Dann die Arme wieder strecken und den Körper hochdrücken. Ein Vorneigen des Oberkörpers verlagert den Fokus mehr auf die Brustmuskulatur.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Ausfallschritt (ohne Gewicht)",
+      "muskelgruppen": [
+        "Beine (Quadrizeps, Beinbizeps)",
+        "Gesäß"
+      ],
+      "ausführung": "Aus dem aufrechten Stand einen weiten Schritt nach vorn machen. Das vordere Knie beugen, bis der hintere Knie fast den Boden berührt und das vordere Bein etwa 90° gebeugt ist. Dann mit Kraft aus dem vorderen Bein zurück in den Stand drücken. Abwechselnd das linke und rechte Bein nach vorn setzen.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Wadenheben (einbeinig)",
+      "muskelgruppen": [
+        "Waden (Gastrocnemius, Soleus)"
+      ],
+      "ausführung": "Auf einem Bein stehend den Fußballen erhöht (z.B. auf einer Stufe) platzieren, die Ferse unten absenken. Dann durch Anspannen der Wadenmuskulatur die Ferse so weit wie möglich anheben (Zehenspitzenstand) und langsam wieder absenken. Die Übung kann abwechselnd mit jedem Bein ausgeführt werden.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Unterarmstütz (Plank)",
+      "muskelgruppen": [
+        "Rumpf (gerade und schräge Bauchmuskeln)",
+        "Rückenstrecker",
+        "Gesäß"
+      ],
+      "ausführung": "In Bauchlage stützt man sich auf die Unterarme und die Zehenspitzen. Der Körper bildet eine gerade Linie. Diese Position wird statisch gehalten, ohne dass Hüfte oder Rücken durchhängen. Gleichmäßig weiteratmen und die Rumpfmuskulatur angespannt halten.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Seitlicher Unterarmstütz (Seitstütz)",
+      "muskelgruppen": [
+        "Seitliche Bauchmuskulatur",
+        "Gesäß",
+        "Schultern (Stützmuskulatur)"
+      ],
+      "ausführung": "In Seitenlage stützt man sich auf einen Unterarm und die seitlichen Fußkanten. Der Körper bildet eine Linie von Kopf bis Fuß. Das Becken wird angehoben, sodass der Körper nicht durchhängt. Diese seitliche Plank-Position wird gehalten. Für die andere Seite wiederholen.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Burpee",
+      "muskelgruppen": [
+        "Ganzkörper (Beine, Brust, Arme, Rumpf)"
+      ],
+      "ausführung": "Aus dem Stand in die Hocke gehen, Hände aufsetzen und mit den Füßen in die Liegestützposition springen. Einen Liegestütz ausführen, dann die Füße zurück unter den Körper springen und explosiv nach oben springen, die Arme über dem Kopf. Dies ist eine Wiederholung.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Bergsteiger (Mountain Climber)",
+      "muskelgruppen": [
+        "Rumpf",
+        "Beine",
+        "Schultern"
+      ],
+      "ausführung": "Im Liegestütz mit gestreckten Armen abstützen. Abwechselnd das linke und rechte Knie zügig Richtung Brust ziehen, als würde man auf der Stelle laufen, während die Hände weiter am Boden bleiben. Die Bauchmuskulatur bleibt angespannt, um den Körper stabil zu halten.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Crunch",
+      "muskelgruppen": [
+        "Bauch (gerader Bauchmuskel)"
+      ],
+      "ausführung": "Rückenlage, Beine angewinkelt aufgestellt. Hände leicht an den Hinterkopf oder über die Brust verschränkt. Den Oberkörper kontrolliert anheben, indem die Schultern vom Boden abgehoben und die Rippen Richtung Becken gezogen werden. Dann langsam wieder ablegen, ohne Schwung.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Sit-Up",
+      "muskelgruppen": [
+        "Bauch (gerader Bauchmuskel, Hüftbeuger)"
+      ],
+      "ausführung": "Rückenlage mit angewinkelten Beinen, Füße am Boden fixiert. Die Arme vor der Brust oder an den Schläfen. Den Oberkörper vollständig aufrichten, bis der Oberkörper die Oberschenkel erreicht, dann kontrolliert wieder ablegen. Während des Aufrichtens ausatmen und nicht mit Schwung arbeiten.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Beinheben liegend",
+      "muskelgruppen": [
+        "Bauch (untere Bauchmuskeln)",
+        "Hüftbeuger"
+      ],
+      "ausführung": "Rückenlage, Arme seitlich neben dem Körper. Geschlossene, gestreckte Beine langsam anheben, bis sie senkrecht stehen. Die Bauchmuskeln anspannen, um den unteren Rücken am Boden zu halten. Dann die Beine kontrolliert wieder absenken, ohne dass der Rücken ins Hohlkreuz fällt.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Beinheben hängend",
+      "muskelgruppen": [
+        "Bauch (gerade Bauchmuskeln, unterer Teil)",
+        "Hüftbeuger"
+      ],
+      "ausführung": "Im Hang an einer Klimmzugstange werden die gestreckten Beine (oder angewinkelten Knie) langsam nach oben gezogen, bis die Oberschenkel die Waagerechte erreichen oder die Knie Richtung Brust gehen. Anschließend die Beine langsam wieder senken. Dabei den Rumpf stabil halten und nicht schwingen.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Hüftheben (Brücke)",
+      "muskelgruppen": [
+        "Gesäß",
+        "Beinrückseite (Hamstrings)",
+        "unterer Rücken"
+      ],
+      "ausführung": "In Rückenlage, Beine angewinkelt, Füße flach am Boden. Die Hüfte anheben, indem Gesäß und Beinhinterseite angespannt werden, bis Oberkörper und Oberschenkel eine Linie bilden. Oben kurz halten und das Gesäß bewusst anspannen, dann wieder absenken ohne das Gesäß ganz abzulegen.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Hyperextension (Superman)",
+      "muskelgruppen": [
+        "unterer Rücken (Rückenstrecker)",
+        "Gesäß"
+      ],
+      "ausführung": "Bauchlage auf dem Boden. Beide Arme und Beine gestreckt. Den Oberkörper und die Beine gleichzeitig leicht anheben, indem der untere Rücken und das Gesäß angespannt werden. Einige Sekunden halten, dann wieder absenken. Die Bewegung erfolgt langsam und kontrolliert.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Pistol Squat (einbeinige Kniebeuge)",
+      "muskelgruppen": [
+        "Beine (Quadrizeps)",
+        "Gesäß"
+      ],
+      "ausführung": "Auf einem Bein stehend, das andere Bein gestreckt nach vorn anheben. Das Standbein kontrolliert beugen und die Hüfte nach hinten führen, um den Körper abzusenken, während das freie Bein gestreckt bleibt. So tief wie möglich in die Hocke auf einem Bein gehen, dann mit der Kraft des Standbeins wieder hochdrücken. Dies erfordert erhebliche Balance und Kraft.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Handstand-Liegestütz",
+      "muskelgruppen": [
+        "Schultern",
+        "Trizeps",
+        "Oberer Rücken"
+      ],
+      "ausführung": "Im Handstand an der Wand oder frei wird der Körper gestreckt gehalten. Die Arme beugen, um den Kopf kontrolliert Richtung Boden zu senken, dann die Arme wieder strecken und den Körper nach oben drücken. Diese Übung erfordert ein hohes Maß an Kraft und Balance.",
+      "schwierigkeit": "Profi"
+    }
+  ],
+  "Kurzhanteln": [
+    {
+      "name": "Kurzhantel-Bankdrücken (flach)",
+      "muskelgruppen": [
+        "Brust (großer Brustmuskel)",
+        "Trizeps",
+        "Vordere Schulter"
+      ],
+      "ausführung": "Auf einer Flachbank liegend hält man in jeder Hand eine Kurzhantel auf Höhe der Brust, Ellbogen etwa 45° nach außen. Die Hanteln nach oben drücken, bis die Arme fast gestreckt sind, dann langsam wieder absenken bis knapp über die Brust. Dabei die Schulterblätter hinten zusammengezogen halten.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Kurzhantel-Bankdrücken (Schrägbank)",
+      "muskelgruppen": [
+        "Brust (oberer Brustmuskelfasern)",
+        "Trizeps",
+        "Schultern"
+      ],
+      "ausführung": "Auf einer Schrägbank (ca. 30°-45° geneigt) mit je einer Kurzhantel in den Händen. Die Hanteln seitlich der oberen Brust halten. Dann die Hanteln kontrolliert nach oben drücken, bis die Arme beinahe gestreckt sind. Anschließend langsam zurück zur oberen Brust absenken. Fokus liegt durch die Schräge stärker auf dem oberen Brustbereich.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Fliegende mit Kurzhanteln",
+      "muskelgruppen": [
+        "Brust (großer Brustmuskel)"
+      ],
+      "ausführung": "Auf einer Flachbank liegend hält man zwei Kurzhanteln über der Brust mit fast gestreckten Armen, Handflächen zueinander. Die Arme leicht gebeugt halten und die Hanteln langsam zu den Seiten absenken, bis ein Dehnen in der Brust spürbar ist. Dann mit Kraft aus der Brust die Hanteln in einem Bogen wieder nach oben führen, als würde man einen Baum umarmen.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Schulterdrücken mit Kurzhanteln",
+      "muskelgruppen": [
+        "Schultern (vorderer und mittlerer Deltamuskel)",
+        "Trizeps"
+      ],
+      "ausführung": "Im Sitzen oder stabilen Stand je eine Kurzhantel auf Schulterhöhe halten, Handflächen nach vorn. Die Kurzhanteln kontrolliert über dem Kopf nach oben drücken, bis die Arme fast gestreckt sind (ohne ins Hohlkreuz zu fallen). Anschließend die Hanteln langsam zurück auf Schulterhöhe absenken.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Arnold-Presse",
+      "muskelgruppen": [
+        "Schultern (gesamter Deltamuskel)",
+        "Trizeps"
+      ],
+      "ausführung": "Im Sitzen mit zwei Kurzhanteln auf Schulterhöhe, Handflächen zeigen nach innen (zum Gesicht). Während des Hochdrückens der Hanteln werden die Handgelenke gedreht, sodass die Handflächen oben nach vorn zeigen. Oben sind die Arme gestreckt. Beim Absenken die Bewegung umkehren und Handflächen wieder zum Körper drehen. Diese Variante trainiert alle Teile der Schulter durch den Rotationsablauf.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Seitheben mit Kurzhanteln",
+      "muskelgruppen": [
+        "Schultern (seitlicher Deltamuskel)"
+      ],
+      "ausführung": "Im aufrechten Stand je eine leichte Kurzhantel in den Händen seitlich am Körper halten, Handflächen zueinander. Mit nahezu gestreckten Armen die Hanteln gleichzeitig seitlich bis auf Schulterhöhe anheben, Ellbogen leicht gebeugt und höher als die Hände. Oben kurz halten, dann langsam wieder absenken. Nicht mit Schwung arbeiten.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Frontheben mit Kurzhanteln",
+      "muskelgruppen": [
+        "Schultern (vorderer Deltamuskel)"
+      ],
+      "ausführung": "Im Stand hält man zwei Kurzhanteln vor den Oberschenkeln, Handflächen zeigen zum Körper. Abwechselnd oder gleichzeitig einen Arm nach vorn anheben bis etwa auf Augenhöhe, Arm fast gestreckt. Dann langsam zurückführen. Diese Übung isoliert den vorderen Anteil der Schultermuskulatur.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Reverse Fly (vorgebeugtes Seitheben)",
+      "muskelgruppen": [
+        "Oberer Rücken (Trapez, Rhomboide)",
+        "Schultern (hinterer Deltamuskel)"
+      ],
+      "ausführung": "Mit zwei leichten Kurzhanteln in den Händen hüftbreit stehen und Oberkörper nach vorn beugen (gerader Rücken). Die leicht gebeugten Arme seitlich vom Körper nach oben ziehen, Schulterblätter zusammenführen, bis die Hanteln etwa auf Schulterhöhe sind. Dann die Arme wieder kontrolliert senken. Dies trainiert die hintere Schulter und oberen Rücken.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Schulterheben (Shrugs) mit Kurzhanteln",
+      "muskelgruppen": [
+        "Trapezmuskeln (Nacken)"
+      ],
+      "ausführung": "Im Stand zwei schwere Kurzhanteln seitlich am Körper halten. Die Schultern so weit wie möglich nach oben zu den Ohren ziehen (ohne die Arme zu beugen), kurz halten, dann langsam wieder senken. Die Arme bleiben gestreckt, der Bewegungsumfang kommt aus dem Schultergürtel. Nicht mit den Armen reißen.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Bizeps-Curl (stehend, Kurzhanteln)",
+      "muskelgruppen": [
+        "Bizeps",
+        "Oberarmspeichenmuskel"
+      ],
+      "ausführung": "Schulterbreiter Stand, in jeder Hand eine Kurzhantel im Untergriff (Handflächen nach vorn). Die Hanteln abwechselnd oder gleichzeitig nach oben zum Oberarm beugen, nur der Unterarm bewegt sich. Oben Bizeps anspannen, dann Hanteln wieder absenken, aber die Ellbogen nicht vollständig durchstrecken. Oberarme bleiben während der Bewegung am Körper fixiert.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Hammercurl (neutraler Griff)",
+      "muskelgruppen": [
+        "Bizeps",
+        "Oberarmspeichenmuskel",
+        "Unterarm"
+      ],
+      "ausführung": "Wie beim klassischen Bizeps-Curl, aber die Kurzhanteln werden mit neutralem Griff gehalten (Daumen zeigen nach oben). Die Hanteln abwechselnd anheben, ohne die Handgelenke zu drehen. Diese Griffhaltung beansprucht verstärkt den Oberarmspeichenmuskel und den Unterarm.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Konzentrations-Curl",
+      "muskelgruppen": [
+        "Bizeps"
+      ],
+      "ausführung": "Im Sitzen mit breiter Beinstellung eine Kurzhantel in der Hand halten. Den Ellbogen der arbeitenden Hand an der Innenseite des gleichseitigen Oberschenkels abstützen. Den Arm komplett strecken, dann die Hantel aus dieser Position zum Oberarm curlen. Oben Bizeps maximal anspannen, dann langsam wieder strecken. So wird jeder Bizeps isoliert trainiert.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Trizeps-Kickback",
+      "muskelgruppen": [
+        "Trizeps"
+      ],
+      "ausführung": "Mit einem Knie und einer Hand auf einer Bank abstützen (flacher Rücken). In der freien Hand eine Kurzhantel, Oberarm eng am Körper und Ellbogen 90° gebeugt. Nun den Unterarm nach hinten oben strecken, bis der Arm fast vollständig gestreckt ist und der Trizeps angespannt. Dann kontrolliert wieder beugen. Die Oberarmposition bleibt fixiert, nur der Unterarm bewegt sich.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Trizepsstrecken über Kopf (Kurzhantel)",
+      "muskelgruppen": [
+        "Trizeps"
+      ],
+      "ausführung": "Im Sitz oder Stand wird eine Kurzhantel mit beiden Händen hinter dem Kopf gehalten (Ellbogen zeigen nach oben, Oberarme dicht am Kopf). Durch Strecken der Arme die Hantel nach oben über den Kopf heben, Ellbogen bleiben eng beieinander. Dann die Hantel langsam wieder hinter den Kopf absenken, nur die Unterarme bewegen sich. Diese Übung trainiert speziell den Trizeps-Muskel.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Einarmiges Kurzhantel-Rudern",
+      "muskelgruppen": [
+        "Rücken (Latissimus, Trapez)",
+        "Bizeps"
+      ],
+      "ausführung": "Mit einer Hand und einem Knie auf einer Bank abstützen, flacher Rücken. In der anderen Hand eine Kurzhantel mit gestrecktem Arm nach unten. Die Hantel zum Körper heranziehen, indem der Ellbogen nach oben geführt wird und eng am Körper nach hinten zieht. Die Schulterblatt zieht nach innen. Oben kurz halten, dann die Hantel wieder kontrolliert ablassen. Danach Seite wechseln.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Goblet Squat (Hantel vor der Brust)",
+      "muskelgruppen": [
+        "Beine (Quadrizeps)",
+        "Gesäß",
+        "Rumpf (Core)"
+      ],
+      "ausführung": "Schulterbreiter Stand, eine einzelne Kurzhantel oder Kettlebell mit beiden Händen vor der Brust halten. Dann eine tiefe Kniebeuge ausführen: Hüfte nach hinten/unten führen, Rücken gerade, bis die Hüfte unter paralleler Position ist (wenn möglich). Anschließend durch Drücken der Fersen zurück nach oben kommen. Die Hantel bleibt währenddessen vor der Brust, wodurch der Oberkörper stabilisiert wird.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Bulgarischer Ausfallschritt (Split Squat)",
+      "muskelgruppen": [
+        "Beine (Quadrizeps, Beinbeuger)",
+        "Gesäß"
+      ],
+      "ausführung": "Im Stand wird ein Fuß hinter dem Körper auf eine Bank oder Erhöhung gelegt (Fußrücken aufliegend). In den Händen können Kurzhanteln gehalten werden. Das Standbein wird gebeugt, der Körper sinkt ab bis das hintere Knie nahe dem Boden ist. Dann drückt das vordere Bein den Körper wieder hoch. Diese einbeinige Kniebeuge trainiert intensiv Oberschenkel und Gesäß.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Rumänisches Kreuzheben mit Kurzhanteln",
+      "muskelgruppen": [
+        "Beinrückseite (Hamstrings)",
+        "Gesäß",
+        "unterer Rücken"
+      ],
+      "ausführung": "Hüftbreiter Stand mit zwei Kurzhanteln vor dem Körper, Handflächen zum Körper. Beine fast gestreckt (leichte Kniebeugung). Den Oberkörper mit geradem Rücken nach vorn beugen und die Hanteln an den Beinen entlang nach unten führen, bis ein Dehnungsgefühl in der hinteren Oberschenkelmuskulatur entsteht. Dann die Hüfte wieder nach vorn schieben und den Oberkörper aufrichten, indem die Gesäß- und Beinbeuger-Muskulatur angespannt wird.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Farmer's Walk (Kurzhanteltragen)",
+      "muskelgruppen": [
+        "Ganzkörper (Unterarme, Schultern, Rumpf, Beine)"
+      ],
+      "ausführung": "In jede Hand wird eine schwere Kurzhantel genommen. Mit aufrechter Haltung und angespannter Körpermitte geht man eine bestimmte Strecke oder Zeit lang, während man die Gewichte hält. Der Farmer's Walk stärkt die Griffkraft, die Rumpfmuskulatur und konditioniert den ganzen Körper.",
+      "schwierigkeit": "Anfänger"
+    }
+  ],
+  "Langhanteln": [
+    {
+      "name": "Kniebeuge (Langhantel, Back Squat)",
+      "muskelgruppen": [
+        "Beine (Quadrizeps, Beinbeuger)",
+        "Gesäß",
+        "unterer Rücken"
+      ],
+      "ausführung": "Mit einer Langhantel auf dem oberen Rücken (Trapez) steht man schulterbreit. Die Kniebeuge ausführen, indem Hüfte nach hinten und unten geht, Rücken bleibt gerade. Tief gehen (Oberschenkel mindestens parallel zum Boden), dann kraftvoll nach oben drücken, bis die Beine gestreckt sind. Diese Grundübung trainiert Oberschenkel, Po und Rumpf.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Frontkniebeuge (Front Squat)",
+      "muskelgruppen": [
+        "Beine (Quadrizeps)",
+        "Gesäß",
+        "Rumpf (Core)"
+      ],
+      "ausführung": "Eine Langhantel wird vor der Schulter auf den Frontdelts gehalten (Ellbogen hoch, Oberarme parallel zum Boden, Griff im Obergriff oder überkreuzt). Dann eine Kniebeuge ausführen, wobei der Oberkörper möglichst aufrecht bleibt, da die Hantel vorne liegt. Unten parallel oder tiefer, dann wieder hochdrücken. Der vordere Oberschenkel wird besonders beansprucht, und es erfordert hohe Rumpfstabilität.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Ausfallschritt mit Langhantel",
+      "muskelgruppen": [
+        "Beine (Quadrizeps, Beinbeuger)",
+        "Gesäß"
+      ],
+      "ausführung": "Eine Langhantel wird wie beim Kniebeugen auf dem oberen Rücken platziert. Aus dem Stand einen großen Schritt nach vorne machen und das hintere Knie Richtung Boden senken. Das vordere Knie beugen bis etwa 90°. Dann mit dem vorderen Bein wieder in den Stand drücken. Diese Übung trainiert die Oberschenkel und das Gesäß und verbessert das Gleichgewicht.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Kreuzheben (Deadlift)",
+      "muskelgruppen": [
+        "Beinrückseite (Hamstrings)",
+        "Gesäß",
+        "Rücken (unterer Rücken, Rückenstrecker, Latissimus)"
+      ],
+      "ausführung": "Stand etwas schulterbreit, Füße unter der Langhantel. In die Hocke gehen und die Hantel mit beiden Händen schulterbreit greifen (Obergriff oder Kreuzgriff). Rücken gerade, Brust heraus. Die Hantel durch Strecken von Hüfte und Knien anheben, eng am Körper führen, bis man aufrecht steht. Dann die Hantel kontrolliert wieder absenken. Das Kreuzheben ist eine der effektivsten Ganzkörperübungen und erfordert eine saubere Technik.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Sumo-Kreuzheben",
+      "muskelgruppen": [
+        "Beininnenseite (Adduktoren, Quadrizeps)",
+        "Gesäß",
+        "unterer Rücken"
+      ],
+      "ausführung": "Weit gegrätschte Fußstellung, Zehen nach außen. Die Langhantel wird mit engem Griff innerhalb der Knie gegriffen. Wie beim klassischen Kreuzheben streckt man Hüfte und Knie, um die Hantel hochzuheben. Durch die breite Fußstellung werden vermehrt die inneren Oberschenkel und das Gesäß beansprucht. Dann Hantel wieder absenken. Rücken gerade halten.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Gestrecktes Kreuzheben (Rumänisches Kreuzheben)",
+      "muskelgruppen": [
+        "Beinrückseite (Hamstrings)",
+        "Gesäß",
+        "unterer Rücken"
+      ],
+      "ausführung": "Etwa schulterbreiter Stand mit Langhantel im Obergriff vor dem Körper. Knie leicht gebeugt, Rücken gerade. Die Hantel wird durch nach vorn beugen (nur Hüftgelenk, kaum Kniebewegung) entlang der Beine nach unten geführt, bis ein Zug in der hinteren Oberschenkelmuskulatur spürbar ist. Dann zieht man die Hüfte wieder nach vorn und richtet sich auf. Diese Variante betont die hintere Oberschenkelmuskulatur und das Gesäß.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Good Mornings (Langhantel)",
+      "muskelgruppen": [
+        "unterer Rücken",
+        "Gesäß",
+        "Beinrückseite"
+      ],
+      "ausführung": "Eine Langhantel ruht auf dem Nacken (ähnlich Kniebeuge-Position). Mit geradem Rücken Oberkörper nach vorn beugen, Hüfte nach hinten schieben, bis Oberkörper etwa waagerecht. Die Knie nur leicht gebeugt. Dann die Hüfte nach vorn drücken und den Oberkörper wieder aufrichten. Good Mornings stärken insbesondere Rückenstrecker und Gesäß, aber erfordern vorsichtige Ausführung und moderates Gewicht.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Bankdrücken (Langhantel)",
+      "muskelgruppen": [
+        "Brust (großer Brustmuskel)",
+        "Trizeps",
+        "Vordere Schulter"
+      ],
+      "ausführung": "Rückenlage auf der Flachbank, Füße flach am Boden für Stabilität. Die Langhantel etwas mehr als schulterbreit im Obergriff fassen. Die Hantel aus der Ständerung heben und auf Höhe der Brust senken, Ellbogen etwa 45° zur Seite. Dann die Hantel explosiv nach oben drücken, bis die Arme gestreckt sind. Dies ist die klassische Übung für Brustkraft.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Schrägbankdrücken (Langhantel)",
+      "muskelgruppen": [
+        "Brust (oberer Anteil)",
+        "Trizeps",
+        "Schultern"
+      ],
+      "ausführung": "Ähnlich dem flachen Bankdrücken, jedoch auf einer Schrägbank (~30° Neigung). Die Langhantel von oben zur oberen Brust senken und wieder hochdrücken. Durch die Schräge wird verstärkt die obere Brustmuskulatur beansprucht. Die Ellbogen nicht zu weit ausstellen, um die Schultergelenke zu schonen.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Negativ-Bankdrücken (Langhantel, decline)",
+      "muskelgruppen": [
+        "Brust (unterer Anteil)",
+        "Trizeps"
+      ],
+      "ausführung": "Auf einer negativen Bank (Kopf tiefer als Füße) liegt man stabil. Die Langhantel wird etwas weiter als schulterbreit gegriffen, zur unteren Brust oder Oberbauch abgesenkt und wieder nach oben gedrückt. Durch den negativen Winkel wird vermehrt der untere Bereich der Brustmuskulatur aktiviert.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Überkopfdrücken (Military Press)",
+      "muskelgruppen": [
+        "Schultern (v.a. vorderer Deltamuskel)",
+        "Trizeps",
+        "obere Brust (leicht)"
+      ],
+      "ausführung": "Im schulterbreiten Stand eine Langhantel mit schulterbreitem Griff vor der Brust halten (Handrücken zeigen nach hinten). Die Hantelstange gerade nach oben über den Kopf drücken, Kopf leicht nach hinten um Platz zu schaffen. Sobald die Hantel überkopf ist, Kopf wieder neutral. Dann Hantel langsam zur oberen Brust absenken. Diese Übung erfordert Rumpfstabilität und trainiert hauptsächlich die Schultern und Trizeps.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Nackendrücken (Langhantel hinter dem Kopf)",
+      "muskelgruppen": [
+        "Schultern (mittlerer Deltamuskel)",
+        "Trizeps"
+      ],
+      "ausführung": "Ähnlich dem Überkopfdrücken, jedoch wird die Langhantel hinter dem Kopf geführt. Im Sitz oder Stand die Hantel im Nacken fassen, etwas mehr als schulterbreit. Die Stange nach oben drücken, ohne Schwung, bis die Arme gestreckt sind, dann hinter den Kopf bis auf Ohrenhöhe ablassen. Diese Variante beansprucht die seitlichen Schultern stark, ist aber technisch anspruchsvoll und belastet die Schultergelenke mehr.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Langhantelrudern (vorgebeugt)",
+      "muskelgruppen": [
+        "Rücken (Latissimus, Trapez)",
+        "Bizeps",
+        "unterer Rücken (stabilisierend)"
+      ],
+      "ausführung": "Im schulterbreiten Stand die Knie leicht beugen und den Oberkörper mit geradem Rücken ca. 45° nach vorne neigen. Die Langhantel im schulterbreiten Obergriff hängt vor den Knien. Nun die Hantel zur unteren Brust/Bauch ziehen, Ellbogen eng am Körper nach hinten führen, Schulterblätter ziehen zusammen. Kurz halten und den Rücken spüren, dann die Hantel kontrolliert ablassen. Rudern trainiert die Rückenmuskulatur und Bizeps.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Aufrechtes Rudern (Langhantel)",
+      "muskelgruppen": [
+        "Schultern (seitlicher Deltamuskel)",
+        "Trapez",
+        "Bizeps"
+      ],
+      "ausführung": "Im schulterbreiten Stand eine Langhantel mit schmalem Griff (ca. schulterbreit oder etwas enger) vor den Oberschenkeln halten. Die Hantel nahe am Körper nach oben ziehen, indem die Ellbogen nach oben geführt werden, bis Oberarme etwa auf Schulterhöhe sind. Die Hände bleiben unter den Ellbogen. Dann die Hantel wieder absenken. Diese Übung trainiert Nacken und Schultern, aber birgt bei unsauberer Ausführung Verletzungsrisiken für die Schultern.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Langhantel-Shrugs",
+      "muskelgruppen": [
+        "Trapezmuskeln (Nacken)"
+      ],
+      "ausführung": "Im aufrechten Stand eine schwer beladene Langhantel vor dem Körper im Obergriff halten (Arme gestreckt). Nun die Schultern maximal nach oben zu den Ohren ziehen, kurz halten und langsam wieder senken. Nur der Schultergürtel bewegt sich, die Arme bleiben gestreckt. Diese Übung kräftigt die Nackenmuskulatur.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Bizeps-Curls (Langhantel)",
+      "muskelgruppen": [
+        "Bizeps",
+        "Oberarmspeichenmuskel"
+      ],
+      "ausführung": "Schulterbreiter Stand, Langhantel im Untergriff (Handflächen nach oben) mit schulterbreitem Griff halten. Die Stange durch Beugen der Ellbogen hochcurlen, Oberarme bleiben am Oberkörper fixiert. Bis zur maximalen Kontraktion anheben, dann langsam wieder senken, ohne die Ellbogen komplett zu strecken. Standardübung für die Bizepsmuskulatur.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "French Press (Skull Crusher, liegend)",
+      "muskelgruppen": [
+        "Trizeps"
+      ],
+      "ausführung": "In Rückenlage auf der Flachbank, eine SZ-Stange oder Langhantel im engen Obergriff hoch über der Brust halten (Arme gestreckt). Nun nur die Unterarme beugen und die Stange Richtung Stirn oder leicht dahinter absenken, Ellbogen bleiben fixiert und zeigen nach vorn. Dann durch Strecken der Ellbogen die Stange wieder hochdrücken. Diese isolierte Übung beansprucht alle Köpfe des Trizeps.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Enges Bankdrücken",
+      "muskelgruppen": [
+        "Trizeps",
+        "Brust (innen)",
+        "Schultern"
+      ],
+      "ausführung": "Ähnlich dem normalen Bankdrücken, jedoch wird die Langhantel schulter- oder eng gegriffen. Die Ellbogen bleiben näher am Körper beim Absenken. Drücke die Hantel nach dem Absenken an den unteren Brustbereich wieder hoch. Durch den engen Griff wird der Trizeps verstärkt aktiviert.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Umsetzen (Power Clean)",
+      "muskelgruppen": [
+        "Ganzkörper (Beine, Rücken, Schultern)",
+        "Explosivkraft"
+      ],
+      "ausführung": "Eine Langhantel vom Boden ruckartig auf die vordere Schulter bringen. Aus dem Kreuzhebeposition heraus mit explosiver Streckung von Hüfte, Knien und Knöcheln die Hantel beschleunigen, dabei mit den Schultern zucken. Sobald die Hantel auf Brusthöhe kommt, unter die Hantel in eine halbe Kniebeuge springen und die Hantel auf den Schultern auffangen (Ellbogen unter die Stange drehen). Anschließend aufstehen. Diese olympische Übung trainiert Schnelligkeit und Kraft.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Stoßen (Jerk)",
+      "muskelgruppen": [
+        "Ganzkörper (Beine, Schultern, Trizeps)",
+        "Explosivkraft"
+      ],
+      "ausführung": "Aus der Frontschulter-Position (Hantel liegt auf den Schultern) erfolgt ein schnelles Beugen und explosiver Strecksprung der Beine, um die Hantel kraftvoll nach oben zu treiben. Gleichzeitig drückt man mit den Armen nach. Während die Hantel aufsteigt, geht man in einen Ausfallschritt oder eine tiefe Position, um die Hantel mit gestreckten Armen über Kopf zu fixieren. Dann aufstehen und Füße zusammenführen. Der Jerk erfordert Koordination und Explosivkraft.",
+      "schwierigkeit": "Profi"
+    },
+    {
+      "name": "Reißen (Snatch)",
+      "muskelgruppen": [
+        "Ganzkörper (Beine, Rücken, Schultern)",
+        "Explosivkraft"
+      ],
+      "ausführung": "Mit breitem Griff wird die Langhantel in einer schnellen Bewegung vom Boden über den Kopf gebracht. Start ähnlich wie beim Kreuzheben, dann explosive Hüftstreckung, um die Hantel hochzuziehen. Sobald die Hantel an Fahrt gewinnt, unter die Stange tauchen und sie mit gestreckten Armen in der Hocke auffangen. Anschließend aus der Hocke aufstehen, die Hantel bleibt über Kopf. Das Reißen ist eine technisch sehr anspruchsvolle, explosive Übung.",
+      "schwierigkeit": "Profi"
+    }
+  ],
+  "Gym-Geräte": [
+    {
+      "name": "Beinpresse",
+      "muskelgruppen": [
+        "Beine (Quadrizeps, Beinbeuger)",
+        "Gesäß"
+      ],
+      "ausführung": "Sitzend im Beinpresse-Gerät drückt man eine Plattform mit den Füßen vom Körper weg. Die Füße etwa schulterbreit auf der Plattform platzieren. Die Knie anbeugen und die Plattform kontrolliert Richtung Körper senken (Knie mindestens 90° gebeugt), dann mit Kraft der Oberschenkel wieder wegdrücken, ohne die Knie vollständig zu durchstrecken.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Beinstrecker (Quadrizeps-Maschine)",
+      "muskelgruppen": [
+        "Vorderer Oberschenkel (Quadrizeps)"
+      ],
+      "ausführung": "Im Sitz des Beinstrecker-Geräts die Fußrolle vor dem Schienbein positionieren. Aus der 90° Kniebeugung die Beine strecken, bis sie fast gerade sind, dabei den Quadrizeps anspannen. Dann die Beine langsam wieder beugen. Diese Isolationsübung trainiert gezielt den vorderen Oberschenkelmuskel.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Beincurl (Beinbeuger-Maschine)",
+      "muskelgruppen": [
+        "Oberschenkelrückseite (Hamstrings)"
+      ],
+      "ausführung": "Im Leg-Curl-Gerät in Bauchlage (oder sitzend je nach Maschine) die Fersen unter einer Polsterrolle positionieren. Die Knie sind gestreckt. Nun die Fersen Richtung Gesäß ziehen, Knie beugen und die hinteren Oberschenkel anspannen. Dann die Beine wieder kontrolliert strecken. Diese Übung isoliert die hintere Oberschenkelmuskulatur.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Wadenmaschine (Wadenheben)",
+      "muskelgruppen": [
+        "Waden (Zwillingswadenmuskel, Schollenmuskel)"
+      ],
+      "ausführung": "Je nach Gerät im Sitzen (Sitzendes Wadenheben) oder Stehen (Wadenpresse) die Schultern unter die Polster legen (beim stehenden Gerät) bzw. Oberschenkel unter das Polster (beim sitzenden Gerät). Die Fußspitzen auf die Platte, Fersen frei. Dann durch Wadenkontraktion die Fersen heben (auf die Zehenspitzen stellen), kurz halten, langsam absenken. Volle Dehnung unten ausnutzen.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Adduktoren-Maschine (Beinadduktion)",
+      "muskelgruppen": [
+        "Innenseite Oberschenkel (Adduktoren)"
+      ],
+      "ausführung": "Im Adduktoren-Gerät (Sitz mit gepolsterten Außenflächen für die Knie) sitzen. Mit Kraft aus der Oberschenkel-Innenseite die Beine zusammendrücken, indem die Polster zueinander bewegt werden. Kurz halten, dann die Beine kontrolliert wieder öffnen, bis eine Dehnung spürbar ist. Die Adduktoren-Maschine trainiert die Muskulatur an der Oberschenkelinnenseite.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Abduktoren-Maschine (Beinabduktion)",
+      "muskelgruppen": [
+        "Außenseite Oberschenkel (Abduktoren, Gesäßmittelmuskel)"
+      ],
+      "ausführung": "Sitzend im Abduktoren-Gerät mit geschlossenen Beinen an den Innenpolstern. Die Bewegung besteht darin, die Beine gegen den Widerstand nach außen zu drücken, so weit wie bequem möglich, um die seitliche Gesäß- und Oberschenkelmuskulatur zu trainieren. Anschließend die Beine kontrolliert zurückführen. Hält den Rücken gerade am Polster.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Brustpresse (Maschine)",
+      "muskelgruppen": [
+        "Brust",
+        "Trizeps",
+        "Vordere Schulter"
+      ],
+      "ausführung": "Im Brustpresse-Gerät sitzt man mit dem Rücken am Polster, Hände fassen die Griffe in Brusthöhe. Aus der gebeugten Armposition die Griffe nach vorne drücken, bis die Arme fast gestreckt sind, dann langsam zurück zur Ausgangsposition. Dies simuliert ein Bankdrücken und trainiert Brust, Trizeps und vordere Schultern auf geführte Weise.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Butterfly (Pec Deck)",
+      "muskelgruppen": [
+        "Brust (innerer Bereich)"
+      ],
+      "ausführung": "Sitzend am Butterfly-Gerät die Unterarme oder Ellbogen gegen die Polster legen (oder Griffe fassen, je nach Ausführung). Die Arme sind zur Seite ausgestreckt. Nun die Arme vor dem Körper zusammenführen, als würde man jemanden umarmen, bis sich die Hände oder Polster vorne fast berühren. Dann kontrolliert zurück in die Dehnung der Brust öffnen. Der Butterfly isoliert den Brustmuskel.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Schulterpresse (Maschine)",
+      "muskelgruppen": [
+        "Schultern (v.a. vorderer Deltamuskel)",
+        "Trizeps"
+      ],
+      "ausführung": "Sitzend im Schulterpressen-Gerät greift man die Griffe auf Schulterhöhe seitlich des Kopfes. Aus der Ausgangsposition mit gebeugten Armen drückt man die Griffe nach oben, bis die Arme fast gestreckt sind. Anschließend die Griffe wieder kontrolliert absenken. Diese Übung trainiert die Schultermuskulatur und den Trizeps auf einer vorgegebenen Bewegungsbahn.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Latziehen (Lat Pulldown)",
+      "muskelgruppen": [
+        "Rücken (Latissimus, Trapez)",
+        "Bizeps"
+      ],
+      "ausführung": "Am Latzug-Gerät sitzt man mit fixierten Oberschenkeln und greift die obere Stange etwas über schulterbreit im Obergriff. Aus gestreckten Armen die Stange nach unten ziehen, bis sie die obere Brust oder das Schlüsselbein berührt. Dabei die Ellbogen nach unten/hinten ziehen und die Rückenmuskeln spüren. Anschließend die Arme kontrolliert strecken nach oben. Alternativ kann eng im Untergriff gezogen werden, um mehr Bizeps zu aktivieren.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Rudern am Kabelzug (sitzend)",
+      "muskelgruppen": [
+        "Rücken (Latissimus, Trapez, Rhomboide)",
+        "Bizeps"
+      ],
+      "ausführung": "Sitzend am Kabelzug mit den Füßen an der Stütze und leicht gebeugten Knien. Einen engen Rudergriff oder Stange fassen. Mit gestrecktem Rücken leicht nach vorne geneigt starten. Nun den Griff zum Bauch ziehen, Ellbogen eng am Körper nach hinten führen und Schulterblätter zusammenziehen. Kurz halten, dann die Arme wieder strecken und Oberkörper leicht vorlehnen. Dieses Kabelrudern trainiert den gesamte oberen Rücken und die Bizeps.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Kabel-Crossover",
+      "muskelgruppen": [
+        "Brust",
+        "Schultern",
+        "Bizeps (stabilisieren)"
+      ],
+      "ausführung": "Im Stehen mittig zwischen zwei hohen Kabelzügen positionieren, je einen Griff in die Hände nehmen. Die Arme zur Seite ausgestreckt, Ellbogen leicht gebeugt. Nun die Griffe in einem weiten Bogen vor dem Körper zusammenführen (leicht vorgebeugter Oberkörper), als würde man einen Baum umarmen. Vorne können sich die Hände überkreuzen für maximale Kontraktion der Brust. Dann langsam die Arme wieder in die Ausgangsposition zurückführen. Konstant Spannung auf der Brust halten.",
+      "schwierigkeit": "Fortgeschritten"
+    },
+    {
+      "name": "Trizepsdrücken am Kabel (Push-down)",
+      "muskelgruppen": [
+        "Trizeps"
+      ],
+      "ausführung": "Am hohen Kabelzug einen geraden oder V-förmigen Griff fassen, Ellbogen an den Körper fixiert, Oberarme parallel zum Oberkörper. Aus ca. 90° Beugung die Unterarme nach unten strecken, den Griff nach unten bis zur vollständigen Armstreckung drücken, Trizeps anspannen. Dann die Unterarme kontrolliert zurück hochlassen. Nur die Unterarme bewegen sich, Oberarme bleiben fix. Diese Übung isoliert den Trizeps.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Bizepscurls am Kabel",
+      "muskelgruppen": [
+        "Bizeps"
+      ],
+      "ausführung": "Am tiefen Kabelzug einen geraden Stangen- oder Seilgriff im Untergriff fassen, eng an den Oberschenkeln starten mit gestreckten Armen. Die Hände zum Oberkörper curlen, Ellbogen bleiben an der gleichen Position. Oben Bizeps voll anspannen, dann langsam zurück nach unten strecken. Die konstante Spannung des Kabels trifft den Bizeps während der gesamten Bewegung.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Bauchpresse (Crunch-Maschine)",
+      "muskelgruppen": [
+        "Bauch (gerader Bauchmuskel)"
+      ],
+      "ausführung": "Sitzend am Crunch-Gerät, die Arme greifen die vorgesehenen Hebel/Griffe. Die Ausgangsposition ist aufrecht. Nun den oberen Teil des Geräts nach vorne/unten ziehen, indem man die Bauchmuskeln kontrahiert und den Rumpf beugt, als würde man einen Crunch machen. Dann langsam zurück in die aufrechte Position. Diese Maschine ermöglicht es, den Bauchmuskel mit Gewicht zu trainieren.",
+      "schwierigkeit": "Anfänger"
+    },
+    {
+      "name": "Hyperextensions-Gerät",
+      "muskelgruppen": [
+        "unterer Rücken (Rückenstrecker)",
+        "Gesäß",
+        "Beinrückseite"
+      ],
+      "ausführung": "Am römischen Stuhl/Hyperextension-Gerät die Füße fixieren und Hüfte gegen das Polster. Aus horizontaler Position den Oberkörper nach unten absenken (Wirbelsäule gerade oder leicht gerundet), dann mit Kraft der Rückenstrecker den Oberkörper wieder bis zur geraden Linie anheben. Nicht überstrecken. Diese Übung kräftigt den unteren Rücken und Gesäß. Mit verschränkten Armen oder Gewicht auf der Brust kann die Intensität erhöht werden.",
+      "schwierigkeit": "Fortgeschritten"
+    }
+  ]
+}
