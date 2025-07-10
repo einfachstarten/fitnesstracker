@@ -563,6 +563,7 @@
                         this.userData = JSON.parse(localUserData);
                         this.currentPlan = JSON.parse(localPlan);
                         await this.loadSessions();
+                        this.migrateLegacyExerciseCompletions();
                         this.currentView = 'overview';
                     }
 
@@ -609,13 +610,33 @@
                 const sessions = await this.api.getSessions();
                 this.completedExercises = {};
                 this.completedDays = {};
-                
+
                 sessions.forEach(session => {
-                    session.completed_exercises.forEach(exerciseIndex => {
-                        this.completedExercises[`${session.day_index}-${exerciseIndex}`] = true;
-                    });
-                    this.completedDays[session.day_index] = session.is_completed;
+                    if (session.workoutId) {
+                        session.completed_exercises.forEach(exerciseIndex => {
+                            this.completedExercises[`${session.workoutId}-${exerciseIndex}`] = true;
+                        });
+                    } else if (session.day_index !== undefined) {
+                        // Legacy format
+                        session.completed_exercises.forEach(exerciseIndex => {
+                            this.completedExercises[`${session.day_index}-${exerciseIndex}`] = true;
+                        });
+                        this.completedDays[session.day_index] = session.is_completed;
+                    }
                 });
+            }
+
+            migrateLegacyExerciseCompletions() {
+                const legacyKeys = Object.keys(this.completedExercises).filter(key => key.match(/^\d+-\d+$/));
+                if (legacyKeys.length === 0) return;
+
+                console.log('Migrating legacy exercise completions...');
+                legacyKeys.forEach(key => {
+                    delete this.completedExercises[key];
+                });
+
+                this.saveWeeklyData();
+                console.log('Legacy exercise completions cleared.');
             }
 
             nextStep() {
@@ -932,66 +953,67 @@
                 this.render();
             }
 
-            async toggleExercise(dayIndex, exerciseIndex) {
-                const key = `${dayIndex}-${exerciseIndex}`;
+            async toggleExercise(workoutId, exerciseIndex) {
+                const key = `${workoutId}-${exerciseIndex}`;
                 this.completedExercises[key] = !this.completedExercises[key];
 
-                const completedExercisesForDay = Object.keys(this.completedExercises)
-                    .filter(k => k.startsWith(`${dayIndex}-`) && this.completedExercises[k])
-                    .map(k => parseInt(k.split('-')[1]));
+                const workout = this.findWorkoutById(workoutId);
+                if (workout) {
+                    const completedExercisesForWorkout = Object.keys(this.completedExercises)
+                        .filter(k => k.startsWith(`${workoutId}-`) && this.completedExercises[k])
+                        .map(k => parseInt(k.split('-')[1]));
 
-                const currentWeek = this.weeklyData.currentWeek;
-                const weekData = this.weeklyData.weeks[currentWeek];
-                const workout = weekData.workouts[dayIndex];
-
-                await this.api.saveSession({
-                    dayIndex,
-                    completedExercises: completedExercisesForDay,
-                    isCompleted: workout.isCompleted || false,
-                    workoutDate: new Date().toISOString().split('T')[0]
-                });
+                    await this.api.saveSession({
+                        workoutId: workoutId,
+                        completedExercises: completedExercisesForWorkout,
+                        isCompleted: workout.isCompleted || false,
+                        workoutDate: workout.date
+                    });
+                }
 
                 this.render();
             }
 
-            async completeAllExercisesForDay(dayIndex) {
-                const currentWeek = this.weeklyData.currentWeek;
-                const weekData = this.weeklyData.weeks[currentWeek];
-                const workout = weekData.workouts[dayIndex];
-
+            async completeAllExercisesForDay(workout) {
                 const allIndexes = workout.exercises.map((_, idx) => idx);
                 allIndexes.forEach(idx => {
-                    this.completedExercises[`${dayIndex}-${idx}`] = true;
+                    this.completedExercises[`${workout.id}-${idx}`] = true;
                 });
 
                 await this.api.saveSession({
-                    dayIndex,
+                    workoutId: workout.id,
                     completedExercises: allIndexes,
                     isCompleted: true,
-                    workoutDate: new Date().toISOString().split('T')[0]
+                    workoutDate: workout.date
                 });
             }
 
-            async toggleDay(workoutIndex) {
+            async toggleDay(workoutId) {
                 this.saveStateSnapshot('toggleDay');
-                const currentWeek = this.weeklyData.currentWeek;
-                const weekData = this.weeklyData.weeks[currentWeek];
-                const workout = weekData.workouts[workoutIndex];
+                const workout = this.findWorkoutById(workoutId);
+                if (!workout) return;
+
+                const weekString = this.getISOWeek(new Date(workout.date));
+                const weekData = this.weeklyData.weeks[weekString];
 
                 workout.isCompleted = !workout.isCompleted;
 
                 if (workout.isCompleted) {
                     weekData.completed++;
-                    await this.completeAllExercisesForDay(workoutIndex);
+                    workout.exercises.forEach((_, idx) => {
+                        this.completedExercises[`${workout.id}-${idx}`] = true;
+                    });
                 } else {
                     weekData.completed--;
                     workout.exercises.forEach((_, idx) => {
-                        delete this.completedExercises[`${workoutIndex}-${idx}`];
+                        delete this.completedExercises[`${workout.id}-${idx}`];
                     });
                 }
 
                 if (weekData.completed >= weekData.target) {
                     weekData.isWeekCompleted = true;
+                } else {
+                    weekData.isWeekCompleted = false;
                 }
 
                 this.saveWeeklyData();
@@ -1116,7 +1138,7 @@
                 const nextPlanDay = planDays[weekData.workouts.length % planDays.length];
 
                 const workout = {
-                    id: `workout_${Date.now()}`,
+                    id: `workout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                     date: dateStr,
                     planDay: nextPlanDay,
                     exercises: this.currentPlan[nextPlanDay].exercises,
@@ -1145,13 +1167,28 @@
                 return weekData.workouts.indexOf(workout);
             }
 
-            getCompletionPercentage(dayIndex, day) {
-                if (!day || !day.exercises) return 0;
-                const totalExercises = day.exercises.length;
+            findWorkoutById(workoutId) {
+                for (const weekString in this.weeklyData.weeks) {
+                    const weekData = this.weeklyData.weeks[weekString];
+                    const workout = weekData.workouts.find(w => w.id === workoutId);
+                    if (workout) return workout;
+                }
+                return null;
+            }
+
+            getCurrentWorkout() {
+                const currentWeek = this.weeklyData.currentWeek;
+                const weekData = this.weeklyData.weeks[currentWeek];
+                return weekData.workouts[this.selectedDay];
+            }
+
+            getCompletionPercentage(workout) {
+                if (!workout || !workout.exercises) return 0;
+                const totalExercises = workout.exercises.length;
                 let completed = 0;
-                
+
                 for (let i = 0; i < totalExercises; i++) {
-                    const key = `${dayIndex}-${i}`;
+                    const key = `${workout.id}-${i}`;
                     if (this.completedExercises[key]) completed++;
                 }
                 
@@ -2035,14 +2072,14 @@
             renderDay() {
                 if (!this.currentPlan || this.selectedDay === null) return '<div>Fehler beim Laden</div>';
 
-                const currentWeek = this.weeklyData.currentWeek;
-                const weekData = this.weeklyData.weeks[currentWeek];
-                const workout = weekData.workouts[this.selectedDay];
+                const workout = this.getCurrentWorkout();
                 if (!workout) return '<div>Fehler beim Laden</div>';
+                const weekString = this.getISOWeek(new Date(workout.date));
+                const weekData = this.weeklyData.weeks[weekString];
 
                 const dayName = workout.planDay;
                 const day = this.currentPlan[dayName];
-                const completionPercentage = this.getCompletionPercentage(this.selectedDay, day);
+                const completionPercentage = this.getCompletionPercentage(workout);
                 
                 return `
                     <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -2080,14 +2117,14 @@
 
                                 <div class="space-y-3">
                                     ${day.exercises.map((exercise, index) => {
-                                        const isCompleted = this.completedExercises[`${this.selectedDay}-${index}`];
+                                        const isCompleted = this.completedExercises[`${workout.id}-${index}`];
                                         const exerciseDetail = this.findExerciseDetail(exercise);
                                         const isExpanded = this.expandedExercises[`${this.selectedDay}-${index}`];
 
                                         return `
                                           <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
                                             <div class="flex items-center p-3">
-                                              <button onclick="app.toggleExercise(${this.selectedDay}, ${index})" class="mr-3">
+                                              <button onclick="app.toggleExercise('${workout.id}', ${index})" class="mr-3">
                                                 ${isCompleted ?
                                                     '<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
                                                     '<svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"></circle></svg>'
@@ -2137,8 +2174,8 @@
                                     }).join('')}
                                 </div>
 
-                                <button onclick="app.toggleDay(${this.selectedDay})" class="w-full mt-6 py-3 rounded-lg font-bold transition-all text-lg ${weekData.workouts[this.selectedDay].isCompleted ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700'}">
-                                    ${weekData.workouts[this.selectedDay].isCompleted ? '🎉 Tag geschafft! Super!' : '✅ Tag als geschafft markieren'}
+                                <button onclick="app.toggleDay('${workout.id}')" class="w-full mt-6 py-3 rounded-lg font-bold transition-all text-lg ${workout.isCompleted ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700'}">
+                                    ${workout.isCompleted ? '🎉 Tag geschafft! Super!' : '✅ Tag als geschafft markieren'}
                                 </button>
                             </div>
                         </div>
