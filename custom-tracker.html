@@ -21,6 +21,22 @@
             -webkit-touch-callout: none;
             overscroll-behavior: contain;
         }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        .calendar-day.today { border-color: #3b82f6; background: #eff6ff; }
+        .calendar-day.completed { border-color: #22c55e; background: #f0fdf4; }
+        .calendar-day.past { opacity: 0.5; cursor: not-allowed; }
+        .calendar-day:hover:not(.past) { border-color: #93c5fd; }
     </style>
 </head>
 <body>
@@ -148,6 +164,7 @@
                 this.userData = {};
                 this.currentPlan = null;
                 this.selectedDay = null;
+                this.weeklyData = this.loadWeeklyData();
                 this.completedExercises = {};
                 this.completedDays = {};
                 this.apiStatus = 'unknown'; // unknown, working, offline
@@ -622,36 +639,192 @@
             async toggleExercise(dayIndex, exerciseIndex) {
                 const key = `${dayIndex}-${exerciseIndex}`;
                 this.completedExercises[key] = !this.completedExercises[key];
-                
+
                 const completedExercisesForDay = Object.keys(this.completedExercises)
                     .filter(k => k.startsWith(`${dayIndex}-`) && this.completedExercises[k])
                     .map(k => parseInt(k.split('-')[1]));
-                
+
+                const currentWeek = this.weeklyData.currentWeek;
+                const weekData = this.weeklyData.weeks[currentWeek];
+                const workout = weekData.workouts[dayIndex];
+
                 await this.api.saveSession({
                     dayIndex,
                     completedExercises: completedExercisesForDay,
-                    isCompleted: this.completedDays[dayIndex] || false,
+                    isCompleted: workout.isCompleted || false,
                     workoutDate: new Date().toISOString().split('T')[0]
                 });
-                
+
                 this.render();
             }
 
-            async toggleDay(dayIndex) {
-                this.completedDays[dayIndex] = !this.completedDays[dayIndex];
-                
-                const completedExercisesForDay = Object.keys(this.completedExercises)
-                    .filter(k => k.startsWith(`${dayIndex}-`) && this.completedExercises[k])
-                    .map(k => parseInt(k.split('-')[1]));
-                
-                await this.api.saveSession({
-                    dayIndex,
-                    completedExercises: completedExercisesForDay,
-                    isCompleted: this.completedDays[dayIndex],
-                    workoutDate: new Date().toISOString().split('T')[0]
-                });
-                
+            async toggleDay(workoutIndex) {
+                const currentWeek = this.weeklyData.currentWeek;
+                const weekData = this.weeklyData.weeks[currentWeek];
+                const workout = weekData.workouts[workoutIndex];
+
+                workout.isCompleted = !workout.isCompleted;
+
+                if (workout.isCompleted) {
+                    weekData.completed++;
+                } else {
+                    weekData.completed--;
+                }
+
+                if (weekData.completed >= weekData.target) {
+                    weekData.isWeekCompleted = true;
+                }
+
+                this.saveWeeklyData();
                 this.render();
+            }
+
+            migrateToWeeklySystem() {
+                if (localStorage.getItem('weeklyTrainingData')) return;
+
+                const weeklyData = {
+                    weeklyGoal: parseInt(this.userData.frequency),
+                    currentWeek: this.getISOWeek(new Date()),
+                    weeks: {}
+                };
+
+                const currentWeek = this.getISOWeek(new Date());
+                weeklyData.weeks[currentWeek] = {
+                    startDate: this.getWeekBounds(currentWeek).start.toISOString().split('T')[0],
+                    endDate: this.getWeekBounds(currentWeek).end.toISOString().split('T')[0],
+                    target: parseInt(this.userData.frequency),
+                    completed: 0,
+                    workouts: [],
+                    isWeekCompleted: false
+                };
+
+                this.weeklyData = weeklyData;
+                this.saveWeeklyData();
+            }
+
+            getISOWeek(date) {
+                const d = new Date(date);
+                d.setHours(0, 0, 0, 0);
+                d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+                const week1 = new Date(d.getFullYear(), 0, 4);
+                const week = 1 + Math.round(((d - week1) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+                return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
+            }
+
+            getWeekBounds(weekString) {
+                const [year, week] = weekString.split('-W').map(Number);
+                const jan4 = new Date(year, 0, 4);
+                const weekStart = new Date(jan4.getTime() + (week - 1) * 7 * 86400000);
+                weekStart.setDate(weekStart.getDate() - (jan4.getDay() + 6) % 7);
+                return {
+                    start: weekStart,
+                    end: new Date(weekStart.getTime() + 6 * 86400000)
+                };
+            }
+
+            loadWeeklyData() {
+                const data = localStorage.getItem('weeklyTrainingData');
+                return data ? JSON.parse(data) : null;
+            }
+
+            saveWeeklyData() {
+                localStorage.setItem('weeklyTrainingData', JSON.stringify(this.weeklyData));
+            }
+
+            renderWeekCalendar(weekString, weekData) {
+                const { start, end } = this.getWeekBounds(weekString);
+                const days = [];
+
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const dateStr = d.toISOString().split('T')[0];
+                    const workout = weekData.workouts.find(w => w.date === dateStr);
+                    const isToday = dateStr === new Date().toISOString().split('T')[0];
+                    const isPast = d < new Date().setHours(0,0,0,0);
+
+                    days.push(`
+                      <div class="calendar-day ${workout?.isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''} ${isPast && !workout ? 'past' : ''}" 
+                           onclick="app.handleDayClick('${dateStr}')">
+                        <div class="text-xs text-center p-1">
+                          <div class="font-medium">${d.toLocaleDateString('de-DE', {weekday: 'short'})}</div>
+                          <div class="text-lg font-bold">${d.getDate()}</div>
+                        </div>
+                        <div class="text-center text-xl">
+                          ${workout ? (workout.isCompleted ? '✅' : '🏋️') : ''}
+                        </div>
+                      </div>
+                    `);
+                }
+
+                return `
+                  <div class="p-4">
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                      <h3 class="font-semibold text-gray-800 mb-4">
+                        Woche ${weekString.split('-W')[1]} (${start.getDate()}.${start.getMonth()+1} - ${end.getDate()}.${end.getMonth()+1})
+                      </h3>
+                      <div class="grid grid-cols-7 gap-2 mb-4">
+                        ${days.join('')}
+                      </div>
+                      <div class="text-center">
+                        <button onclick="app.addWorkoutToday()" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">
+                          + Training für heute
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                `;
+            }
+
+            handleDayClick(dateStr) {
+                const workout = this.getWorkoutForDate(dateStr);
+                if (workout) {
+                    this.selectedDay = this.getWorkoutIndex(workout);
+                    this.currentView = 'day';
+                    this.render();
+                } else {
+                    this.addWorkoutToDay(dateStr);
+                }
+            }
+
+            addWorkoutToday() {
+                const today = new Date().toISOString().split('T')[0];
+                this.addWorkoutToDay(today);
+            }
+
+            addWorkoutToDay(dateStr) {
+                const weekString = this.getISOWeek(new Date(dateStr));
+                const weekData = this.weeklyData.weeks[weekString];
+
+                const planDays = Object.keys(this.currentPlan);
+                const nextPlanDay = planDays[weekData.workouts.length % planDays.length];
+
+                const workout = {
+                    id: `workout_${Date.now()}`,
+                    date: dateStr,
+                    planDay: nextPlanDay,
+                    exercises: this.currentPlan[nextPlanDay].exercises,
+                    completedExercises: [],
+                    isCompleted: false,
+                    timestamp: new Date().toISOString()
+                };
+
+                weekData.workouts.push(workout);
+                this.saveWeeklyData();
+
+                this.selectedDay = weekData.workouts.length - 1;
+                this.currentView = 'day';
+                this.render();
+            }
+
+            getWorkoutForDate(dateStr) {
+                const weekString = this.getISOWeek(new Date(dateStr));
+                const weekData = this.weeklyData.weeks[weekString];
+                return weekData?.workouts.find(w => w.date === dateStr);
+            }
+
+            getWorkoutIndex(workout) {
+                const weekString = this.getISOWeek(new Date(workout.date));
+                const weekData = this.weeklyData.weeks[weekString];
+                return weekData.workouts.indexOf(workout);
             }
 
             getCompletionPercentage(dayIndex, day) {
@@ -1124,96 +1297,34 @@
 
             renderOverview() {
                 if (!this.currentPlan) return '<div>Lade Plan...</div>';
-                
-                const planDays = Object.keys(this.currentPlan);
-                const totalDays = planDays.length;
-                const completedDaysCount = Object.values(this.completedDays).filter(Boolean).length;
-                const totalProgress = Math.round((completedDaysCount / totalDays) * 100);
-                
+
+                if (!this.weeklyData) {
+                    this.migrateToWeeklySystem();
+                }
+
+                const currentWeek = this.weeklyData.currentWeek;
+                const weekData = this.weeklyData.weeks[currentWeek];
+
                 return `
                     <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
                         <div class="bg-white shadow-lg">
                             <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h1 class="text-xl font-bold">💪 ${this.userData.name}'s Plan</h1>
-                                        <p class="text-blue-100">Personalisierter Trainingsplan</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-2xl font-bold">${totalProgress}%</div>
-                                        <div class="text-xs text-blue-100">Fortschritt</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-4 bg-white bg-opacity-20 rounded-lg p-3">
+                                <h1 class="text-xl font-bold">📅 ${this.userData.name}'s Trainingskalender</h1>
+                                <p class="text-blue-100">Woche ${currentWeek.split('-W')[1]} • ${weekData.completed}/${weekData.target} Trainings</p>
+                                <div class="mt-2 bg-white bg-opacity-20 rounded-lg p-2">
                                     <div class="w-full bg-white bg-opacity-30 rounded-full h-2">
-                                        <div class="bg-white h-2 rounded-full transition-all duration-500" style="width: ${totalProgress}%"></div>
-                                    </div>
-                                    <div class="mt-2 text-xs text-blue-100">
-                                        ${completedDaysCount} von ${totalDays} Trainingstagen abgeschlossen
+                                        <div class="bg-white h-2 rounded-full transition-all duration-500" style="width: ${(weekData.completed / weekData.target) * 100}%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        ${this.renderSyncStatus()}
+                        ${this.renderWeekCalendar(currentWeek, weekData)}
 
                         <div class="p-4">
-                            <div class="grid grid-cols-1 gap-3">
-                                ${planDays.map((dayName, index) => {
-                                    const day = this.currentPlan[dayName];
-                                    const isCompleted = this.completedDays[index];
-                                    const completionPercentage = this.getCompletionPercentage(index, day);
-                                    
-                                    return `
-                                        <div class="bg-white rounded-lg shadow-md p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200'}" 
-                                             onclick="app.selectedDay=${index}; app.currentView='day'; app.render();">
-                                            <div class="flex items-center justify-between mb-2">
-                                                <div class="flex items-center">
-                                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${isCompleted ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'}">
-                                                        ${index + 1}
-                                                    </div>
-                                                    <div>
-                                                        <h3 class="font-semibold text-gray-800">${dayName}</h3>
-                                                        <p class="text-xs text-gray-500">${day.difficulty}</p>
-                                                    </div>
-                                                </div>
-                                                
-                                                ${isCompleted ? '<svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
-                                            </div>
-                                            
-                                            <div class="mb-2">
-                                                <h4 class="text-sm font-medium text-gray-700 mb-1">${day.title}</h4>
-                                                <p class="text-xs text-gray-500">${day.duration} • ${day.focus}</p>
-                                            </div>
-                                            
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex-1 mr-3">
-                                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                                        <div class="h-1.5 rounded-full transition-all duration-300 ${isCompleted ? 'bg-green-500' : 'bg-blue-500'}" style="width: ${completionPercentage}%"></div>
-                                                    </div>
-                                                </div>
-                                                <span class="text-xs font-semibold text-gray-600">${completionPercentage}%</span>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                            
-                            <div class="mt-6 p-4 bg-white rounded-lg shadow-md">
-                                <div class="text-center">
-                                    <div class="text-2xl mb-2">🎯</div>
-                                    <h3 class="font-semibold text-gray-800 mb-2">Dein Profil</h3>
-                                    <div class="text-sm text-gray-600 space-y-1">
-                                        <p>📊 Level: ${this.userData.experience}</p>
-                                        <p>📅 Plan: ${this.userData.frequency}x pro Woche</p>
-                                        <p>🏋️ Equipment: ${(this.userData.equipment || []).length} Typen</p>
-                                    </div>
-                                    <button onclick="localStorage.clear(); location.reload();" class="mt-3 text-xs text-blue-600 hover:text-blue-800">
-                                        🔄 Neuen Plan erstellen
-                                    </button>
-                                </div>
-                            </div>
+                            <button onclick="localStorage.clear(); location.reload();" class="w-full text-xs text-blue-600 p-2 border border-blue-200 rounded-lg">
+                                🔄 Neuen Plan erstellen
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1221,8 +1332,13 @@
 
             renderDay() {
                 if (!this.currentPlan || this.selectedDay === null) return '<div>Fehler beim Laden</div>';
-                
-                const dayName = Object.keys(this.currentPlan)[this.selectedDay];
+
+                const currentWeek = this.weeklyData.currentWeek;
+                const weekData = this.weeklyData.weeks[currentWeek];
+                const workout = weekData.workouts[this.selectedDay];
+                if (!workout) return '<div>Fehler beim Laden</div>';
+
+                const dayName = workout.planDay;
                 const day = this.currentPlan[dayName];
                 const completionPercentage = this.getCompletionPercentage(this.selectedDay, day);
                 
@@ -1280,8 +1396,8 @@
                                     }).join('')}
                                 </div>
 
-                                <button onclick="app.toggleDay(${this.selectedDay})" class="w-full mt-6 py-3 rounded-lg font-bold transition-all text-lg ${this.completedDays[this.selectedDay] ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700'}">
-                                    ${this.completedDays[this.selectedDay] ? '🎉 Tag geschafft! Super!' : '✅ Tag als geschafft markieren'}
+                                <button onclick="app.toggleDay(${this.selectedDay})" class="w-full mt-6 py-3 rounded-lg font-bold transition-all text-lg ${weekData.workouts[this.selectedDay].isCompleted ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700'}">
+                                    ${weekData.workouts[this.selectedDay].isCompleted ? '🎉 Tag geschafft! Super!' : '✅ Tag als geschafft markieren'}
                                 </button>
                             </div>
                         </div>
