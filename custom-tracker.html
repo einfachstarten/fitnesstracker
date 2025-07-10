@@ -206,6 +206,189 @@
                 gap: 4px;
             }
         }
+
+        /* Clean Calendar Day */
+        .calendar-day-clean {
+            position: relative;
+            width: 100%;
+            height: 85px;
+            background: white;
+            border: 1.5px solid #f1f5f9;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .calendar-day-clean:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .calendar-day-clean.today {
+            border-color: #3b82f6;
+            border-width: 2px;
+        }
+
+        .calendar-day-clean.scheduled {
+            border-color: #e2e8f0;
+            background: #fafbfc;
+        }
+
+        .calendar-day-clean.completed {
+            border-color: #e2e8f0;
+        }
+
+        .day-header-clean {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .day-name {
+            font-size: 11px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 2px;
+        }
+
+        .day-number {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1;
+        }
+
+        .status-indicator {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .today-marker {
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .scheduled-dot {
+            width: 6px;
+            height: 6px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+
+        .completed-check {
+            width: 18px;
+            height: 18px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .completed-check svg {
+            width: 10px;
+            height: 10px;
+            color: white;
+        }
+
+        .empty-hint {
+            width: 20px;
+            height: 20px;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .calendar-day-clean:hover .empty-hint {
+            opacity: 1;
+        }
+
+        .empty-hint::before {
+            content: '+';
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .week-header-clean {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+
+        .nav-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: #f8fafc;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-button:hover {
+            background: #e2e8f0;
+            color: #374151;
+        }
+
+        .week-info { text-align: center; }
+
+        .week-dates {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .week-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .calendar-grid-clean {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            padding: 0 4px;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-day-clean {
+                height: 75px;
+                padding: 6px;
+            }
+
+            .day-number { font-size: 16px; }
+            .day-name { font-size: 10px; }
+            .calendar-grid-clean { gap: 6px; }
+        }
     </style>
 </head>
 <body>
@@ -1062,13 +1245,27 @@
                 return null;
             }
 
-            getEnhancedDayClass(workout, isToday, isPast) {
+            getCleanDayClass(workout, isToday) {
                 let classes = [];
                 if (isToday) classes.push('today');
                 if (workout?.isCompleted) classes.push('completed');
                 else if (workout) classes.push('scheduled');
-                if (isPast && !workout) classes.push('past');
                 return classes.join(' ');
+            }
+
+            getCleanStatusIndicator(workout, isToday) {
+                if (workout?.isCompleted) {
+                    return `
+                      <div class="completed-check">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      </div>
+                    `;
+                } else if (workout) {
+                    return '<div class="scheduled-dot"></div>';
+                }
+                return '<div class="empty-hint"></div>';
             }
 
             renderEnhancedCalendarDays(currentWeek, weekData) {
@@ -1080,33 +1277,18 @@
                     const dateStr = d.toISOString().split('T')[0];
                     const workout = weekData.workouts.find(w => w.date === dateStr);
                     const isToday = dateStr === today;
-                    const isPast = new Date(dateStr) < new Date().setHours(0,0,0,0);
                     const dayName = d.toLocaleDateString('de-DE', {weekday: 'short'});
 
                     days.push(`
-                      <div class="calendar-day-enhanced ${this.getEnhancedDayClass(workout, isToday, isPast)}" onclick="app.handleDayClick('${dateStr}')">
-                        <div class="day-header-enhanced">
-                          <div class="text-xs font-medium text-center mb-1">${dayName}</div>
-                          <div class="text-xl font-bold text-center mb-2">${d.getDate()}</div>
+                      <div class="calendar-day-clean ${this.getCleanDayClass(workout, isToday)}" onclick="app.handleDayClick('${dateStr}')">
+                        <div class="day-header-clean">
+                          <div class="day-name">${dayName}</div>
+                          <div class="day-number">${d.getDate()}</div>
                         </div>
-                        <div class="workout-status">
-                          ${workout ? `
-                            <div class="workout-indicator ${workout.isCompleted ? 'completed' : 'scheduled'}">
-                              ${workout.isCompleted ? '<div class="text-2xl">✅</div>' : '<div class="text-lg">💪</div>'}
-                            </div>
-                            <div class="workout-info">
-                              <div class="text-xs font-medium truncate">${workout.planDay}</div>
-                              <div class="text-xs text-gray-500">${workout.exercises.length} Übungen</div>
-                            </div>
-                          ` : isToday ? `
-                            <div class="add-workout-hint">
-                              <div class="text-xl opacity-60">➕</div>
-                              <div class="text-xs text-gray-500">Training hinzufügen</div>
-                            </div>
-                          ` : ''}
+                        <div class="status-indicator">
+                          ${this.getCleanStatusIndicator(workout, isToday)}
                         </div>
-                        ${isToday ? '<div class="today-pulse"></div>' : ''}
-                        ${workout?.isCompleted ? '<div class="completion-badge">🔥</div>' : ''}
+                        ${isToday ? '<div class="today-marker"></div>' : ''}
                       </div>
                     `);
                 }
@@ -1191,6 +1373,33 @@
                 return { title: 'Lass uns loslegen! 🚀', subtitle: 'Jedes Training bringt dich weiter!' };
             }
 
+            renderCleanWeekHeader(currentWeek, weekData) {
+                const { start, end } = this.getWeekBounds(currentWeek);
+                const prevWeek = this.getPreviousWeek(currentWeek);
+                const nextWeek = this.getNextWeek(currentWeek);
+
+                return `
+                    <div class="week-header-clean">
+                      <button onclick="app.navigateToWeek('${prevWeek}')" class="nav-button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                      </button>
+
+                      <div class="week-info">
+                        <div class="week-dates">${start.getDate()}.${start.getMonth()+1} - ${end.getDate()}.${end.getMonth()+1}</div>
+                        <div class="week-label">Kalenderwoche ${currentWeek.split('-W')[1]}</div>
+                      </div>
+
+                      <button onclick="app.navigateToWeek('${nextWeek}')" class="nav-button">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                      </button>
+                    </div>
+                `;
+            }
+
             renderEnhancedHeader(currentWeek, weekData) {
                 const streak = this.calculateStreak();
                 const weekProgress = (weekData.completed / weekData.target) * 100;
@@ -1252,26 +1461,11 @@
             }
 
             renderAdvancedCalendar(currentWeek, weekData) {
-                const { start, end } = this.getWeekBounds(currentWeek);
-                const prevWeek = this.getPreviousWeek(currentWeek);
-                const nextWeek = this.getNextWeek(currentWeek);
-
                 return `
                     <div class="p-4">
-                      <div class="bg-white rounded-2xl shadow-lg p-4 mb-4">
-                        <div class="flex items-center justify-between mb-4">
-                          <button onclick="app.navigateToWeek('${prevWeek}')" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                          </button>
-                          <div class="text-center">
-                            <h3 class="text-lg font-bold text-gray-800">${start.getDate()}.${start.getMonth()+1} - ${end.getDate()}.${end.getMonth()+1}.${end.getFullYear()}</h3>
-                            <p class="text-sm text-gray-500">Kalenderwoche ${currentWeek.split('-W')[1]}</p>
-                          </div>
-                          <button onclick="app.navigateToWeek('${nextWeek}')" class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                          </button>
-                        </div>
-                        <div class="calendar-grid-container">
+                      <div class="bg-white rounded-2xl shadow-lg">
+                        ${this.renderCleanWeekHeader(currentWeek, weekData)}
+                        <div class="calendar-grid-clean">
                           ${this.renderEnhancedCalendarDays(currentWeek, weekData)}
                         </div>
                       </div>
