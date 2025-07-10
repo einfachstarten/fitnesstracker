@@ -524,35 +524,35 @@
 
             renderStep1_Welcome() {
                 return `
-                    <div class="text-center space-y-6">
+                    <form class="text-center space-y-6" onsubmit="event.preventDefault(); if(app.userData.name) app.nextStep();">
                         <div class="text-6xl">🏋️‍♀️</div>
                         <h2 class="text-2xl font-bold text-gray-800">Willkommen!</h2>
                         <p class="text-gray-600">Ich erstelle dir einen personalisierten Trainingsplan.</p>
-                        
+
                         <div class="space-y-4">
                             <div>
                                 <label class="text-sm font-medium text-gray-700 mb-2" style="display: block;">Wie heißt du?</label>
-                                <input type="text" 
+                                <input type="text" autofocus required
                                        value="${this.userData.name || ''}"
                                        oninput="app.setUserData('name', this.value)"
                                        placeholder="Dein Name">
                             </div>
-                            
+
                             <div>
                                 <label class="text-sm font-medium text-gray-700 mb-2" style="display: block;">Alter (optional)</label>
-                                <input type="number" min="12" max="100"
+                                <input type="number" min="12" max="100" inputmode="numeric"
                                        value="${this.userData.age || ''}"
                                        oninput="app.setUserData('age', parseInt(this.value) || null)"
                                        placeholder="Dein Alter">
                             </div>
                         </div>
 
-                        <button onclick="app.nextStep()" 
+                        <button type="submit"
                                 class="gradient-button w-full"
                                 ${!this.userData.name ? 'disabled' : ''}>
                             Weiter →
                         </button>
-                    </div>
+                    </form>
                 `;
             }
 
