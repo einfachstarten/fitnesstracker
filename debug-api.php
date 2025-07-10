@@ -30,16 +30,23 @@ if (!is_writable($data_dir)) {
 $request_method = $_SERVER['REQUEST_METHOD'];
 $request_uri = $_SERVER['REQUEST_URI'];
 
-// Parse the path
-$path = parse_url($request_uri, PHP_URL_PATH);
-$path_parts = explode('/', trim($path, '/'));
+// Parse and normalize the path so the API works from any directory
+$uri_path = parse_url($request_uri, PHP_URL_PATH);
+$base_dir = trim(dirname($_SERVER['SCRIPT_NAME']), '/');
+$script_file = basename($_SERVER['SCRIPT_NAME']);
 
-// Remove script name from path
-$script_name = basename($_SERVER['SCRIPT_NAME'], '.php');
-while (($key = array_search($script_name, $path_parts)) !== false) {
-    unset($path_parts[$key]);
+// Remove the directory part of the script from the path
+if ($base_dir !== '') {
+    $uri_path = substr($uri_path, strlen('/' . $base_dir));
 }
-$path_parts = array_values($path_parts);
+
+// Remove the script file itself if present
+$uri_path = ltrim($uri_path, '/');
+if (strpos($uri_path, $script_file) === 0) {
+    $uri_path = substr($uri_path, strlen($script_file));
+}
+
+$path_parts = array_values(array_filter(explode('/', trim($uri_path, '/'))));
 
 // Debug: Log the parsed path
 file_put_contents('./debug.log', "Parsed path: " . json_encode($path_parts) . "\n", FILE_APPEND);
