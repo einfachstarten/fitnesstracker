@@ -131,18 +131,24 @@
             }
 
             async saveSession(sessionData) {
-                if (!this.userId) throw new Error('No user ID');
-                
-                const result = await this.request(`/users/${this.userId}/session`, {
-                    method: 'POST',
-                    body: JSON.stringify(sessionData)
-                });
-
                 const sessions = JSON.parse(localStorage.getItem('fitness_sessions') || '[]');
-                sessions.push({ ...sessionData, timestamp: new Date().toISOString() });
-                localStorage.setItem('fitness_sessions', JSON.stringify(sessions));
 
-                return result;
+                if (this.userId) {
+                    const result = await this.request(`/users/${this.userId}/session`, {
+                        method: 'POST',
+                        body: JSON.stringify(sessionData)
+                    });
+
+                    sessions.push({ ...sessionData, timestamp: new Date().toISOString() });
+                    localStorage.setItem('fitness_sessions', JSON.stringify(sessions));
+
+                    return result;
+                } else {
+                    console.warn('No user ID – session saved locally only');
+                    sessions.push({ ...sessionData, timestamp: new Date().toISOString() });
+                    localStorage.setItem('fitness_sessions', JSON.stringify(sessions));
+                    return { message: 'saved locally' };
+                }
             }
 
             async getSessions() {
@@ -658,6 +664,24 @@
                 this.render();
             }
 
+            async completeAllExercisesForDay(dayIndex) {
+                const currentWeek = this.weeklyData.currentWeek;
+                const weekData = this.weeklyData.weeks[currentWeek];
+                const workout = weekData.workouts[dayIndex];
+
+                const allIndexes = workout.exercises.map((_, idx) => idx);
+                allIndexes.forEach(idx => {
+                    this.completedExercises[`${dayIndex}-${idx}`] = true;
+                });
+
+                await this.api.saveSession({
+                    dayIndex,
+                    completedExercises: allIndexes,
+                    isCompleted: true,
+                    workoutDate: new Date().toISOString().split('T')[0]
+                });
+            }
+
             async toggleDay(workoutIndex) {
                 const currentWeek = this.weeklyData.currentWeek;
                 const weekData = this.weeklyData.weeks[currentWeek];
@@ -667,8 +691,12 @@
 
                 if (workout.isCompleted) {
                     weekData.completed++;
+                    await this.completeAllExercisesForDay(workoutIndex);
                 } else {
                     weekData.completed--;
+                    workout.exercises.forEach((_, idx) => {
+                        delete this.completedExercises[`${workoutIndex}-${idx}`];
+                    });
                 }
 
                 if (weekData.completed >= weekData.target) {
