@@ -1,0 +1,79 @@
+{
+    "user_id": "user_686fa68b564db",
+    "plan": {
+        "Tag 1": {
+            "title": "Push Training",
+            "exercises": [
+                "Bankdr\u00fccken: 3x8-12"
+            ],
+            "exercise_details": [
+                {
+                    "name": "Bankdr\u00fccken",
+                    "equipment": [
+                        "barbell",
+                        "machines"
+                    ],
+                    "difficulty": "intermediate",
+                    "muscles": [
+                        "Brust",
+                        "Trizeps",
+                        "Schultern"
+                    ],
+                    "instructions": "Auf der Bank liegend, Stange zur Brust senken"
+                }
+            ],
+            "duration": "45 Min",
+            "focus": "Brust, Trizeps, Schultern",
+            "difficulty": "Intermediate"
+        },
+        "Tag 2": {
+            "title": "Pull Training",
+            "exercises": [
+                "Klimmz\u00fcge: 3x8-12"
+            ],
+            "exercise_details": [
+                {
+                    "name": "Klimmz\u00fcge",
+                    "equipment": [
+                        "bodyweight"
+                    ],
+                    "difficulty": "intermediate",
+                    "muscles": [
+                        "R\u00fccken",
+                        "Bizeps"
+                    ],
+                    "instructions": "An der Stange h\u00e4ngend, K\u00f6rper nach oben ziehen"
+                }
+            ],
+            "duration": "45 Min",
+            "focus": "R\u00fccken, Bizeps",
+            "difficulty": "Intermediate"
+        },
+        "Tag 3": {
+            "title": "Legs Training",
+            "exercises": [
+                "Kreuzheben: 3x8-12"
+            ],
+            "exercise_details": [
+                {
+                    "name": "Kreuzheben",
+                    "equipment": [
+                        "barbell",
+                        "dumbbells"
+                    ],
+                    "difficulty": "intermediate",
+                    "muscles": [
+                        "R\u00fccken",
+                        "Ges\u00e4\u00df",
+                        "Hamstrings"
+                    ],
+                    "instructions": "Gewicht vom Boden heben, R\u00fccken gerade"
+                }
+            ],
+            "duration": "45 Min",
+            "focus": "R\u00fccken, Ges\u00e4\u00df, Hamstrings",
+            "difficulty": "Intermediate"
+        }
+    },
+    "created_at": "2025-07-10 13:39:55"
+}

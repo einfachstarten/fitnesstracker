@@ -1,0 +1,15 @@
+{
+    "id": "user_686fa68b564db",
+    "name": "Marcus",
+    "age": 45,
+    "experience": "intermediate",
+    "goals": [],
+    "schedule": "3days",
+    "equipment": [
+        "bodyweight",
+        "dumbbells",
+        "barbell"
+    ],
+    "duration": "45min",
+    "created_at": "2025-07-10 13:39:55"
+}

@@ -1,8 +1,8 @@
 {
-  "name": "Fitness Tracker",
-  "short_name": "Fitness",
-  "description": "2-Wochen Fitness Tracker mit Push/Pull/Legs Training",
-  "start_url": "./",
+  "name": "Intelligenter Fitness Tracker",
+  "short_name": "FitnessAI",
+  "description": "KI-basierter Trainingsplan-Generator mit intelligentem Assistenten",
+  "start_url": "./custom-tracker.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
@@ -10,31 +10,30 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./icon-32.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
       "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "./icon-512.png",
+      "src": "./icon-512.png", 
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Neuer Plan",
+      "short_name": "Neu",
+      "description": "Erstelle einen neuen Trainingsplan",
+      "url": "./custom-tracker.html",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "name": "Benni's Tracker", 
+      "short_name": "Benni",
+      "description": "Spezial-Tracker für Jugendliche",
+      "url": "./benni.html",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

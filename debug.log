@@ -2,3 +2,11 @@
 2025-07-10 13:32:16 - GET /demos/fitnesstracker/debug-api.php
 Parsed path: ["demos","fitnesstracker","debug-api.php"]
 Parsed path: ["demos","fitnesstracker","debug-api.php"]
+2025-07-10 13:39:44 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 13:39:44 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 13:39:55 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 13:39:55 - POST /demos/fitnesstracker/debug-api.php/users/user_686fa68b564db/plan
+Parsed path: ["users","user_686fa68b564db","plan"]

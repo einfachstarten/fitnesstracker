@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Custom Fitness Tracker">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#2563eb">
-    <title>Custom Fitness Tracker</title>
+    <title>Custom Fitness Tracker - Intelligenter Assistent</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -28,8 +28,8 @@
         <!-- Loading state -->
         <div class="max-w-md mx-auto bg-white min-h-screen flex items-center justify-center">
             <div class="text-center">
-                <div class="text-4xl mb-4">🏋️‍♀️</div>
-                <div class="text-lg font-semibold text-gray-800 mb-2">Custom Fitness Tracker</div>
+                <div class="text-4xl mb-4">🧙‍♂️</div>
+                <div class="text-lg font-semibold text-gray-800 mb-2">Intelligenter Trainingsplan-Assistent</div>
                 <div class="text-sm text-gray-600">Wird geladen...</div>
             </div>
         </div>
@@ -114,25 +114,6 @@
                 return await this.request(`/users/${this.userId}`);
             }
 
-            async generatePlan() {
-                if (!this.userId) throw new Error('No user ID');
-                
-                const result = await this.request(`/users/${this.userId}/plan`, {
-                    method: 'POST'
-                });
-
-                if (result && result.plan) {
-                    this.saveLocalFallback(`/users/${this.userId}/plan`, result);
-                }
-
-                return result;
-            }
-
-            async getPlan() {
-                if (!this.userId) return null;
-                return await this.request(`/users/${this.userId}/plan`);
-            }
-
             async saveSession(sessionData) {
                 if (!this.userId) throw new Error('No user ID');
                 
@@ -163,12 +144,14 @@
             constructor() {
                 this.api = new FitnessAPI();
                 this.currentView = 'setup';
+                this.setupStep = 1;
                 this.userData = {};
                 this.currentPlan = null;
                 this.selectedDay = null;
                 this.completedExercises = {};
                 this.completedDays = {};
                 this.apiStatus = 'unknown'; // unknown, working, offline
+                this.exerciseDatabase = this.loadExerciseDatabase();
                 
                 this.init();
             }
@@ -182,22 +165,237 @@
                     this.apiStatus = 'offline';
                 }
 
-                const existingUser = await this.api.getUser();
-                if (existingUser) {
-                    this.userData = existingUser;
-                    await this.loadPlan();
+                // Prüfe lokale Daten
+                const localUserData = localStorage.getItem('fitness_user_data');
+                const localPlan = localStorage.getItem('fitness_current_plan');
+                
+                if (localUserData && localPlan) {
+                    this.userData = JSON.parse(localUserData);
+                    this.currentPlan = JSON.parse(localPlan);
+                    await this.loadSessions();
                     this.currentView = 'overview';
+                } else {
+                    // Versuche API Daten zu laden falls User ID vorhanden
+                    const existingUser = await this.api.getUser();
+                    if (existingUser) {
+                        this.userData = existingUser;
+                        await this.loadPlan();
+                        this.currentView = 'overview';
+                    }
                 }
                 
                 this.render();
             }
 
-            async loadPlan() {
-                const planData = await this.api.getPlan();
-                if (planData && planData.plan) {
-                    this.currentPlan = planData.plan;
-                    await this.loadSessions();
-                }
+            loadExerciseDatabase() {
+                return {
+                    "Eigengewicht": [
+                        {
+                            "name": "Liegestütz",
+                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Kniebeuge (ohne Gewicht)",
+                            "muskelgruppen": ["Beine", "Gesäß"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Klimmzug",
+                            "muskelgruppen": ["Rücken", "Bizeps"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Dips",
+                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Ausfallschritt (ohne Gewicht)",
+                            "muskelgruppen": ["Beine", "Gesäß"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Unterarmstütz (Plank)",
+                            "muskelgruppen": ["Rumpf", "Rücken"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Core", "Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Burpee",
+                            "muskelgruppen": ["Ganzkörper"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Ganzkörper", "Cardio"]
+                        },
+                        {
+                            "name": "Bergsteiger (Mountain Climber)",
+                            "muskelgruppen": ["Rumpf", "Beine", "Schultern"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Ganzkörper", "Cardio"]
+                        },
+                        {
+                            "name": "Crunch",
+                            "muskelgruppen": ["Bauch"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Core"]
+                        },
+                        {
+                            "name": "Hüftheben (Brücke)",
+                            "muskelgruppen": ["Gesäß", "Beine"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
+                        }
+                    ],
+                    "Kurzhanteln": [
+                        {
+                            "name": "Kurzhantel-Bankdrücken",
+                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Schulterdrücken mit Kurzhanteln",
+                            "muskelgruppen": ["Schultern", "Trizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Seitheben mit Kurzhanteln",
+                            "muskelgruppen": ["Schultern"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Bizeps-Curl (Kurzhanteln)",
+                            "muskelgruppen": ["Bizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Arme"]
+                        },
+                        {
+                            "name": "Trizeps-Kickback",
+                            "muskelgruppen": ["Trizeps"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Oberkörper", "Arme"]
+                        },
+                        {
+                            "name": "Einarmiges Kurzhantel-Rudern",
+                            "muskelgruppen": ["Rücken", "Bizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Goblet Squat",
+                            "muskelgruppen": ["Beine", "Gesäß", "Rumpf"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Rumänisches Kreuzheben mit Kurzhanteln",
+                            "muskelgruppen": ["Beine", "Gesäß", "Rücken"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
+                        }
+                    ],
+                    "Langhanteln": [
+                        {
+                            "name": "Kniebeuge (Langhantel)",
+                            "muskelgruppen": ["Beine", "Gesäß", "Rücken"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Kreuzheben",
+                            "muskelgruppen": ["Beine", "Gesäß", "Rücken"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Ganzkörper"]
+                        },
+                        {
+                            "name": "Bankdrücken (Langhantel)",
+                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Überkopfdrücken (Military Press)",
+                            "muskelgruppen": ["Schultern", "Trizeps"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Langhantelrudern (vorgebeugt)",
+                            "muskelgruppen": ["Rücken", "Bizeps"],
+                            "schwierigkeit": "Fortgeschritten",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Bizeps-Curls (Langhantel)",
+                            "muskelgruppen": ["Bizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Arme"]
+                        }
+                    ],
+                    "Gym-Geräte": [
+                        {
+                            "name": "Beinpresse",
+                            "muskelgruppen": ["Beine", "Gesäß"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Unterkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Beinstrecker",
+                            "muskelgruppen": ["Beine"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Unterkörper"]
+                        },
+                        {
+                            "name": "Beincurl",
+                            "muskelgruppen": ["Beine"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Unterkörper"]
+                        },
+                        {
+                            "name": "Brustpresse (Maschine)",
+                            "muskelgruppen": ["Brust", "Trizeps", "Schultern"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Latziehen",
+                            "muskelgruppen": ["Rücken", "Bizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Schulterpresse (Maschine)",
+                            "muskelgruppen": ["Schultern", "Trizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Rudern am Kabelzug",
+                            "muskelgruppen": ["Rücken", "Bizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Ganzkörper"]
+                        },
+                        {
+                            "name": "Trizepsdrücken am Kabel",
+                            "muskelgruppen": ["Trizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Arme"]
+                        },
+                        {
+                            "name": "Bizepscurls am Kabel",
+                            "muskelgruppen": ["Bizeps"],
+                            "schwierigkeit": "Anfänger",
+                            "zielgruppe": ["Oberkörper", "Arme"]
+                        }
+                    ]
+                };
             }
 
             async loadSessions() {
@@ -213,18 +411,212 @@
                 });
             }
 
-            async completeSetup(userData) {
-                this.userData = userData;
-                
-                const result = await this.api.createUser(userData);
-                if (result && result.id) {
-                    const planResult = await this.api.generatePlan();
-                    if (planResult && planResult.plan) {
-                        this.currentPlan = planResult.plan;
-                        this.currentView = 'overview';
-                        this.render();
-                    }
+            nextStep() {
+                this.setupStep++;
+                this.render();
+            }
+
+            previousStep() {
+                if (this.setupStep > 1) {
+                    this.setupStep--;
+                    this.render();
                 }
+            }
+
+            setUserData(key, value) {
+                this.userData[key] = value;
+            }
+
+            toggleGoal(goal) {
+                const goals = this.userData.goals || [];
+                const index = goals.indexOf(goal);
+                if (index > -1) {
+                    goals.splice(index, 1);
+                } else {
+                    goals.push(goal);
+                }
+                this.userData.goals = goals;
+                this.render();
+            }
+
+            toggleEquipment(equipment) {
+                const equipments = this.userData.equipment || [];
+                const index = equipments.indexOf(equipment);
+                if (index > -1) {
+                    equipments.splice(index, 1);
+                } else {
+                    equipments.push(equipment);
+                }
+                this.userData.equipment = equipments;
+                this.render();
+            }
+
+            toggleFocus(focus) {
+                const focuses = this.userData.focus || [];
+                const index = focuses.indexOf(focus);
+                if (index > -1) {
+                    focuses.splice(index, 1);
+                } else {
+                    focuses.push(focus);
+                }
+                this.userData.focus = focuses;
+                this.render();
+            }
+
+            async completeSetup() {
+                // Generiere Plan basierend auf userData
+                const plan = this.generateIntelligentPlan();
+                this.currentPlan = plan;
+                
+                // API Call falls verfügbar
+                try {
+                    const result = await this.api.createUser(this.userData);
+                    if (result && result.id) {
+                        // Speichere Plan auch via API
+                        await this.api.saveSession({
+                            plan: plan,
+                            userData: this.userData
+                        });
+                    }
+                } catch (error) {
+                    console.log('API nicht verfügbar, nutze lokale Speicherung');
+                }
+                
+                // Lokale Speicherung als Fallback
+                localStorage.setItem('fitness_user_data', JSON.stringify(this.userData));
+                localStorage.setItem('fitness_current_plan', JSON.stringify(plan));
+                
+                this.currentView = 'overview';
+                this.render();
+            }
+
+            generateIntelligentPlan() {
+                const { frequency, equipment, focus, duration, experience, goals } = this.userData;
+                
+                // Sammle verfügbare Übungen basierend auf Equipment
+                let availableExercises = [];
+                equipment.forEach(eq => {
+                    if (this.exerciseDatabase[eq]) {
+                        availableExercises = availableExercises.concat(this.exerciseDatabase[eq]);
+                    }
+                });
+
+                // Filtere nach Fokus und Erfahrung
+                availableExercises = availableExercises.filter(exercise => {
+                    const matchesFocus = focus.some(f => exercise.zielgruppe.includes(f));
+                    const matchesExperience = exercise.schwierigkeit === experience || 
+                        (experience === 'Fortgeschritten' && exercise.schwierigkeit === 'Anfänger') ||
+                        (experience === 'Profi' && ['Anfänger', 'Fortgeschritten'].includes(exercise.schwierigkeit));
+                    return matchesFocus && matchesExperience;
+                });
+
+                // Erstelle Wochenplan
+                const plan = {};
+                const trainingDays = parseInt(frequency);
+                
+                // Bestimme Split basierend auf Häufigkeit und Fokus
+                let split = this.determineSplit(trainingDays, focus);
+                
+                split.forEach((dayFocus, index) => {
+                    const dayName = `Tag ${index + 1}`;
+                    const dayExercises = this.selectExercisesForDay(availableExercises, dayFocus, duration);
+                    
+                    plan[dayName] = {
+                        title: this.getDayTitle(dayFocus),
+                        exercises: dayExercises.map(ex => `${ex.name}: ${this.getRepScheme(experience, goals)}`),
+                        exercise_details: dayExercises,
+                        duration: duration,
+                        focus: dayFocus.join(', '),
+                        difficulty: experience
+                    };
+                });
+
+                return plan;
+            }
+
+            determineSplit(trainingDays, focus) {
+                if (focus.includes('Ganzkörper')) {
+                    // Ganzkörper-Split
+                    return Array(trainingDays).fill(['Ganzkörper']);
+                } else if (trainingDays <= 3) {
+                    // 2-3 Tage: Oberkörper/Unterkörper oder Push/Pull/Legs
+                    if (trainingDays === 2) {
+                        return [['Oberkörper'], ['Unterkörper']];
+                    } else {
+                        return [['Oberkörper', 'Brust', 'Schultern', 'Trizeps'], ['Oberkörper', 'Rücken', 'Bizeps'], ['Unterkörper']];
+                    }
+                } else {
+                    // 4+ Tage: Detaillierter Split
+                    const splits = [
+                        ['Brust', 'Trizeps'],
+                        ['Rücken', 'Bizeps'],
+                        ['Unterkörper'],
+                        ['Schultern'],
+                        ['Arme'],
+                        ['Core']
+                    ];
+                    return splits.slice(0, trainingDays);
+                }
+            }
+
+            selectExercisesForDay(availableExercises, dayFocus, duration) {
+                // Filtere Übungen für den spezifischen Tag
+                let dayExercises = availableExercises.filter(exercise => 
+                    dayFocus.some(focus => exercise.zielgruppe.includes(focus))
+                );
+
+                // Bestimme Anzahl Übungen basierend auf Dauer
+                let exerciseCount;
+                switch (duration) {
+                    case '30min': exerciseCount = 4; break;
+                    case '45min': exerciseCount = 6; break;
+                    case '60min': exerciseCount = 8; break;
+                    case '90min': exerciseCount = 10; break;
+                    default: exerciseCount = 6;
+                }
+
+                // Shuffle und wähle aus
+                dayExercises = this.shuffleArray([...dayExercises]);
+                return dayExercises.slice(0, exerciseCount);
+            }
+
+            getDayTitle(dayFocus) {
+                if (dayFocus.includes('Ganzkörper')) return '💪 Ganzkörper Training';
+                if (dayFocus.includes('Oberkörper')) return '🏋️ Oberkörper Training';
+                if (dayFocus.includes('Unterkörper')) return '🦵 Bein Training';
+                if (dayFocus.includes('Brust')) return '💪 Brust & Trizeps';
+                if (dayFocus.includes('Rücken')) return '🔙 Rücken & Bizeps';
+                if (dayFocus.includes('Schultern')) return '🤸 Schulter Training';
+                if (dayFocus.includes('Arme')) return '💪 Arm Training';
+                if (dayFocus.includes('Core')) return '🔥 Core Training';
+                return '🏋️ Training';
+            }
+
+            getRepScheme(experience, goals) {
+                if (goals.includes('Muskelaufbau')) {
+                    switch (experience) {
+                        case 'Anfänger': return '2x8-10';
+                        case 'Fortgeschritten': return '3x8-12';
+                        case 'Profi': return '4x6-10';
+                    }
+                } else if (goals.includes('Kraft')) {
+                    switch (experience) {
+                        case 'Anfänger': return '3x5-6';
+                        case 'Fortgeschritten': return '3x3-5';
+                        case 'Profi': return '5x3-5';
+                    }
+                } else if (goals.includes('Ausdauer')) {
+                    return '3x15-20';
+                }
+                return '3x8-12'; // Default
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
             }
 
             async toggleExercise(dayIndex, exerciseIndex) {
@@ -315,82 +707,416 @@
             }
 
             renderSetup() {
+                const steps = [
+                    this.renderStep1_Welcome(),
+                    this.renderStep2_Goals(),
+                    this.renderStep3_Experience(),
+                    this.renderStep4_Equipment(),
+                    this.renderStep5_Focus(),
+                    this.renderStep6_Schedule(),
+                    this.renderStep7_Summary()
+                ];
+
                 return `
                     <div class="max-w-md mx-auto bg-white min-h-screen">
                         <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                            <h1 class="text-xl font-bold">🏋️ Custom Fitness Tracker</h1>
-                            <p class="text-blue-100">Erstelle deinen persönlichen Trainingsplan</p>
+                            <h1 class="text-xl font-bold">🧙‍♂️ Trainingsplan-Assistent</h1>
+                            <p class="text-blue-100">Schritt ${this.setupStep} von 7</p>
+                            <div class="mt-2 bg-white bg-opacity-20 rounded-full h-2">
+                                <div class="bg-white h-2 rounded-full transition-all duration-300" style="width: ${(this.setupStep / 7) * 100}%"></div>
+                            </div>
                         </div>
                         
                         <div class="p-6">
-                            <form id="setupForm" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
-                                    <input type="text" name="name" required 
-                                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Dein Name">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Alter</label>
-                                    <input type="number" name="age" min="12" max="100"
-                                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                           placeholder="Dein Alter">
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Trainingserfahrung</label>
-                                    <select name="experience" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                        <option value="beginner">🟢 Anfänger (0-6 Monate)</option>
-                                        <option value="intermediate">🟡 Fortgeschritten (6+ Monate)</option>
-                                        <option value="advanced">🔴 Profi (2+ Jahre)</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Trainingstage pro Woche</label>
-                                    <select name="schedule" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                                        <option value="3days">3 Tage/Woche (entspannt)</option>
-                                        <option value="4days">4 Tage/Woche (ausgewogen)</option>
-                                        <option value="5days">5 Tage/Woche (intensiv)</option>
-                                        <option value="6days">6 Tage/Woche (sehr intensiv)</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Verfügbare Ausrüstung (mehrere möglich)</label>
-                                    <div class="space-y-2 bg-gray-50 p-3 rounded-lg">
-                                        <label class="flex items-center">
-                                            <input type="checkbox" name="equipment" value="bodyweight" checked class="mr-2">
-                                            🤸 Körpergewicht (immer verfügbar)
-                                        </label>
-                                        <label class="flex items-center">
-                                            <input type="checkbox" name="equipment" value="dumbbells" class="mr-2">
-                                            🏋️ Kurzhanteln
-                                        </label>
-                                        <label class="flex items-center">
-                                            <input type="checkbox" name="equipment" value="barbell" class="mr-2">
-                                            🎯 Langhantel
-                                        </label>
-                                        <label class="flex items-center">
-                                            <input type="checkbox" name="equipment" value="machines" class="mr-2">
-                                            ⚙️ Fitnessgeräte/Maschinen
-                                        </label>
-                                        <label class="flex items-center">
-                                            <input type="checkbox" name="equipment" value="cardio" class="mr-2">
-                                            🏃 Cardio-Geräte
-                                        </label>
+                            ${steps[this.setupStep - 1]}
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep1_Welcome() {
+                return `
+                    <div class="text-center space-y-6">
+                        <div class="text-6xl">🏋️‍♀️</div>
+                        <h2 class="text-2xl font-bold text-gray-800">Willkommen!</h2>
+                        <p class="text-gray-600 leading-relaxed">
+                            Ich erstelle dir einen personalisierten Trainingsplan, der perfekt zu dir passt. 
+                            Dazu stelle ich dir ein paar kurze Fragen.
+                        </p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Wie heißt du?</label>
+                                <input type="text" 
+                                       value="${this.userData.name || ''}"
+                                       onchange="app.setUserData('name', this.value)"
+                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Dein Name">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Wie alt bist du? (optional)</label>
+                                <input type="number" min="12" max="100"
+                                       value="${this.userData.age || ''}"
+                                       onchange="app.setUserData('age', parseInt(this.value) || null)"
+                                       class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Dein Alter">
+                            </div>
+                        </div>
+
+                        <button onclick="app.nextStep()" 
+                                class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
+                                ${!this.userData.name ? 'disabled style="opacity: 0.5"' : ''}>
+                            Weiter →
+                        </button>
+                    </div>
+                `;
+            }
+
+            renderStep2_Goals() {
+                const goals = this.userData.goals || [];
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🎯</div>
+                            <h2 class="text-xl font-bold text-gray-800">Was ist dein Hauptziel?</h2>
+                            <p class="text-gray-600 mt-2">Du kannst mehrere Ziele auswählen</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${[
+                                { id: 'Muskelaufbau', icon: '💪', title: 'Muskelaufbau', desc: 'Muskelmasse und Definition' },
+                                { id: 'Kraft', icon: '🏋️', title: 'Kraft steigern', desc: 'Stärker werden' },
+                                { id: 'Ausdauer', icon: '🏃', title: 'Ausdauer', desc: 'Kondition verbessern' },
+                                { id: 'Gewichtsverlust', icon: '⚖️', title: 'Gewicht verlieren', desc: 'Fett reduzieren' },
+                                { id: 'Gesundheit', icon: '❤️', title: 'Gesundheit', desc: 'Fit und gesund bleiben' },
+                                { id: 'Sport', icon: '⚽', title: 'Sport-Performance', desc: 'Leistung in anderen Sportarten' }
+                            ].map(goal => `
+                                <label class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${goals.includes(goal.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                                    <input type="checkbox" 
+                                           ${goals.includes(goal.id) ? 'checked' : ''}
+                                           onchange="app.toggleGoal('${goal.id}')"
+                                           class="sr-only">
+                                    <div class="text-2xl mr-4">${goal.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-800">${goal.title}</div>
+                                        <div class="text-sm text-gray-600">${goal.desc}</div>
                                     </div>
+                                    <div class="ml-4">
+                                        ${goals.includes(goal.id) ? 
+                                            '<svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' :
+                                            '<div class="w-5 h-5 border-2 border-gray-300 rounded"></div>'
+                                        }
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" 
+                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                                ← Zurück
+                            </button>
+                            <button onclick="app.nextStep()" 
+                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
+                                    ${goals.length === 0 ? 'disabled style="opacity: 0.5"' : ''}>
+                                Weiter →
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep3_Experience() {
+                const experience = this.userData.experience || '';
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">📊</div>
+                            <h2 class="text-xl font-bold text-gray-800">Wie viel Trainingserfahrung hast du?</h2>
+                            <p class="text-gray-600 mt-2">Sei ehrlich - das hilft mir, den richtigen Plan zu erstellen</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${[
+                                { id: 'Anfänger', icon: '🌱', title: 'Anfänger', desc: 'Wenig bis keine Erfahrung (0-6 Monate)', color: 'green' },
+                                { id: 'Fortgeschritten', icon: '💪', title: 'Fortgeschritten', desc: 'Regelmäßiges Training (6+ Monate)', color: 'yellow' },
+                                { id: 'Profi', icon: '🏆', title: 'Erfahren', desc: 'Sehr erfahren (2+ Jahre)', color: 'red' }
+                            ].map(level => `
+                                <label class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${experience === level.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                                    <input type="radio" name="experience" value="${level.id}"
+                                           ${experience === level.id ? 'checked' : ''}
+                                           onchange="app.setUserData('experience', this.value)"
+                                           class="sr-only">
+                                    <div class="text-2xl mr-4">${level.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-800">${level.title}</div>
+                                        <div class="text-sm text-gray-600">${level.desc}</div>
+                                    </div>
+                                    <div class="ml-4">
+                                        ${experience === level.id ? 
+                                            '<div class="w-4 h-4 bg-blue-500 rounded-full"></div>' :
+                                            '<div class="w-4 h-4 border-2 border-gray-300 rounded-full"></div>'
+                                        }
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" 
+                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                                ← Zurück
+                            </button>
+                            <button onclick="app.nextStep()" 
+                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
+                                    ${!experience ? 'disabled style="opacity: 0.5"' : ''}>
+                                Weiter →
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep4_Equipment() {
+                const equipment = this.userData.equipment || [];
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🏋️‍♂️</div>
+                            <h2 class="text-xl font-bold text-gray-800">Welche Ausrüstung hast du?</h2>
+                            <p class="text-gray-600 mt-2">Wähle alles aus, was dir zur Verfügung steht</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${[
+                                { id: 'Eigengewicht', icon: '🤸', title: 'Eigengewicht', desc: 'Trainieren ohne Geräte' },
+                                { id: 'Kurzhanteln', icon: '🏋️', title: 'Kurzhanteln', desc: 'Verstellbare oder feste Kurzhanteln' },
+                                { id: 'Langhanteln', icon: '🎯', title: 'Langhantel', desc: 'Langhantel mit Gewichten' },
+                                { id: 'Gym-Geräte', icon: '⚙️', title: 'Fitnessstudio', desc: 'Zugang zu Geräten und Maschinen' }
+                            ].map(eq => `
+                                <label class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${equipment.includes(eq.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                                    <input type="checkbox" 
+                                           ${equipment.includes(eq.id) ? 'checked' : ''}
+                                           onchange="app.toggleEquipment('${eq.id}')"
+                                           class="sr-only">
+                                    <div class="text-2xl mr-4">${eq.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-800">${eq.title}</div>
+                                        <div class="text-sm text-gray-600">${eq.desc}</div>
+                                    </div>
+                                    <div class="ml-4">
+                                        ${equipment.includes(eq.id) ? 
+                                            '<svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' :
+                                            '<div class="w-5 h-5 border-2 border-gray-300 rounded"></div>'
+                                        }
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" 
+                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                                ← Zurück
+                            </button>
+                            <button onclick="app.nextStep()" 
+                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
+                                    ${equipment.length === 0 ? 'disabled style="opacity: 0.5"' : ''}>
+                                Weiter →
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep5_Focus() {
+                const focus = this.userData.focus || [];
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🎯</div>
+                            <h2 class="text-xl font-bold text-gray-800">Welche Bereiche willst du trainieren?</h2>
+                            <p class="text-gray-600 mt-2">Wähle die Körperbereiche, die dir wichtig sind</p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            ${[
+                                { id: 'Ganzkörper', icon: '🤸', title: 'Ganzkörper', desc: 'Alles in jeder Einheit trainieren' },
+                                { id: 'Oberkörper', icon: '💪', title: 'Oberkörper', desc: 'Brust, Rücken, Schultern, Arme' },
+                                { id: 'Unterkörper', icon: '🦵', title: 'Unterkörper', desc: 'Beine, Po, Waden' },
+                                { id: 'Core', icon: '🔥', title: 'Core/Bauch', desc: 'Bauch, Rumpf, Stabilität' },
+                                { id: 'Arme', icon: '💪', title: 'Arme', desc: 'Bizeps, Trizeps, Unterarme' },
+                                { id: 'Cardio', icon: '🏃', title: 'Cardio', desc: 'Ausdauer und Kondition' }
+                            ].map(f => `
+                                <label class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${focus.includes(f.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                                    <input type="checkbox" 
+                                           ${focus.includes(f.id) ? 'checked' : ''}
+                                           onchange="app.toggleFocus('${f.id}')"
+                                           class="sr-only">
+                                    <div class="text-2xl mr-4">${f.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-gray-800">${f.title}</div>
+                                        <div class="text-sm text-gray-600">${f.desc}</div>
+                                    </div>
+                                    <div class="ml-4">
+                                        ${focus.includes(f.id) ? 
+                                            '<svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' :
+                                            '<div class="w-5 h-5 border-2 border-gray-300 rounded"></div>'
+                                        }
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" 
+                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                                ← Zurück
+                            </button>
+                            <button onclick="app.nextStep()" 
+                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
+                                    ${focus.length === 0 ? 'disabled style="opacity: 0.5"' : ''}>
+                                Weiter →
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep6_Schedule() {
+                const frequency = this.userData.frequency || '';
+                const duration = this.userData.duration || '';
+                
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">📅</div>
+                            <h2 class="text-xl font-bold text-gray-800">Wie oft und wie lange?</h2>
+                            <p class="text-gray-600 mt-2">Lass uns deinen Zeitplan festlegen</p>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-3">Wie oft pro Woche willst du trainieren?</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    ${['2', '3', '4', '5', '6', '7'].map(days => `
+                                        <label class="flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${frequency === days ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                                            <input type="radio" name="frequency" value="${days}"
+                                                   ${frequency === days ? 'checked' : ''}
+                                                   onchange="app.setUserData('frequency', this.value)"
+                                                   class="sr-only">
+                                            <div class="text-center">
+                                                <div class="text-xl font-bold text-gray-800">${days}x</div>
+                                                <div class="text-xs text-gray-600">${days === '2' ? 'Entspannt' : days === '3' ? 'Optimal' : days === '4' ? 'Gut' : days === '5' ? 'Intensiv' : days === '6' ? 'Sehr intensiv' : 'Täglich'}</div>
+                                            </div>
+                                        </label>
+                                    `).join('')}
                                 </div>
-                                
-                                <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors">
-                                    🎉 Persönlichen Plan erstellen
-                                </button>
-                                
-                                <div class="text-xs text-gray-500 text-center mt-4">
-                                    💾 Alle Daten werden lokal gespeichert und optional synchronisiert
+                            </div>
+
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-3">Wie lange pro Trainingseinheit?</h3>
+                                <div class="space-y-2">
+                                    ${[
+                                        { id: '30min', title: '30 Minuten', desc: 'Kurz und knackig' },
+                                        { id: '45min', title: '45 Minuten', desc: 'Standard-Training' },
+                                        { id: '60min', title: '60 Minuten', desc: 'Ausführliches Training' },
+                                        { id: '90min', title: '90+ Minuten', desc: 'Intensive Sessions' }
+                                    ].map(dur => `
+                                        <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${duration === dur.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                                            <input type="radio" name="duration" value="${dur.id}"
+                                                   ${duration === dur.id ? 'checked' : ''}
+                                                   onchange="app.setUserData('duration', this.value)"
+                                                   class="sr-only">
+                                            <div class="flex-1">
+                                                <div class="font-semibold text-gray-800">${dur.title}</div>
+                                                <div class="text-sm text-gray-600">${dur.desc}</div>
+                                            </div>
+                                            <div class="ml-4">
+                                                ${duration === dur.id ? 
+                                                    '<div class="w-4 h-4 bg-blue-500 rounded-full"></div>' :
+                                                    '<div class="w-4 h-4 border-2 border-gray-300 rounded-full"></div>'
+                                                }
+                                            </div>
+                                        </label>
+                                    `).join('')}
                                 </div>
-                            </form>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" 
+                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                                ← Zurück
+                            </button>
+                            <button onclick="app.nextStep()" 
+                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
+                                    ${!frequency || !duration ? 'disabled style="opacity: 0.5"' : ''}>
+                                Weiter →
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderStep7_Summary() {
+                const { name, goals, experience, equipment, focus, frequency, duration } = this.userData;
+                
+                return `
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">📋</div>
+                            <h2 class="text-xl font-bold text-gray-800">Perfekt, ${name}!</h2>
+                            <p class="text-gray-600 mt-2">Hier ist deine Zusammenfassung. Bereit für deinen Plan?</p>
+                        </div>
+                        
+                        <div class="bg-blue-50 rounded-lg p-4 space-y-3">
+                            <div class="flex justify-between items-start">
+                                <span class="font-semibold text-gray-700">Ziele:</span>
+                                <span class="text-gray-600 text-right">${(goals || []).join(', ') || 'Nicht angegeben'}</span>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <span class="font-semibold text-gray-700">Erfahrung:</span>
+                                <span class="text-gray-600">${experience || 'Nicht angegeben'}</span>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <span class="font-semibold text-gray-700">Ausrüstung:</span>
+                                <span class="text-gray-600 text-right">${(equipment || []).join(', ') || 'Nicht angegeben'}</span>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <span class="font-semibold text-gray-700">Fokus:</span>
+                                <span class="text-gray-600 text-right">${(focus || []).join(', ') || 'Nicht angegeben'}</span>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <span class="font-semibold text-gray-700">Häufigkeit:</span>
+                                <span class="text-gray-600">${frequency ? frequency + 'x pro Woche' : 'Nicht angegeben'}</span>
+                            </div>
+                            <div class="flex justify-between items-start">
+                                <span class="font-semibold text-gray-700">Dauer:</span>
+                                <span class="text-gray-600">${duration ? duration.replace('min', ' Minuten') : 'Nicht angegeben'}</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <div class="text-green-600 mr-3">✅</div>
+                                <div>
+                                    <div class="font-semibold text-green-800">Dein Plan wird erstellt!</div>
+                                    <div class="text-sm text-green-600">Basierend auf deinen Angaben erstelle ich einen individuellen ${frequency}x-Wochen-Plan mit ${(equipment || []).length} Ausrüstungstypen.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3">
+                            <button onclick="app.previousStep()" 
+                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                                ← Zurück
+                            </button>
+                            <button onclick="app.completeSetup()" 
+                                    class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-colors">
+                                🎉 Plan erstellen!
+                            </button>
                         </div>
                     </div>
                 `;
@@ -480,8 +1206,8 @@
                                     <h3 class="font-semibold text-gray-800 mb-2">Dein Profil</h3>
                                     <div class="text-sm text-gray-600 space-y-1">
                                         <p>📊 Level: ${this.userData.experience}</p>
-                                        <p>📅 Plan: ${this.userData.schedule}</p>
-                                        <p>🏋️ Equipment: ${this.userData.equipment.length} Typen</p>
+                                        <p>📅 Plan: ${this.userData.frequency}x pro Woche</p>
+                                        <p>🏋️ Equipment: ${(this.userData.equipment || []).length} Typen</p>
                                     </div>
                                     <button onclick="localStorage.clear(); location.reload();" class="mt-3 text-xs text-blue-600 hover:text-blue-800">
                                         🔄 Neuen Plan erstellen
@@ -567,28 +1293,6 @@
         // Initialize app
         document.addEventListener('DOMContentLoaded', () => {
             window.app = new CustomFitnessApp();
-            
-            // Handle form submission
-            document.addEventListener('submit', async (e) => {
-                if (e.target.id === 'setupForm') {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(e.target);
-                    const equipment = Array.from(formData.getAll('equipment'));
-                    
-                    const userData = {
-                        name: formData.get('name'),
-                        age: parseInt(formData.get('age')) || null,
-                        experience: formData.get('experience'),
-                        schedule: formData.get('schedule'),
-                        equipment: equipment,
-                        goals: [],
-                        duration: '45min'
-                    };
-                    
-                    await app.completeSetup(userData);
-                }
-            });
         });
     </script>
 </body>
