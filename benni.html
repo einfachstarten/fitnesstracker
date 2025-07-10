@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Benni's Fitness Tracker">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#10b981">
+    <title>Benni's Arm & Core Tracker - 7 Tage Oberkörper Training</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            overscroll-behavior: contain;
+        }
+        
+        .emoji-bg {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    
+    <script>
+        // Fitness plan for Benni (13 years old) - 7 days UPPER BODY, ARMS, CORE + CARDIO (Stepper/Ergometer only)
+        const fitnessplan = {
+            'Tag 1': {
+                title: '💪 Oberkörper Basis + Stepper',
+                exercises: [
+                    'Warm-up: 5 Min Ergometer lockeres Radeln',
+                    'Brustpresse (Maschine): 2x8-10 (sehr leichtes Gewicht)',
+                    'Latzug (Maschine): 2x8-10 (leicht)',
+                    'Bauchtrainer-Maschine: 2x8-10',
+                    'Stepper: 8 Min (langsames, gleichmäßiges Tempo)',
+                    'Cool-down: 5 Min lockeres Ergometer'
+                ],
+                duration: '30 Min',
+                focus: 'Brust, Rücken, Bauch + Cardio',
+                difficulty: 'Leicht 🟢'
+            },
+            'Tag 2': {
+                title: '🔥 Arme Fokus + Ergometer',
+                exercises: [
+                    'Warm-up: 5 Min Stepper locker',
+                    'Bizeps-Maschine: 2x8-10 (leichtes Gewicht)',
+                    'Trizeps-Maschine: 2x8-10 (leicht)',
+                    'Bauchtrainer seitlich: 2x8 pro Seite',
+                    'Ergometer: 10 Min (verschiedene Programme)',
+                    'Cool-down: 5 Min Stepper entspannt'
+                ],
+                duration: '35 Min',
+                focus: 'Bizeps, Trizeps, seitliche Bauchmuskeln',
+                difficulty: 'Leicht 🟢'
+            },
+            'Tag 3': {
+                title: '🏃 Pure Cardio + Core',
+                exercises: [
+                    'Warm-up: 3 Min Ergometer',
+                    'Stepper: 8 Min (gleichmäßiges Tempo)',
+                    'Ergometer: 8 Min (lockeres Tempo)',
+                    'Bauchtrainer: 2x10',
+                    'Stepper: 5 Min (etwas schneller)',
+                    'Ergometer: 5 Min entspannt',
+                    'Core-Stretching: 5 Min'
+                ],
+                duration: '40 Min',
+                focus: 'Ausdauer + Core-Stärke',
+                difficulty: 'Leicht 🟢'
+            },
+            'Tag 4': {
+                title: '💪 Oberkörper Power + Stepper',
+                exercises: [
+                    'Warm-up: 5 Min Ergometer',
+                    'Schulterpress (Maschine): 2x8-10 (leicht)',
+                    'Ruder-Maschine: 2x8-10 (leicht)',
+                    'Brustpresse: 2x8 (etwas mehr Gewicht)',
+                    'Bauchtrainer: 2x10',
+                    'Stepper: 10 Min (eigenes Tempo)',
+                    'Cool-down: Oberkörper-Stretching'
+                ],
+                duration: '35 Min',
+                focus: 'Schultern, Rücken, Brust, Core',
+                difficulty: 'Leicht-Mittel 🟡'
+            },
+            'Tag 5': {
+                title: '🎯 Arm-Challenge + Cardio-Mix',
+                exercises: [
+                    'Warm-up: 5 Min Stepper',
+                    'Bizeps-Maschine: 2x10 (leicht)',
+                    'Ergometer: 5 Min',
+                    'Trizeps-Maschine: 2x10 (leicht)',
+                    'Stepper: 5 Min',
+                    'Bauchtrainer komplett: 2x8',
+                    'Ergometer entspannt: 8 Min',
+                    'Cool-down: Arm-Stretching'
+                ],
+                duration: '40 Min',
+                focus: 'Arm-Kraft + Ausdauer-Mix',
+                difficulty: 'Leicht-Mittel 🟡'
+            },
+            'Tag 6': {
+                title: '🏋️ Oberkörper Komplett + Stepper',
+                exercises: [
+                    'Warm-up: 5 Min Ergometer',
+                    'Brustpresse: 2x8',
+                    'Latzug: 2x8',
+                    'Schulterpress: 2x8',
+                    'Bizeps-Maschine: 2x8',
+                    'Trizeps-Maschine: 2x8',
+                    'Bauchtrainer: 2x10',
+                    'Stepper: 8 Min (moderate Intensität)',
+                    'Cool-down: Ganzkörper-Stretching'
+                ],
+                duration: '45 Min',
+                focus: 'Kompletter Oberkörper + Core',
+                difficulty: 'Mittel 🟡'
+            },
+            'Tag 7': {
+                title: '😌 Lieblings-Geräte + Entspannung',
+                exercises: [
+                    'Warm-up: 5 Min Ergometer entspannt',
+                    'Lieblings-Armgerät: 2x8 (sehr leicht)',
+                    'Lieblings-Oberkörpergerät: 2x8',
+                    'Bauchtrainer entspannt: 2x8',
+                    'Stepper oder Ergometer: 15 Min (eigene Wahl)',
+                    'Sauna (falls vorhanden): 5-8 Min',
+                    'Reflexion: Was war am coolsten?'
+                ],
+                duration: '45 Min',
+                focus: 'Entspannt ausklingen, Favoriten',
+                difficulty: 'Entspannt 🧘'
+            }
+        };
+
+        // Exercise explanations for teenagers
+        const exerciseExplanations = {
+            'Warm-up: 5 Min lockeres Gehen + Armkreisen': 'Immer mit Aufwärmen starten! Gehe 5 Minuten locker und kreise dabei deine Arme. Das bereitet deinen Körper aufs Training vor.',
+            'Liegestütze (Knie): 2x5-8 Wiederholungen': 'Starte auf den Knien! Hände unter den Schultern, Körper gerade. Langsam runter bis fast zum Boden, dann wieder hoch. Qualität vor Quantität!',
+            'Assisted Pull-ups oder Latzug: 2x5-8': 'Lass dir helfen oder nutze den Latzug. Fokus auf die Rückenmuskulatur. Langsam und kontrolliert bewegen.',
+            'Leichte Schulterdrücken: 2x8-10': 'Nimm leichte Gewichte (1-3kg)! Von Schulterhöhe gerade nach oben drücken. Rücken gerade halten.',
+            'Planks: 2x20-30 Sekunden': 'Unterarmstütz! Körper bildet eine gerade Linie. Bauch anspannen, nicht durchhängen. Lieber kürzer aber richtig!',
+            'Cool-down: 5 Min Stretching': 'Dehnung ist wichtig! Alle Muskelgruppen die du trainiert hast für 20-30 Sekunden dehnen.',
+            
+            'Warm-up: 5 Min Marschieren + Beinpendel': 'Marschiere auf der Stelle und schwinge dabei die Beine locker vor und zurück. Bereitet die Beine aufs Training vor.',
+            'Körpergewicht Squats: 2x8-12': 'Füße schulterbreit, als würdest du dich auf einen Stuhl setzen. Knie in Richtung der Zehen, nicht nach innen fallen lassen!',
+            'Statische Lunges: 2x6 pro Bein': 'Großer Schritt nach vorne, beide Knie 90°. Bleib in der Position und gehe nur hoch und runter. Sehr gut für Balance!',
+            'Glute Bridges: 2x10-12': 'Auf dem Rücken liegen, Knie angewinkelt. Po anspannen und Hüfte nach oben drücken. Super für den Po!',
+            'Wadenheben: 2x12-15': 'Auf die Zehenspitzen stellen, Fersen hoch, kurz halten, langsam senken. Kann man überall machen!',
+            'Dead Bug: 2x8 pro Seite': 'Auf dem Rücken, Arme und Beine 90°. Abwechselnd gegenüberliegendes Arm/Bein strecken. Toll für den Core!',
+            
+            'Warm-up: 3 Min lockeres Gehen': 'Entspannt starten! Einfach locker gehen und den Körper aufwecken.',
+            'Laufband: 10-15 Min (kann gehen/joggen)': 'Du bestimmst das Tempo! Gehen ist völlig okay. Hauptsache du bewegst dich und hast Spaß.',
+            'Jumping Jacks: 3x15 Sekunden': 'Hampelmann! Beine auseinander springen, Arme über Kopf. Macht wach und trainiert Koordination.',
+            'High Knees: 3x10 Sekunden': 'Knie hoch zum Bauch! Wie Laufen auf der Stelle, aber Knie richtig hoch ziehen.',
+            'Yoga Flow: 10 Min (YouTube Video)': 'Such dir ein Anfänger-Yoga-Video aus. Gut für Flexibilität und Entspannung.',
+            'Atemübungen: 5 Min Entspannung': '4 Sekunden einatmen, 4 Sekunden halten, 4 Sekunden ausatmen. Hilft beim Entspannen.',
+            
+            'Warm-up: 5 Min Dynamic Stretching': 'Bewegliches Dehnen! Arme kreisen, Beine schwingen, Körper mobilisieren.',
+            'Wall Push-ups: 2x8-10': 'Stehe vor einer Wand, Hände an die Wand, körperbreit weg. Wie Liegestütze, aber leichter!',
+            'Assisted Squats: 2x10-12': 'Halte dich an etwas fest wenn nötig. Sicherheit geht vor! Form ist wichtiger als Schwierigkeit.',
+            'Modified Planks: 2x15-25 Sek': 'Kannst auch auf den Knien machen! Hauptsache der Core wird aktiviert.',
+            'Standing Marches: 2x10 pro Bein': 'Knie abwechselnd zum Bauch ziehen. Trainiert Balance und Core.',
+            'Arm Circles: 2x10 jede Richtung': 'Arme seitlich ausstrecken und Kreise machen. Gut für die Schultern.',
+            
+            'Warm-up: 5 Min Bewegung nach Wahl': 'Such dir aus was Spaß macht! Tanzen, Armkreisen, auf der Stelle laufen - Hauptsache Bewegung.',
+            'Basketball/Fußball: 15-20 Min': 'Sport ist das beste Training! Dribbeln, Pässe, Körbe werfen - hab Spaß!',
+            'Koordinationsleiter (oder imaginär): 10 Min': 'Stelle dir eine Leiter am Boden vor. Verschiedene Schrittmuster - trainiert Schnelligkeit und Koordination.',
+            'Reaktionsspiele: 5-10 Min': 'Schnelle Richtungswechsel, auf Kommandos reagieren. Macht Spaß und trainiert Reflexe.',
+            'Dehnen: 10 Min entspannt': 'Nach dem Sport dehnen ist wichtig. Alle Muskeln entspannen und lockern.',
+            'Hydration Break: Viel trinken! 💧': 'Wasser ist dein bester Freund beim Sport! Immer genug trinken.',
+            
+            'Warm-up: 5 Min leichte Bewegung': 'Locker anfangen, Körper aufwärmen. Du kennst das schon!',
+            'Balance Übungen: 2x30 Sek pro Bein': 'Auf einem Bein stehen, Augen zu oder Bewegungen mit den Armen. Trainiert das Gleichgewicht.',
+            'Leichte Gewichte Curls: 2x8-10': 'Sehr leichte Gewichte (1-2kg)! Bizeps Curls langsam und kontrolliert. Form vor Gewicht!',
+            'Resistance Band Übungen: 2x10-12': 'Gummiband ist super! Verschiedene Zugübungen, trainiert Kraft und ist gelenkschonend.',
+            'Bear Crawl: 2x5 Schritte': 'Wie ein Bär auf Händen und Füßen krabbeln. Trainiert den ganzen Körper und macht Spaß!',
+            'Superman: 2x8-10': 'Bauchlage, Arme und Beine gleichzeitig heben. Wie Superman beim Fliegen! Gut für den Rücken.',
+            
+            'Langer Spaziergang: 20-30 Min': 'Einfach rausgehen und die Natur genießen. Entspannt und trotzdem Bewegung.',
+            'Schwimmen (falls möglich): 15-20 Min': 'Schwimmen ist perfekt für den ganzen Körper! Auch einfach im Wasser bewegen ist toll.',
+            'Stretching & Mobility: 15 Min': 'Ausführliches Dehnen aller Muskelgruppen. Entspannende Musik dazu ist perfekt.',
+            'Entspannungsübungen: 10 Min': 'Atemübungen, Meditation oder einfach entspannt liegen. Mental relaxen ist genauso wichtig!',
+            'Reflexion: Was hat Spaß gemacht?': 'Denk drüber nach: Was war cool? Was war schwer? Was willst du nächste Woche machen?',
+            'Planung: Nächste Woche besprechen': 'Rede mit Papa/Mama über deine Fortschritte und plane die nächste Woche!'
+        };
+
+        // App state
+        let currentView = 'overview';
+        let selectedDay = null;
+        let completedExercises = JSON.parse(localStorage.getItem('benni_completedExercises') || '{}');
+        let completedDays = JSON.parse(localStorage.getItem('benni_completedDays') || '{}');
+        let expandedExercises = {}; // Not needed anymore but keeping for potential future use
+
+        // Generate 7 training days (flexible timing, no specific weekdays)
+        function generateDates() {
+            const dates = [];
+            
+            for (let i = 0; i < 7; i++) {
+                const dayName = `Tag ${i + 1}`;
+                
+                dates.push({
+                    dayName: dayName,
+                    dayIndex: i,
+                    workout: fitnessplan[dayName]
+                });
+            }
+            return dates;
+        }
+
+        const dates = generateDates();
+
+        // Helper functions
+        function saveData() {
+            localStorage.setItem('benni_completedExercises', JSON.stringify(completedExercises));
+            localStorage.setItem('benni_completedDays', JSON.stringify(completedDays));
+        }
+
+        function toggleExercise(dayIndex, exerciseIndex) {
+            const key = `${dayIndex}-${exerciseIndex}`;
+            completedExercises[key] = !completedExercises[key];
+            saveData();
+            render();
+        }
+
+        function toggleDay(dayIndex) {
+            completedDays[dayIndex] = !completedDays[dayIndex];
+            saveData();
+            render();
+        }
+
+        function getCompletionPercentage(dayIndex, workout) {
+            if (!workout || !workout.exercises) return 0;
+            const totalExercises = workout.exercises.length;
+            let completed = 0;
+            
+            for (let i = 0; i < totalExercises; i++) {
+                const key = `${dayIndex}-${i}`;
+                if (completedExercises[key]) completed++;
+            }
+            
+            return Math.round((completed / totalExercises) * 100);
+        }
+
+        function getTotalProgress() {
+            const totalDays = dates.length;
+            const completedDaysCount = Object.values(completedDays).filter(Boolean).length;
+            return Math.round((completedDaysCount / totalDays) * 100);
+        }
+
+        function getCurrentDate() {
+            // No specific current day since training is flexible
+            return null;
+        }
+
+        // Render functions
+        function renderDayView() {
+            const dayData = dates[selectedDay];
+            const workout = dayData.workout;
+            const completionPercentage = getCompletionPercentage(selectedDay, workout);
+
+            return `
+                <div class="max-w-md mx-auto bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
+                    <div class="bg-white shadow-lg">
+                        <div class="p-4 emoji-bg text-white">
+                            <button onclick="currentView='overview'; render();" class="text-green-100 hover:text-white mb-2">
+                                ← Zurück zur Übersicht
+                            </button>
+                            <h1 class="text-xl font-bold">${dayData.dayName}</h1>
+                            <p class="text-green-100">${dayData.workout.title}</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-lg font-semibold text-gray-800">${workout.title}</h2>
+                                <span class="text-sm text-gray-600">${workout.duration}</span>
+                            </div>
+                            
+                            <div class="mb-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                                <p class="text-xs text-green-700 font-medium mb-1">🎯 Fokus: ${workout.focus}</p>
+                                <p class="text-xs text-green-600">📊 Schwierigkeit: ${workout.difficulty}</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Fortschritt</span>
+                                    <span class="text-sm font-semibold text-green-600">${completionPercentage}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full transition-all duration-300" style="width: ${completionPercentage}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                ${workout.exercises.map((exercise, index) => {
+                                    const isCompleted = completedExercises[`${selectedDay}-${index}`];
+                                    
+                                    // Direct mapping for exercise explanations
+                                    let explanation = '';
+                                    if (exercise.includes('Warm-up: 5 Min Ergometer')) {
+                                        explanation = 'Das Ergometer ist ein Fahrrad. Setze dich drauf, stelle die Füße in die Pedale und radle ganz locker 5 Minuten. Widerstand auf niedrigster Stufe. Deine Muskeln werden warm.';
+                                    } else if (exercise.includes('Brustpresse (Maschine)')) {
+                                        explanation = 'Die Brustpresse ist ein Gerät mit einem Sitz und zwei Griffen vor der Brust. Setze dich hin, Rücken fest an die Rückenlehne. Greife die Griffe auf Brusthöhe und drücke sie gerade nach vorne weg von dir. Langsam zurück. Trainiert deine Brustmuskeln.';
+                                    } else if (exercise.includes('Latzug (Maschine)')) {
+                                        explanation = 'Das ist ein Gerät mit einer Stange oben und einem Sitz. Setze dich hin, Knie unter die Polster klemmen. Greife die breite Stange oben und ziehe sie runter zur oberen Brust. Nicht hinter den Kopf! Trainiert deinen Rücken.';
+                                    } else if (exercise.includes('Bauchtrainer-Maschine') || exercise.includes('Bauchtrainer:') || exercise.includes('Bauchtrainer ')) {
+                                        explanation = 'Das ist ein Sitz mit Polstern für die Arme/Brust. Setze dich rein, Rücken an die Lehne. Die Bewegung kommt nur aus dem Bauch - beuge dich nach vorne. Nicht mit den Armen drücken! Trainiert deine Bauchmuskeln.';
+                                    } else if (exercise.includes('Stepper:') && exercise.includes('8 Min')) {
+                                        explanation = 'Der Stepper ist wie eine Treppe. Steige abwechselnd links-rechts auf die Pedale. Wie beim Treppensteigen. Halte dich leicht an den Griffen fest, aber nicht festklammern. Gleichmäßiges Tempo, nicht hetzen.';
+                                    } else if (exercise.includes('Cool-down') && exercise.includes('Ergometer')) {
+                                        explanation = 'Nochmal auf das Fahrrad, aber jetzt ganz entspannt ausradeln. Niedriger Widerstand, langsam radeln. Dein Körper kommt zur Ruhe.';
+                                    } else if (exercise.includes('Warm-up: 5 Min Stepper')) {
+                                        explanation = 'Gehe zum Stepper und steige 5 Minuten ganz locker. Nicht schnell, nur aufwärmen. Halte dich leicht fest und finde deinen Rhythmus.';
+                                    } else if (exercise.includes('Bizeps-Maschine')) {
+                                        explanation = 'Das ist ein Sitz mit einem schrägen Polster für die Arme. Setze dich hin, lege die Oberarme auf das Polster. Greife die Griffe und beuge nur die Unterarme zu dir ran. Der Oberarm bleibt am Polster! Trainiert den Bizeps (vorne am Oberarm).';
+                                    } else if (exercise.includes('Trizeps-Maschine')) {
+                                        explanation = 'Das ist ein Gerät wo du die Arme streckst. Setze dich hin, greife die Griffe oder Stange. Drücke die Arme nach unten/weg von dir durch Strecken der Ellbogen. Trainiert den Trizeps (hinten am Oberarm).';
+                                    } else if (exercise.includes('Bauchtrainer seitlich')) {
+                                        explanation = 'Wie der normale Bauchtrainer, aber drehe deinen Oberkörper abwechselnd nach links und rechts. Trainiert die seitlichen Bauchmuskeln. Langsam machen, jede Seite einzeln zählen.';
+                                    } else if (exercise.includes('Ergometer:') && exercise.includes('verschiedene Programme')) {
+                                        explanation = 'Auf dem Display vom Fahrrad kannst du verschiedene Programme wählen. Probiere "Hügel" oder "Intervall" aus. Das Gerät ändert automatisch den Widerstand. Ist abwechslungsreicher als konstantes Radeln.';
+                                    } else if (exercise.includes('Cool-down') && exercise.includes('Stepper')) {
+                                        explanation = 'Nochmal auf den Stepper, aber jetzt ganz entspannt runterkommen. Sehr langsames Tempo, nicht anstrengen. Körper beruhigen.';
+                                    } else if (exercise.includes('Warm-up: 3 Min Ergometer')) {
+                                        explanation = 'Kurzes Aufwärmen auf dem Fahrrad. 3 Minuten lockeres Radeln, niedriger Widerstand.';
+                                    } else if (exercise.includes('Stepper:') && exercise.includes('gleichmäßiges Tempo')) {
+                                        explanation = 'Auf den Stepper, gleichmäßig steppen. Nicht zu langsam, aber auch nicht hetzen. Finde ein Tempo wo du dich noch unterhalten könntest.';
+                                    } else if (exercise.includes('Ergometer:') && exercise.includes('lockeres Tempo')) {
+                                        explanation = 'Fahrrad fahren, entspannt. Mittlerer Widerstand, gleichmäßig radeln. Probiere auch mal aufrecht zu sitzen statt nach vorne gebeugt.';
+                                    } else if (exercise.includes('Stepper:') && exercise.includes('etwas schneller')) {
+                                        explanation = 'Jetzt darfst du etwas schneller steppen als vorher. Aber immer noch kontrolliert und gleichmäßig. Spürst du wie dein Herz schneller schlägt?';
+                                    } else if (exercise.includes('Ergometer:') && exercise.includes('entspannt')) {
+                                        explanation = 'Entspanntes Ausradeln nach dem Cardio. Ganz locker, niedrigster Widerstand.';
+                                    } else if (exercise.includes('Core-Stretching')) {
+                                        explanation = 'Stretching bedeutet Dehnen. Dehne deinen Bauch und Rücken. Stehe auf, Arme über den Kopf strecken, zur Seite beugen. 20-30 Sekunden halten.';
+                                    } else if (exercise.includes('Schulterpress (Maschine)')) {
+                                        explanation = 'Das ist ein Sitz mit Griffen auf Schulterhöhe. Setze dich hin, Rücken gerade. Greife die Griffe und drücke sie gerade nach oben über den Kopf. Langsam wieder runter auf Schulterhöhe. Trainiert deine Schultern.';
+                                    } else if (exercise.includes('Ruder-Maschine')) {
+                                        explanation = 'Das ist ein Sitz mit Griffen vor dir, die du zu dir ranziehst. Setze dich hin, greife die Griffe und ziehe sie zu deiner unteren Brust/oberen Bauch. Schulterblätter zusammenkneifen! Trainiert den mittleren Rücken.';
+                                    } else if (exercise.includes('Stepper:') && exercise.includes('eigenes Tempo')) {
+                                        explanation = 'Steppen in deinem eigenen Tempo. Du weißt jetzt wie es geht - finde dein Wohlfühl-Tempo!';
+                                    } else if (exercise.includes('Cool-down') && exercise.includes('Stretching')) {
+                                        explanation = 'Arme, Brust, Schultern und Rücken dehnen. Arme nach hinten strecken für die Brust. Einen Arm über den Kopf zur anderen Seite für die Schulter.';
+                                    } else if (exercise.includes('Ergometer: 5 Min')) {
+                                        explanation = 'Kurze Fahrrad-Pause zwischen den Arm-Übungen. Entspannt radeln.';
+                                    } else if (exercise.includes('Stepper: 5 Min')) {
+                                        explanation = 'Stepper-Pause! Gleichmäßig und entspannt.';
+                                    } else if (exercise.includes('Bauchtrainer komplett')) {
+                                        explanation = 'Vollständige Bauchübung. Du beherrschst die Technik jetzt.';
+                                    } else if (exercise.includes('Cool-down: Arm-Stretching')) {
+                                        explanation = 'Arme dehnen: Einen Arm über den Kopf, mit der anderen Hand am Ellbogen ziehen. Für beide Arme machen.';
+                                    } else if (exercise.includes('Stepper:') && exercise.includes('moderate Intensität')) {
+                                        explanation = 'Etwas intensiveres Stepper-Training. Du packst das!';
+                                    } else if (exercise.includes('Cool-down: Ganzkörper-Stretching')) {
+                                        explanation = 'Komplettes Dehnen. Du hast heute alle wichtigen Oberkörper-Muskeln trainiert!';
+                                    } else if (exercise.includes('Lieblings-Armgerät')) {
+                                        explanation = 'Welche Arm-Maschine hat dir am meisten Spaß gemacht? Bizeps oder Trizeps? Das darfst du heute nochmal machen.';
+                                    } else if (exercise.includes('Lieblings-Oberkörpergerät')) {
+                                        explanation = 'Brustpresse, Latzug oder Schulterpress - was war dein Favorit diese Woche? Das machst du nochmal.';
+                                    } else if (exercise.includes('Stepper oder Ergometer: 15 Min')) {
+                                        explanation = 'Du darfst wählen! Stepper oder Fahrrad? Beides kennst du perfekt. 15 Minuten in deinem eigenen Tempo.';
+                                    } else if (exercise.includes('Sauna')) {
+                                        explanation = 'Falls das Gym eine Sauna hat, geh rein! 5-8 Minuten entspannen. Viel Wasser trinken danach!';
+                                    } else if (exercise.includes('Reflexion')) {
+                                        explanation = 'Denke zurück: Welches Gerät war am coolsten? Was hat richtig Spaß gemacht? Du bist 7 Tage durchgezogen - Respekt!';
+                                    } else {
+                                        explanation = 'Führe diese Übung langsam und kontrolliert aus. Bei Fragen frag den Trainer!';
+                                    }
+                                    
+                                    return `
+                                        <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
+                                            <div class="flex items-center p-3 cursor-pointer hover:border-green-300" onclick="toggleExercise(${selectedDay}, ${index})">
+                                                <div class="mr-3">
+                                                    ${isCompleted ? 
+                                                        '<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
+                                                        '<svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"></circle></svg>'
+                                                    }
+                                                </div>
+                                                <span class="flex-1 text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}">${exercise}</span>
+                                            </div>
+                                            
+                                            <div class="px-3 pb-3">
+                                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 ml-9">
+                                                    <div class="flex items-start">
+                                                        <svg class="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                        <p class="text-xs text-blue-800 leading-relaxed font-medium">
+                                                            ${explanation}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            <button onclick="toggleDay(${selectedDay})" class="w-full mt-6 py-3 rounded-lg font-bold transition-all text-lg ${completedDays[selectedDay] ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'}">
+                                ${completedDays[selectedDay] ? '🎉 Tag geschafft! Super!' : '✅ Tag als geschafft markieren'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderOverview() {
+            const totalProgress = getTotalProgress();
+
+            return `
+                <div class="max-w-md mx-auto bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
+                    <div class="bg-white shadow-lg">
+                        <div class="p-4 emoji-bg text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h1 class="text-xl font-bold">💪 Benni's Arm & Core Training</h1>
+                                    <p class="text-green-100">7 Trainingstage - flexibel in 2 Wochen</p>
+                                </div>
+                                <div class="text-4xl">🏋️‍♂️</div>
+                            </div>
+                            
+                            <div class="mt-4 bg-white bg-opacity-20 rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm">Gesamtfortschritt</span>
+                                    <span class="text-sm font-bold">${totalProgress}%</span>
+                                </div>
+                                <div class="w-full bg-white bg-opacity-30 rounded-full h-3">
+                                    <div class="bg-white h-3 rounded-full transition-all duration-500" style="width: ${totalProgress}%"></div>
+                                </div>
+                                <div class="mt-2 text-xs text-green-100">
+                                    ${totalProgress === 100 ? '🏆 Krass! Alle 7 Tage geschafft!' : 
+                                      totalProgress >= 50 ? '🔥 Du rockst das!' : 
+                                      totalProgress > 0 ? '💪 Weiter so!' : '🚀 Los geht\'s!'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <div class="bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg p-4 mb-4 text-white shadow-lg">
+                            <div class="flex items-center">
+                                <div class="text-2xl mr-3">📅</div>
+                                <div>
+                                    <h3 class="font-bold text-lg">Flexibles Training!</h3>
+                                    <p class="text-sm opacity-90">Mache die 7 Trainingstage wann du willst</p>
+                                    <p class="text-xs opacity-75 mt-1">⏰ Du hast 2 Wochen Zeit für alle 7 Tage</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4">
+                        <h2 class="text-lg font-bold text-gray-800 mb-3">💪 Deine 7 Trainingstage</h2>
+                        <div class="grid grid-cols-1 gap-3">
+                            ${dates.map((day, index) => {
+                                const isCompleted = completedDays[index];
+                                const completionPercentage = getCompletionPercentage(index, day.workout);
+                                
+                                return `
+                                    <div class="bg-white rounded-lg shadow-md p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200 hover:border-green-300'}" onclick="selectedDay=${index}; currentView='day'; render();">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mr-3 ${isCompleted ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-green-400 to-emerald-400 text-white'}">
+                                                    ${index + 1}
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-bold text-gray-800">${day.dayName}</h3>
+                                                    <p class="text-xs text-gray-500">Trainingseinheit ${index + 1}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="flex items-center">
+                                                ${isCompleted ? '<div class="text-2xl">🏆</div>' : '<div class="text-xl">💪</div>'}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h4 class="text-sm font-semibold text-gray-700 mb-1">${day.workout.title}</h4>
+                                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                                <span>⏱️ ${day.workout.duration}</span>
+                                                <span>${day.workout.difficulty}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1 mr-3">
+                                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                                    <div class="h-2 rounded-full transition-all duration-300 ${isCompleted ? 'bg-green-500' : 'bg-gradient-to-r from-green-400 to-emerald-400'}" style="width: ${completionPercentage}%"></div>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs font-bold text-gray-600">${completionPercentage}%</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white border-t">
+                        <div class="text-center text-sm text-gray-600">
+                            <div class="flex items-center justify-center mb-2">
+                                <div class="text-2xl mr-2">💪</div>
+                                <span class="font-semibold">Du machst das super, Benni!</span>
+                            </div>
+                            <p class="mb-2">${Object.values(completedDays).filter(Boolean).length} von ${dates.length} Trainingstagen geschafft</p>
+                            <div class="text-xs text-green-600 bg-green-50 rounded-lg p-2">
+                                ✅ Deine Daten bleiben gespeichert!<br>
+                                💡 Alle Übungs-Erklärungen sind direkt sichtbar!<br>
+                                🏋️ Bei Arm-Geräten immer die Trainer fragen!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = currentView === 'day' ? renderDayView() : renderOverview();
+        }
+
+        // Initial render
+        render();
+    </script>
+</body>
+</html>
