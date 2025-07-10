@@ -1,11 +1,10 @@
-const CACHE_NAME = 'fitness-tracker-v1.0.0';
+const CACHE_NAME = 'fitness-tracker-v1.0.1';
 const urlsToCache = [
   './',
   './index.html',
-  './manifest.json',
-  './icon-32.png',
-  './icon-192.png',
-  './icon-512.png'
+  './custom-tracker.html',
+  './benni.html',
+  './manifest.json'
 ];
 
 // Installation des Service Workers
@@ -46,7 +45,26 @@ self.addEventListener('activate', event => {
 
 // Fetch-Events abfangen (Offline-Funktionalität)
 self.addEventListener('fetch', event => {
+  const requestUrl = new URL(event.request.url);
+  
+  // Skip chrome-extension requests
+  if (requestUrl.protocol === 'chrome-extension:') {
+    return;
+  }
+  
+  // Skip POST requests (API calls)
+  if (event.request.method !== 'GET') {
+    console.log('Service Worker: Skipping non-GET request:', event.request.url);
+    return;
+  }
+  
+  // Skip external CDN requests (let them load normally)
+  if (requestUrl.hostname === 'cdn.tailwindcss.com') {
+    return;
+  }
+  
   console.log('Service Worker: Fetching:', event.request.url);
+  
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -62,6 +80,11 @@ self.addEventListener('fetch', event => {
         return fetch(fetchRequest).then(response => {
           // Check if we received a valid response
           if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+          
+          // Only cache same-origin requests
+          if (requestUrl.origin !== location.origin) {
             return response;
           }
           

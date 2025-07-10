@@ -38,15 +38,28 @@
     <script>
         // API Client
         class FitnessAPI {
-            constructor(baseURL = './api.php') {
+            constructor(baseURL = './debug-api.php') {
                 this.baseURL = baseURL;
                 this.userId = localStorage.getItem('fitness_user_id');
+                this.testConnection();
+            }
+
+            async testConnection() {
+                try {
+                    const response = await fetch(this.baseURL);
+                    const data = await response.json();
+                    console.log('API Health Check:', data);
+                } catch (error) {
+                    console.warn('API not available, will use localStorage fallback:', error);
+                }
             }
 
             async request(endpoint, options = {}) {
                 const url = `${this.baseURL}${endpoint}`;
                 
                 try {
+                    console.log('API Request:', options.method || 'GET', url);
+                    
                     const response = await fetch(url, {
                         headers: {
                             'Content-Type': 'application/json',
@@ -56,10 +69,14 @@
                     });
 
                     if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('API Error Response:', errorText);
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
 
-                    return await response.json();
+                    const data = await response.json();
+                    console.log('API Response:', data);
+                    return data;
                 } catch (error) {
                     console.warn('API request failed, using localStorage fallback:', error);
                     return this.getLocalFallback(endpoint);
@@ -151,11 +168,20 @@
                 this.selectedDay = null;
                 this.completedExercises = {};
                 this.completedDays = {};
+                this.apiStatus = 'unknown'; // unknown, working, offline
                 
                 this.init();
             }
 
             async init() {
+                // Test API connection
+                try {
+                    await this.api.testConnection();
+                    this.apiStatus = 'working';
+                } catch (error) {
+                    this.apiStatus = 'offline';
+                }
+
                 const existingUser = await this.api.getUser();
                 if (existingUser) {
                     this.userData = existingUser;
@@ -263,6 +289,29 @@
                         app.innerHTML = this.renderDay();
                         break;
                 }
+            }
+
+            renderSyncStatus() {
+                if (this.apiStatus === 'working') {
+                    return `
+                        <div class="p-2 bg-green-50 border-l-4 border-green-400">
+                            <div class="flex items-center">
+                                <div class="text-green-400 mr-2">🟢</div>
+                                <div class="text-xs text-green-700">Server verbunden - Daten werden synchronisiert</div>
+                            </div>
+                        </div>
+                    `;
+                } else if (this.apiStatus === 'offline') {
+                    return `
+                        <div class="p-2 bg-yellow-50 border-l-4 border-yellow-400">
+                            <div class="flex items-center">
+                                <div class="text-yellow-400 mr-2">🟡</div>
+                                <div class="text-xs text-yellow-700">Offline Modus - Daten werden lokal gespeichert</div>
+                            </div>
+                        </div>
+                    `;
+                }
+                return '';
             }
 
             renderSetup() {
@@ -380,6 +429,8 @@
                                 </div>
                             </div>
                         </div>
+
+                        ${this.renderSyncStatus()}
 
                         <div class="p-4">
                             <div class="grid grid-cols-1 gap-3">
