@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Custom Fitness Tracker">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2563eb">
+    <title>Custom Fitness Tracker</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            overscroll-behavior: contain;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading state -->
+        <div class="max-w-md mx-auto bg-white min-h-screen flex items-center justify-center">
+            <div class="text-center">
+                <div class="text-4xl mb-4">🏋️‍♀️</div>
+                <div class="text-lg font-semibold text-gray-800 mb-2">Custom Fitness Tracker</div>
+                <div class="text-sm text-gray-600">Wird geladen...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Client
+        class FitnessAPI {
+            constructor(baseURL = './api.php') {
+                this.baseURL = baseURL;
+                this.userId = localStorage.getItem('fitness_user_id');
+            }
+
+            async request(endpoint, options = {}) {
+                const url = `${this.baseURL}${endpoint}`;
+                
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        },
+                        ...options
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.warn('API request failed, using localStorage fallback:', error);
+                    return this.getLocalFallback(endpoint);
+                }
+            }
+
+            getLocalFallback(endpoint) {
+                const localKey = `fitness_${endpoint.replace(/\//g, '_')}`;
+                const data = localStorage.getItem(localKey);
+                return data ? JSON.parse(data) : null;
+            }
+
+            saveLocalFallback(endpoint, data) {
+                const localKey = `fitness_${endpoint.replace(/\//g, '_')}`;
+                localStorage.setItem(localKey, JSON.stringify(data));
+            }
+
+            async createUser(userData) {
+                const result = await this.request('/users/create', {
+                    method: 'POST',
+                    body: JSON.stringify(userData)
+                });
+
+                if (result && result.id) {
+                    this.userId = result.id;
+                    localStorage.setItem('fitness_user_id', result.id);
+                    this.saveLocalFallback('/users/create', userData);
+                }
+
+                return result;
+            }
+
+            async getUser() {
+                if (!this.userId) return null;
+                return await this.request(`/users/${this.userId}`);
+            }
+
+            async generatePlan() {
+                if (!this.userId) throw new Error('No user ID');
+                
+                const result = await this.request(`/users/${this.userId}/plan`, {
+                    method: 'POST'
+                });
+
+                if (result && result.plan) {
+                    this.saveLocalFallback(`/users/${this.userId}/plan`, result);
+                }
+
+                return result;
+            }
+
+            async getPlan() {
+                if (!this.userId) return null;
+                return await this.request(`/users/${this.userId}/plan`);
+            }
+
+            async saveSession(sessionData) {
+                if (!this.userId) throw new Error('No user ID');
+                
+                const result = await this.request(`/users/${this.userId}/session`, {
+                    method: 'POST',
+                    body: JSON.stringify(sessionData)
+                });
+
+                const sessions = JSON.parse(localStorage.getItem('fitness_sessions') || '[]');
+                sessions.push({ ...sessionData, timestamp: new Date().toISOString() });
+                localStorage.setItem('fitness_sessions', JSON.stringify(sessions));
+
+                return result;
+            }
+
+            async getSessions() {
+                if (!this.userId) return [];
+                
+                const serverSessions = await this.request(`/users/${this.userId}/sessions`);
+                if (serverSessions) return serverSessions;
+                
+                return JSON.parse(localStorage.getItem('fitness_sessions') || '[]');
+            }
+        }
+
+        // Main App
+        class CustomFitnessApp {
+            constructor() {
+                this.api = new FitnessAPI();
+                this.currentView = 'setup';
+                this.userData = {};
+                this.currentPlan = null;
+                this.selectedDay = null;
+                this.completedExercises = {};
+                this.completedDays = {};
+                
+                this.init();
+            }
+
+            async init() {
+                const existingUser = await this.api.getUser();
+                if (existingUser) {
+                    this.userData = existingUser;
+                    await this.loadPlan();
+                    this.currentView = 'overview';
+                }
+                
+                this.render();
+            }
+
+            async loadPlan() {
+                const planData = await this.api.getPlan();
+                if (planData && planData.plan) {
+                    this.currentPlan = planData.plan;
+                    await this.loadSessions();
+                }
+            }
+
+            async loadSessions() {
+                const sessions = await this.api.getSessions();
+                this.completedExercises = {};
+                this.completedDays = {};
+                
+                sessions.forEach(session => {
+                    session.completed_exercises.forEach(exerciseIndex => {
+                        this.completedExercises[`${session.day_index}-${exerciseIndex}`] = true;
+                    });
+                    this.completedDays[session.day_index] = session.is_completed;
+                });
+            }
+
+            async completeSetup(userData) {
+                this.userData = userData;
+                
+                const result = await this.api.createUser(userData);
+                if (result && result.id) {
+                    const planResult = await this.api.generatePlan();
+                    if (planResult && planResult.plan) {
+                        this.currentPlan = planResult.plan;
+                        this.currentView = 'overview';
+                        this.render();
+                    }
+                }
+            }
+
+            async toggleExercise(dayIndex, exerciseIndex) {
+                const key = `${dayIndex}-${exerciseIndex}`;
+                this.completedExercises[key] = !this.completedExercises[key];
+                
+                const completedExercisesForDay = Object.keys(this.completedExercises)
+                    .filter(k => k.startsWith(`${dayIndex}-`) && this.completedExercises[k])
+                    .map(k => parseInt(k.split('-')[1]));
+                
+                await this.api.saveSession({
+                    dayIndex,
+                    completedExercises: completedExercisesForDay,
+                    isCompleted: this.completedDays[dayIndex] || false,
+                    workoutDate: new Date().toISOString().split('T')[0]
+                });
+                
+                this.render();
+            }
+
+            async toggleDay(dayIndex) {
+                this.completedDays[dayIndex] = !this.completedDays[dayIndex];
+                
+                const completedExercisesForDay = Object.keys(this.completedExercises)
+                    .filter(k => k.startsWith(`${dayIndex}-`) && this.completedExercises[k])
+                    .map(k => parseInt(k.split('-')[1]));
+                
+                await this.api.saveSession({
+                    dayIndex,
+                    completedExercises: completedExercisesForDay,
+                    isCompleted: this.completedDays[dayIndex],
+                    workoutDate: new Date().toISOString().split('T')[0]
+                });
+                
+                this.render();
+            }
+
+            getCompletionPercentage(dayIndex, day) {
+                if (!day || !day.exercises) return 0;
+                const totalExercises = day.exercises.length;
+                let completed = 0;
+                
+                for (let i = 0; i < totalExercises; i++) {
+                    const key = `${dayIndex}-${i}`;
+                    if (this.completedExercises[key]) completed++;
+                }
+                
+                return Math.round((completed / totalExercises) * 100);
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                
+                switch (this.currentView) {
+                    case 'setup':
+                        app.innerHTML = this.renderSetup();
+                        break;
+                    case 'overview':
+                        app.innerHTML = this.renderOverview();
+                        break;
+                    case 'day':
+                        app.innerHTML = this.renderDay();
+                        break;
+                }
+            }
+
+            renderSetup() {
+                return `
+                    <div class="max-w-md mx-auto bg-white min-h-screen">
+                        <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                            <h1 class="text-xl font-bold">🏋️ Custom Fitness Tracker</h1>
+                            <p class="text-blue-100">Erstelle deinen persönlichen Trainingsplan</p>
+                        </div>
+                        
+                        <div class="p-6">
+                            <form id="setupForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Name *</label>
+                                    <input type="text" name="name" required 
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                           placeholder="Dein Name">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Alter</label>
+                                    <input type="number" name="age" min="12" max="100"
+                                           class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                           placeholder="Dein Alter">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Trainingserfahrung</label>
+                                    <select name="experience" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="beginner">🟢 Anfänger (0-6 Monate)</option>
+                                        <option value="intermediate">🟡 Fortgeschritten (6+ Monate)</option>
+                                        <option value="advanced">🔴 Profi (2+ Jahre)</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Trainingstage pro Woche</label>
+                                    <select name="schedule" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        <option value="3days">3 Tage/Woche (entspannt)</option>
+                                        <option value="4days">4 Tage/Woche (ausgewogen)</option>
+                                        <option value="5days">5 Tage/Woche (intensiv)</option>
+                                        <option value="6days">6 Tage/Woche (sehr intensiv)</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Verfügbare Ausrüstung (mehrere möglich)</label>
+                                    <div class="space-y-2 bg-gray-50 p-3 rounded-lg">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="equipment" value="bodyweight" checked class="mr-2">
+                                            🤸 Körpergewicht (immer verfügbar)
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="equipment" value="dumbbells" class="mr-2">
+                                            🏋️ Kurzhanteln
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="equipment" value="barbell" class="mr-2">
+                                            🎯 Langhantel
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="equipment" value="machines" class="mr-2">
+                                            ⚙️ Fitnessgeräte/Maschinen
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" name="equipment" value="cardio" class="mr-2">
+                                            🏃 Cardio-Geräte
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors">
+                                    🎉 Persönlichen Plan erstellen
+                                </button>
+                                
+                                <div class="text-xs text-gray-500 text-center mt-4">
+                                    💾 Alle Daten werden lokal gespeichert und optional synchronisiert
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderOverview() {
+                if (!this.currentPlan) return '<div>Lade Plan...</div>';
+                
+                const planDays = Object.keys(this.currentPlan);
+                const totalDays = planDays.length;
+                const completedDaysCount = Object.values(this.completedDays).filter(Boolean).length;
+                const totalProgress = Math.round((completedDaysCount / totalDays) * 100);
+                
+                return `
+                    <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+                        <div class="bg-white shadow-lg">
+                            <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h1 class="text-xl font-bold">💪 ${this.userData.name}'s Plan</h1>
+                                        <p class="text-blue-100">Personalisierter Trainingsplan</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold">${totalProgress}%</div>
+                                        <div class="text-xs text-blue-100">Fortschritt</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 bg-white bg-opacity-20 rounded-lg p-3">
+                                    <div class="w-full bg-white bg-opacity-30 rounded-full h-2">
+                                        <div class="bg-white h-2 rounded-full transition-all duration-500" style="width: ${totalProgress}%"></div>
+                                    </div>
+                                    <div class="mt-2 text-xs text-blue-100">
+                                        ${completedDaysCount} von ${totalDays} Trainingstagen abgeschlossen
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4">
+                            <div class="grid grid-cols-1 gap-3">
+                                ${planDays.map((dayName, index) => {
+                                    const day = this.currentPlan[dayName];
+                                    const isCompleted = this.completedDays[index];
+                                    const completionPercentage = this.getCompletionPercentage(index, day);
+                                    
+                                    return `
+                                        <div class="bg-white rounded-lg shadow-md p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200'}" 
+                                             onclick="app.selectedDay=${index}; app.currentView='day'; app.render();">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <div class="flex items-center">
+                                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${isCompleted ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'}">
+                                                        ${index + 1}
+                                                    </div>
+                                                    <div>
+                                                        <h3 class="font-semibold text-gray-800">${dayName}</h3>
+                                                        <p class="text-xs text-gray-500">${day.difficulty}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                ${isCompleted ? '<svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
+                                            </div>
+                                            
+                                            <div class="mb-2">
+                                                <h4 class="text-sm font-medium text-gray-700 mb-1">${day.title}</h4>
+                                                <p class="text-xs text-gray-500">${day.duration} • ${day.focus}</p>
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex-1 mr-3">
+                                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                                        <div class="h-1.5 rounded-full transition-all duration-300 ${isCompleted ? 'bg-green-500' : 'bg-blue-500'}" style="width: ${completionPercentage}%"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="text-xs font-semibold text-gray-600">${completionPercentage}%</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            
+                            <div class="mt-6 p-4 bg-white rounded-lg shadow-md">
+                                <div class="text-center">
+                                    <div class="text-2xl mb-2">🎯</div>
+                                    <h3 class="font-semibold text-gray-800 mb-2">Dein Profil</h3>
+                                    <div class="text-sm text-gray-600 space-y-1">
+                                        <p>📊 Level: ${this.userData.experience}</p>
+                                        <p>📅 Plan: ${this.userData.schedule}</p>
+                                        <p>🏋️ Equipment: ${this.userData.equipment.length} Typen</p>
+                                    </div>
+                                    <button onclick="localStorage.clear(); location.reload();" class="mt-3 text-xs text-blue-600 hover:text-blue-800">
+                                        🔄 Neuen Plan erstellen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderDay() {
+                if (!this.currentPlan || this.selectedDay === null) return '<div>Fehler beim Laden</div>';
+                
+                const dayName = Object.keys(this.currentPlan)[this.selectedDay];
+                const day = this.currentPlan[dayName];
+                const completionPercentage = this.getCompletionPercentage(this.selectedDay, day);
+                
+                return `
+                    <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+                        <div class="bg-white shadow-lg">
+                            <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                                <button onclick="app.currentView='overview'; app.render();" class="text-blue-100 hover:text-white mb-2">
+                                    ← Zurück zur Übersicht
+                                </button>
+                                <h1 class="text-xl font-bold">${dayName}</h1>
+                                <p class="text-blue-100">${day.title}</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4">
+                            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h2 class="text-lg font-semibold text-gray-800">${day.title}</h2>
+                                    <span class="text-sm text-gray-600">${day.duration}</span>
+                                </div>
+                                
+                                <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                                    <p class="text-xs text-blue-700 font-medium">🎯 Fokus: ${day.focus}</p>
+                                    <p class="text-xs text-blue-600 mt-1">📊 Schwierigkeit: ${day.difficulty}</p>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Fortschritt</span>
+                                        <span class="text-sm font-semibold text-blue-600">${completionPercentage}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-gradient-to-r from-blue-500 to-indigo-500 h-3 rounded-full transition-all duration-300" style="width: ${completionPercentage}%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-3">
+                                    ${day.exercises.map((exercise, index) => {
+                                        const isCompleted = this.completedExercises[`${this.selectedDay}-${index}`];
+                                        
+                                        return `
+                                            <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
+                                                <div class="flex items-center p-3 cursor-pointer hover:border-blue-300" onclick="app.toggleExercise(${this.selectedDay}, ${index})">
+                                                    <div class="mr-3">
+                                                        ${isCompleted ? 
+                                                            '<svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
+                                                            '<svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"></circle></svg>'
+                                                        }
+                                                    </div>
+                                                    <span class="flex-1 text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}">${exercise}</span>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+
+                                <button onclick="app.toggleDay(${this.selectedDay})" class="w-full mt-6 py-3 rounded-lg font-bold transition-all text-lg ${this.completedDays[this.selectedDay] ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700'}">
+                                    ${this.completedDays[this.selectedDay] ? '🎉 Tag geschafft! Super!' : '✅ Tag als geschafft markieren'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            window.app = new CustomFitnessApp();
+            
+            // Handle form submission
+            document.addEventListener('submit', async (e) => {
+                if (e.target.id === 'setupForm') {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(e.target);
+                    const equipment = Array.from(formData.getAll('equipment'));
+                    
+                    const userData = {
+                        name: formData.get('name'),
+                        age: parseInt(formData.get('age')) || null,
+                        experience: formData.get('experience'),
+                        schedule: formData.get('schedule'),
+                        equipment: equipment,
+                        goals: [],
+                        duration: '45min'
+                    };
+                    
+                    await app.completeSetup(userData);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
