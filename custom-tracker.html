@@ -421,10 +421,18 @@
             }
 
             nextStep() {
-                if (this.isTransitioning) return;
-                this.isTransitioning = true;
+                console.log('nextStep called, current step:', this.setupStep);
+                console.log('Current userData:', this.userData);
 
+                if (this.isTransitioning) {
+                    console.log('Already transitioning, ignoring click');
+                    return;
+                }
+
+                this.isTransitioning = true;
                 this.setupStep++;
+
+                console.log('Moving to step:', this.setupStep);
                 this.render();
 
                 setTimeout(() => {
@@ -439,48 +447,79 @@
                 }
             }
 
-            setUserData(key, value) {
-                this.userData[key] = value;
+            setName(name) {
+                this.userData.name = name;
+                this.render();
+            }
+
+            setAge(age) {
+                this.userData.age = age;
+                this.render();
+            }
+
+            setExperience(experience) {
+                console.log('setExperience called:', experience);
+                this.userData.experience = experience;
+                console.log('Experience set to:', this.userData.experience);
+                this.render();
+            }
+
+            setFrequency(frequency) {
+                console.log('setFrequency called:', frequency);
+                this.userData.frequency = frequency;
+                console.log('Frequency set to:', this.userData.frequency);
+                this.render();
+            }
+
+            setDuration(duration) {
+                console.log('setDuration called:', duration);
+                this.userData.duration = duration;
+                console.log('Duration set to:', this.userData.duration);
+                this.render();
             }
 
             toggleGoal(goal) {
-                console.log('Toggling goal:', goal, 'Current goals:', this.userData.goals);
+                console.log('toggleGoal called:', goal);
                 if (!this.userData.goals) this.userData.goals = [];
-                const goals = this.userData.goals;
-                const index = goals.indexOf(goal);
+
+                const index = this.userData.goals.indexOf(goal);
                 if (index > -1) {
-                    goals.splice(index, 1);
+                    this.userData.goals.splice(index, 1);
                 } else {
-                    goals.push(goal);
+                    this.userData.goals.push(goal);
                 }
-                this.userData.goals = [...goals];
-                console.log('Updated goals:', this.userData.goals);
+
+                console.log('Goals after toggle:', this.userData.goals);
                 this.render();
             }
 
             toggleEquipment(equipment) {
+                console.log('toggleEquipment called:', equipment);
                 if (!this.userData.equipment) this.userData.equipment = [];
-                const equipments = this.userData.equipment;
-                const index = equipments.indexOf(equipment);
+
+                const index = this.userData.equipment.indexOf(equipment);
                 if (index > -1) {
-                    equipments.splice(index, 1);
+                    this.userData.equipment.splice(index, 1);
                 } else {
-                    equipments.push(equipment);
+                    this.userData.equipment.push(equipment);
                 }
-                this.userData.equipment = [...equipments];
+
+                console.log('Equipment after toggle:', this.userData.equipment);
                 this.render();
             }
 
             toggleFocus(focus) {
+                console.log('toggleFocus called:', focus);
                 if (!this.userData.focus) this.userData.focus = [];
-                const focuses = this.userData.focus;
-                const index = focuses.indexOf(focus);
+
+                const index = this.userData.focus.indexOf(focus);
                 if (index > -1) {
-                    focuses.splice(index, 1);
+                    this.userData.focus.splice(index, 1);
                 } else {
-                    focuses.push(focus);
+                    this.userData.focus.push(focus);
                 }
-                this.userData.focus = [...focuses];
+
+                console.log('Focus after toggle:', this.userData.focus);
                 this.render();
             }
 
@@ -1346,6 +1385,49 @@
                     </div>
                 `;
             }
+            renderCheckboxOption(item, selectedArray, toggleFunction) {
+              const isSelected = selectedArray.includes(item.id);
+              return `
+                <div class="cursor-pointer p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                     onclick="app.${toggleFunction}('${item.id}')">
+                  <div class="flex items-center">
+                    <div class="text-2xl mr-4">${item.icon}</div>
+                    <div class="flex-1">
+                      <div class="font-semibold text-gray-800">${item.title}</div>
+                      <div class="text-sm text-gray-600">${item.desc || ''}</div>
+                    </div>
+                    <div class="ml-4">
+                      ${isSelected ? 
+                        '<svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : 
+                        '<div class="w-5 h-5 border-2 border-gray-300 rounded"></div>'
+                      }
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+
+            renderRadioOption(item, selectedValue, setFunction) {
+              const isSelected = selectedValue === item.id;
+              return `
+                <div class="cursor-pointer p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                     onclick="app.${setFunction}('${item.id}')">
+                  <div class="flex items-center">
+                    <div class="text-2xl mr-4">${item.icon}</div>
+                    <div class="flex-1">
+                      <div class="font-semibold text-gray-800">${item.title}</div>
+                      <div class="text-sm text-gray-600">${item.desc || ''}</div>
+                    </div>
+                    <div class="ml-4">
+                      ${isSelected ? 
+                        '<div class="w-4 h-4 bg-blue-500 rounded-full"></div>' : 
+                        '<div class="w-4 h-4 border-2 border-gray-300 rounded-full"></div>'
+                      }
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
 
             renderStep1_Welcome() {
                 return `
@@ -1362,7 +1444,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Wie heißt du?</label>
                                 <input type="text" 
                                        value="${this.userData.name || ''}"
-                                       onchange="app.setUserData('name', this.value)"
+                                       onchange="app.setName(this.value)"
                                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                        placeholder="Dein Name">
                             </div>
@@ -1371,7 +1453,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Wie alt bist du? (optional)</label>
                                 <input type="number" min="12" max="100"
                                        value="${this.userData.age || ''}"
-                                       onchange="app.setUserData('age', parseInt(this.value) || null)"
+                                       onchange="app.setAge(parseInt(this.value) || null)"
                                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                        placeholder="Dein Alter">
                             </div>
@@ -1388,6 +1470,16 @@
 
             renderStep2_Goals() {
                 const goals = this.userData.goals || [];
+                const isValid = goals.length > 0;
+
+                const goalOptions = [
+                    { id: 'Muskelaufbau', icon: '💪', title: 'Muskelaufbau', desc: 'Muskelmasse und Definition' },
+                    { id: 'Kraft', icon: '🏋️', title: 'Kraft steigern', desc: 'Stärker werden' },
+                    { id: 'Ausdauer', icon: '🏃', title: 'Ausdauer', desc: 'Kondition verbessern' },
+                    { id: 'Gewichtsverlust', icon: '⚖️', title: 'Gewicht verlieren', desc: 'Fett reduzieren' },
+                    { id: 'Gesundheit', icon: '❤️', title: 'Gesundheit', desc: 'Fit und gesund bleiben' }
+                ];
+
                 return `
                     <div class="space-y-6">
                         <div class="text-center">
@@ -1397,52 +1489,35 @@
                         </div>
                         
                         <div class="space-y-3">
-                            ${[
-                                { id: 'Muskelaufbau', icon: '💪', title: 'Muskelaufbau', desc: 'Muskelmasse und Definition' },
-                                { id: 'Kraft', icon: '🏋️', title: 'Kraft steigern', desc: 'Stärker werden' },
-                                { id: 'Ausdauer', icon: '🏃', title: 'Ausdauer', desc: 'Kondition verbessern' },
-                                { id: 'Gewichtsverlust', icon: '⚖️', title: 'Gewicht verlieren', desc: 'Fett reduzieren' },
-                                { id: 'Gesundheit', icon: '❤️', title: 'Gesundheit', desc: 'Fit und gesund bleiben' },
-                                { id: 'Sport', icon: '⚽', title: 'Sport-Performance', desc: 'Leistung in anderen Sportarten' }
-                            ].map(goal => `
-                                <label class="setup-option-label flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${goals.includes(goal.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}" onclick="app.toggleGoal('${goal.id}'); event.stopPropagation();">
-                                    <input type="checkbox" 
-                                           ${goals.includes(goal.id) ? 'checked' : ''}
-                                           onchange="app.toggleGoal('${goal.id}')"
-                                           onclick="event.stopPropagation()"
-                                           class="sr-only">
-                                    <div class="text-2xl mr-4">${goal.icon}</div>
-                                    <div class="flex-1">
-                                        <div class="font-semibold text-gray-800">${goal.title}</div>
-                                        <div class="text-sm text-gray-600">${goal.desc}</div>
-                                    </div>
-                                    <div class="ml-4">
-                                        ${goals.includes(goal.id) ? 
-                                            '<svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' :
-                                            '<div class="w-5 h-5 border-2 border-gray-300 rounded"></div>'
-                                        }
-                                    </div>
-                                </label>
-                            `).join('')}
+                            ${goalOptions.map(goal => this.renderCheckboxOption(goal, goals, 'toggleGoal')).join('')}
                         </div>
 
                         <div class="flex space-x-3">
-                            <button onclick="app.previousStep()" 
-                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <button onclick="app.previousStep()" class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                                 ← Zurück
                             </button>
-                            <button onclick="app.nextStep()" 
-                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors ${goals.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                                    ${goals.length === 0 ? 'disabled' : ''}>
+                            <button onclick="app.nextStep()" class="flex-1 py-3 font-semibold rounded-lg transition-colors ${isValid ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}" ${!isValid ? 'disabled' : ''}>
                                 Weiter →
                             </button>
+                        </div>
+                        
+                        <!-- DEBUG INFO -->
+                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+                            Debug: Goals=${JSON.stringify(goals)}, Valid=${isValid}
                         </div>
                     </div>
                 `;
             }
-
             renderStep3_Experience() {
                 const experience = this.userData.experience || '';
+                const isValid = experience !== '';
+
+                const levels = [
+                    { id: 'Anfänger', icon: '🌱', title: 'Anfänger', desc: 'Wenig bis keine Erfahrung (0-6 Monate)' },
+                    { id: 'Fortgeschritten', icon: '💪', title: 'Fortgeschritten', desc: 'Regelmäßiges Training (6+ Monate)' },
+                    { id: 'Profi', icon: '🏆', title: 'Erfahren', desc: 'Sehr erfahren (2+ Jahre)' }
+                ];
+
                 return `
                     <div class="space-y-6">
                         <div class="text-center">
@@ -1452,48 +1527,36 @@
                         </div>
                         
                         <div class="space-y-3">
-                            ${[
-                                { id: 'Anfänger', icon: '🌱', title: 'Anfänger', desc: 'Wenig bis keine Erfahrung (0-6 Monate)', color: 'green' },
-                                { id: 'Fortgeschritten', icon: '💪', title: 'Fortgeschritten', desc: 'Regelmäßiges Training (6+ Monate)', color: 'yellow' },
-                                { id: 'Profi', icon: '🏆', title: 'Erfahren', desc: 'Sehr erfahren (2+ Jahre)', color: 'red' }
-                            ].map(level => `
-                                <label class="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${experience === level.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
-                                    <input type="radio" name="experience" value="${level.id}"
-                                           ${experience === level.id ? 'checked' : ''}
-                                           onchange="app.setUserData('experience', this.value)"
-                                           class="sr-only">
-                                    <div class="text-2xl mr-4">${level.icon}</div>
-                                    <div class="flex-1">
-                                        <div class="font-semibold text-gray-800">${level.title}</div>
-                                        <div class="text-sm text-gray-600">${level.desc}</div>
-                                    </div>
-                                    <div class="ml-4">
-                                        ${experience === level.id ? 
-                                            '<div class="w-4 h-4 bg-blue-500 rounded-full"></div>' :
-                                            '<div class="w-4 h-4 border-2 border-gray-300 rounded-full"></div>'
-                                        }
-                                    </div>
-                                </label>
-                            `).join('')}
+                            ${levels.map(level => this.renderRadioOption(level, experience, 'setExperience')).join('')}
                         </div>
 
                         <div class="flex space-x-3">
-                            <button onclick="app.previousStep()" 
-                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <button onclick="app.previousStep()" class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                                 ← Zurück
                             </button>
-                            <button onclick="app.nextStep()" 
-                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
-                                    ${!experience ? 'disabled style="opacity: 0.5"' : ''}>
+                            <button onclick="app.nextStep()" class="flex-1 py-3 font-semibold rounded-lg transition-colors ${isValid ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}" ${!isValid ? 'disabled' : ''}>
                                 Weiter →
                             </button>
+                        </div>
+                        
+                        <!-- DEBUG INFO -->
+                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+                            Debug: Experience="${experience}", Valid=${isValid}
                         </div>
                     </div>
                 `;
             }
-
             renderStep4_Equipment() {
                 const equipment = this.userData.equipment || [];
+                const isValid = equipment.length > 0;
+
+                const equipmentOptions = [
+                    { id: 'Eigengewicht', icon: '🤸', title: 'Eigengewicht', desc: 'Trainieren ohne Geräte' },
+                    { id: 'Kurzhanteln', icon: '🏋️', title: 'Kurzhanteln', desc: 'Verstellbare oder feste Kurzhanteln' },
+                    { id: 'Langhanteln', icon: '🎯', title: 'Langhantel', desc: 'Langhantel mit Gewichten' },
+                    { id: 'Gym-Geräte', icon: '⚙️', title: 'Fitnessstudio', desc: 'Zugang zu Geräten und Maschinen' }
+                ];
+
                 return `
                     <div class="space-y-6">
                         <div class="text-center">
@@ -1503,50 +1566,36 @@
                         </div>
                         
                         <div class="space-y-3">
-                            ${[
-                                { id: 'Eigengewicht', icon: '🤸', title: 'Eigengewicht', desc: 'Trainieren ohne Geräte' },
-                                { id: 'Kurzhanteln', icon: '🏋️', title: 'Kurzhanteln', desc: 'Verstellbare oder feste Kurzhanteln' },
-                                { id: 'Langhanteln', icon: '🎯', title: 'Langhantel', desc: 'Langhantel mit Gewichten' },
-                                { id: 'Gym-Geräte', icon: '⚙️', title: 'Fitnessstudio', desc: 'Zugang zu Geräten und Maschinen' }
-                            ].map(eq => `
-                                <label class="setup-option-label flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${equipment.includes(eq.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}" onclick="app.toggleEquipment('${eq.id}'); event.stopPropagation();">
-                                    <input type="checkbox"
-                                           ${equipment.includes(eq.id) ? 'checked' : ''}
-                                           onchange="app.toggleEquipment('${eq.id}')"
-                                           onclick="event.stopPropagation()"
-                                           class="sr-only">
-                                    <div class="text-2xl mr-4">${eq.icon}</div>
-                                    <div class="flex-1">
-                                        <div class="font-semibold text-gray-800">${eq.title}</div>
-                                        <div class="text-sm text-gray-600">${eq.desc}</div>
-                                    </div>
-                                    <div class="ml-4">
-                                        ${equipment.includes(eq.id) ? 
-                                            '<svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' :
-                                            '<div class="w-5 h-5 border-2 border-gray-300 rounded"></div>'
-                                        }
-                                    </div>
-                                </label>
-                            `).join('')}
+                            ${equipmentOptions.map(eq => this.renderCheckboxOption(eq, equipment, 'toggleEquipment')).join('')}
                         </div>
 
                         <div class="flex space-x-3">
-                            <button onclick="app.previousStep()" 
-                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <button onclick="app.previousStep()" class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                                 ← Zurück
                             </button>
-                            <button onclick="app.nextStep()"
-                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors ${equipment.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                                    ${equipment.length === 0 ? 'disabled' : ''}>
+                            <button onclick="app.nextStep()" class="flex-1 py-3 font-semibold rounded-lg transition-colors ${isValid ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}" ${!isValid ? 'disabled' : ''}>
                                 Weiter →
                             </button>
+                        </div>
+                        
+                        <!-- DEBUG INFO -->
+                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+                            Debug: Equipment=${JSON.stringify(equipment)}, Valid=${isValid}
                         </div>
                     </div>
                 `;
             }
-
             renderStep5_Focus() {
                 const focus = this.userData.focus || [];
+                const isValid = focus.length > 0;
+
+                const focusOptions = [
+                    { id: 'Ganzkörper', icon: '🤸', title: 'Ganzkörper', desc: 'Alles in jeder Einheit trainieren' },
+                    { id: 'Oberkörper', icon: '💪', title: 'Oberkörper', desc: 'Brust, Rücken, Schultern, Arme' },
+                    { id: 'Unterkörper', icon: '🦵', title: 'Unterkörper', desc: 'Beine, Po, Waden' },
+                    { id: 'Core', icon: '🔥', title: 'Core/Bauch', desc: 'Bauch, Rumpf, Stabilität' }
+                ];
+
                 return `
                     <div class="space-y-6">
                         <div class="text-center">
@@ -1556,94 +1605,27 @@
                         </div>
                         
                         <div class="space-y-3">
-                            ${[
-                                { id: 'Ganzkörper', icon: '🤸', title: 'Ganzkörper', desc: 'Alles in jeder Einheit trainieren' },
-                                { id: 'Oberkörper', icon: '💪', title: 'Oberkörper', desc: 'Brust, Rücken, Schultern, Arme' },
-                                { id: 'Unterkörper', icon: '🦵', title: 'Unterkörper', desc: 'Beine, Po, Waden' },
-                                { id: 'Core', icon: '🔥', title: 'Core/Bauch', desc: 'Bauch, Rumpf, Stabilität' },
-                                { id: 'Arme', icon: '💪', title: 'Arme', desc: 'Bizeps, Trizeps, Unterarme' },
-                                { id: 'Cardio', icon: '🏃', title: 'Cardio', desc: 'Ausdauer und Kondition' }
-                            ].map(f => `
-                                <label class="setup-option-label flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${focus.includes(f.id) ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}" onclick="app.toggleFocus('${f.id}'); event.stopPropagation();">
-                                    <input type="checkbox"
-                                           ${focus.includes(f.id) ? 'checked' : ''}
-                                           onchange="app.toggleFocus('${f.id}')"
-                                           onclick="event.stopPropagation()"
-                                           class="sr-only">
-                                    <div class="text-2xl mr-4">${f.icon}</div>
-                                    <div class="flex-1">
-                                        <div class="font-semibold text-gray-800">${f.title}</div>
-                                        <div class="text-sm text-gray-600">${f.desc}</div>
-                                    </div>
-                                    <div class="ml-4">
-                                        ${focus.includes(f.id) ? 
-                                            '<svg class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' :
-                                            '<div class="w-5 h-5 border-2 border-gray-300 rounded"></div>'
-                                        }
-                                    </div>
-                                </label>
-                            `).join('')}
+                            ${focusOptions.map(f => this.renderCheckboxOption(f, focus, 'toggleFocus')).join('')}
                         </div>
 
                         <div class="flex space-x-3">
-                            <button onclick="app.previousStep()" 
-                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <button onclick="app.previousStep()" class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                                 ← Zurück
                             </button>
-                            <button onclick="app.nextStep()"
-                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors ${focus.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                                    ${focus.length === 0 ? 'disabled' : ''}>
+                            <button onclick="app.nextStep()" class="flex-1 py-3 font-semibold rounded-lg transition-colors ${isValid ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}" ${!isValid ? 'disabled' : ''}>
                                 Weiter →
                             </button>
+                        </div>
+                        
+                        <!-- DEBUG INFO -->
+                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+                            Debug: Focus=${JSON.stringify(focus)}, Valid=${isValid}
                         </div>
                     </div>
                 `;
             }
-
-            renderStep6_Schedule() {
-                const frequency = this.userData.frequency || '';
-                const duration = this.userData.duration || '';
-                
-                return `
-                    <div class="space-y-6">
-                        <div class="text-center">
-                            <div class="text-4xl mb-4">📅</div>
-                            <h2 class="text-xl font-bold text-gray-800">Wie oft und wie lange?</h2>
-                            <p class="text-gray-600 mt-2">Lass uns deinen Zeitplan festlegen</p>
-                        </div>
-                        
-                        <div class="space-y-6">
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-3">Wie oft pro Woche willst du trainieren?</h3>
-                                <div class="grid grid-cols-2 gap-3">
-                                    ${['2', '3', '4', '5', '6', '7'].map(days => `
-                                        <label class="flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${frequency === days ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
-                                            <input type="radio" name="frequency" value="${days}"
-                                                   ${frequency === days ? 'checked' : ''}
-                                                   onchange="app.setUserData('frequency', this.value)"
-                                                   class="sr-only">
-                                            <div class="text-center">
-                                                <div class="text-xl font-bold text-gray-800">${days}x</div>
-                                                <div class="text-xs text-gray-600">${days === '2' ? 'Entspannt' : days === '3' ? 'Optimal' : days === '4' ? 'Gut' : days === '5' ? 'Intensiv' : days === '6' ? 'Sehr intensiv' : 'Täglich'}</div>
-                                            </div>
-                                        </label>
-                                    `).join('')}
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 class="font-semibold text-gray-800 mb-3">Wie lange pro Trainingseinheit?</h3>
-                                <div class="space-y-2">
-                                    ${[
-                                        { id: '30min', title: '30 Minuten', desc: 'Kurz und knackig' },
-                                        { id: '45min', title: '45 Minuten', desc: 'Standard-Training' },
-                                        { id: '60min', title: '60 Minuten', desc: 'Ausführliches Training' },
-                                        { id: '90min', title: '90+ Minuten', desc: 'Intensive Sessions' }
-                                    ].map(dur => `
-                                        <label class="flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 ${duration === dur.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
-                                            <input type="radio" name="duration" value="${dur.id}"
                                                    ${duration === dur.id ? 'checked' : ''}
-                                                   onchange="app.setUserData('duration', this.value)"
+                                                   onclick="app.setDuration('${dur.id}')"
                                                    class="sr-only">
                                             <div class="flex-1">
                                                 <div class="font-semibold text-gray-800">${dur.title}</div>
@@ -1658,81 +1640,57 @@
                                         </label>
                                     `).join('')}
                                 </div>
-                            </div>
-                        </div>
+            renderStep6_Schedule() {
+                const frequency = this.userData.frequency || '';
+                const duration = this.userData.duration || '';
+                const isValid = frequency !== '' && duration !== '';
 
-                        <div class="flex space-x-3">
-                            <button onclick="app.previousStep()" 
-                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
-                                ← Zurück
-                            </button>
-                            <button onclick="app.nextStep()" 
-                                    class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-colors"
-                                    ${!frequency || !duration ? 'disabled style="opacity: 0.5"' : ''}>
-                                Weiter →
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }
-
-            renderStep7_Summary() {
-                const { name, goals, experience, equipment, focus, frequency, duration } = this.userData;
-                
                 return `
                     <div class="space-y-6">
                         <div class="text-center">
-                            <div class="text-4xl mb-4">📋</div>
-                            <h2 class="text-xl font-bold text-gray-800">Perfekt, ${name}!</h2>
-                            <p class="text-gray-600 mt-2">Hier ist deine Zusammenfassung. Bereit für deinen Plan?</p>
+                            <div class="text-4xl mb-4">📅</div>
+                            <h2 class="text-xl font-bold text-gray-800">Wie oft und wie lange?</h2>
+                            <p class="text-gray-600 mt-2">Lass uns deinen Zeitplan festlegen</p>
                         </div>
                         
-                        <div class="bg-blue-50 rounded-lg p-4 space-y-3">
-                            <div class="flex justify-between items-start">
-                                <span class="font-semibold text-gray-700">Ziele:</span>
-                                <span class="text-gray-600 text-right">${(goals || []).join(', ') || 'Nicht angegeben'}</span>
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-3">Wie oft pro Woche willst du trainieren?</h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    ${['2', '3', '4', '5'].map(days => `
+                                      <div class="cursor-pointer text-center p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${frequency === days ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                                           onclick="app.setFrequency('${days}')">
+                                        <div class="text-xl font-bold text-gray-800">${days}x</div>
+                                        <div class="text-xs text-gray-600">${days === '2' ? 'Entspannt' : days === '3' ? 'Optimal' : days === '4' ? 'Gut' : 'Intensiv'}</div>
+                                      </div>
+                                    `).join('')}
+                                </div>
                             </div>
-                            <div class="flex justify-between items-start">
-                                <span class="font-semibold text-gray-700">Erfahrung:</span>
-                                <span class="text-gray-600">${experience || 'Nicht angegeben'}</span>
-                            </div>
-                            <div class="flex justify-between items-start">
-                                <span class="font-semibold text-gray-700">Ausrüstung:</span>
-                                <span class="text-gray-600 text-right">${(equipment || []).join(', ') || 'Nicht angegeben'}</span>
-                            </div>
-                            <div class="flex justify-between items-start">
-                                <span class="font-semibold text-gray-700">Fokus:</span>
-                                <span class="text-gray-600 text-right">${(focus || []).join(', ') || 'Nicht angegeben'}</span>
-                            </div>
-                            <div class="flex justify-between items-start">
-                                <span class="font-semibold text-gray-700">Häufigkeit:</span>
-                                <span class="text-gray-600">${frequency ? frequency + 'x pro Woche' : 'Nicht angegeben'}</span>
-                            </div>
-                            <div class="flex justify-between items-start">
-                                <span class="font-semibold text-gray-700">Dauer:</span>
-                                <span class="text-gray-600">${duration ? duration.replace('min', ' Minuten') : 'Nicht angegeben'}</span>
-                            </div>
-                        </div>
 
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <div class="flex items-center">
-                                <div class="text-green-600 mr-3">✅</div>
-                                <div>
-                                    <div class="font-semibold text-green-800">Dein Plan wird erstellt!</div>
-                                    <div class="text-sm text-green-600">Basierend auf deinen Angaben erstelle ich einen individuellen ${frequency}x-Wochen-Plan mit ${(equipment || []).length} Ausrüstungstypen.</div>
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-3">Wie lange pro Trainingseinheit?</h3>
+                                <div class="space-y-2">
+                                    ${[
+                                      { id: '30min', title: '30 Minuten', desc: 'Kurz und knackig' },
+                                      { id: '45min', title: '45 Minuten', desc: 'Standard-Training' },
+                                      { id: '60min', title: '60 Minuten', desc: 'Ausführliches Training' }
+                                    ].map(dur => this.renderRadioOption(dur, duration, 'setDuration')).join('')}
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex space-x-3">
-                            <button onclick="app.previousStep()" 
-                                    class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <button onclick="app.previousStep()" class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                                 ← Zurück
                             </button>
-                            <button onclick="app.completeSetup()" 
-                                    class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-colors">
-                                🎉 Plan erstellen!
+                            <button onclick="app.nextStep()" class="flex-1 py-3 font-semibold rounded-lg transition-colors ${isValid ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}" ${!isValid ? 'disabled' : ''}>
+                                Weiter →
                             </button>
+                        </div>
+                        
+                        <!-- DEBUG INFO -->
+                        <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
+                            Debug: Frequency="${frequency}", Duration="${duration}", Valid=${isValid}
                         </div>
                     </div>
                 `;
