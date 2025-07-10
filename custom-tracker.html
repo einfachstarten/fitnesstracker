@@ -1624,22 +1624,6 @@
                     </div>
                 `;
             }
-                                                   ${duration === dur.id ? 'checked' : ''}
-                                                   onclick="app.setDuration('${dur.id}')"
-                                                   class="sr-only">
-                                            <div class="flex-1">
-                                                <div class="font-semibold text-gray-800">${dur.title}</div>
-                                                <div class="text-sm text-gray-600">${dur.desc}</div>
-                                            </div>
-                                            <div class="ml-4">
-                                                ${duration === dur.id ? 
-                                                    '<div class="w-4 h-4 bg-blue-500 rounded-full"></div>' :
-                                                    '<div class="w-4 h-4 border-2 border-gray-300 rounded-full"></div>'
-                                                }
-                                            </div>
-                                        </label>
-                                    `).join('')}
-                                </div>
             renderStep6_Schedule() {
                 const frequency = this.userData.frequency || '';
                 const duration = this.userData.duration || '';
