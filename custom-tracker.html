@@ -11,6 +11,15 @@
     <title>Custom Fitness Tracker - Intelligenter Assistent</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Suppress Tailwind CDN production warning
+      console.warn = function(message) {
+        if (message && message.includes && message.includes('tailwindcss.com should not be used in production')) {
+          return;
+        }
+        console.log('Warning:', message);
+      };
+    </script>
     
     <style>
         body {
@@ -354,36 +363,43 @@
             }
 
             async init() {
-                this.exerciseDatabase = await this.loadExerciseDatabase();
-
-                // Test API connection
                 try {
-                    await this.api.testConnection();
-                    this.apiStatus = 'working';
-                } catch (error) {
-                    this.apiStatus = 'offline';
-                }
+                    this.exerciseDatabase = await this.loadExerciseDatabase();
 
-                // Prüfe lokale Daten
-                const localUserData = localStorage.getItem('fitness_user_data');
-                const localPlan = localStorage.getItem('fitness_current_plan');
-                
-                if (localUserData && localPlan) {
-                    this.userData = JSON.parse(localUserData);
-                    this.currentPlan = JSON.parse(localPlan);
-                    await this.loadSessions();
-                    this.currentView = 'overview';
-                } else {
-                    // Versuche API Daten zu laden falls User ID vorhanden
-                    const existingUser = await this.api.getUser();
-                    if (existingUser) {
-                        this.userData = existingUser;
-                        await this.loadPlan();
+                    // Test API connection
+                    try {
+                        await this.api.testConnection();
+                        this.apiStatus = 'working';
+                    } catch (error) {
+                        this.apiStatus = 'offline';
+                    }
+
+                    const localUserData = localStorage.getItem('fitness_user_data');
+                    const localPlan = localStorage.getItem('fitness_current_plan');
+
+                    if (localUserData && localPlan) {
+                        this.userData = JSON.parse(localUserData);
+                        this.currentPlan = JSON.parse(localPlan);
+                        await this.loadSessions();
                         this.currentView = 'overview';
                     }
+
+                    this.render();
+                } catch (error) {
+                    console.error('App initialization failed:', error);
+                    document.getElementById('app').innerHTML = `
+                      <div class="max-w-md mx-auto bg-white min-h-screen flex items-center justify-center">
+                        <div class="text-center p-6">
+                          <div class="text-4xl mb-4">⚠️</div>
+                          <h2 class="text-xl font-bold text-red-600 mb-2">Fehler beim Laden</h2>
+                          <p class="text-gray-600 mb-4">Die App konnte nicht geladen werden.</p>
+                          <button onclick="location.reload()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                            Neu laden
+                          </button>
+                        </div>
+                      </div>
+                    `;
                 }
-                
-                this.render();
             }
 
             async loadExerciseDatabase() {
@@ -429,6 +445,12 @@
                     return;
                 }
 
+                const isValid = this.validateCurrentStep();
+                if (!isValid) {
+                    console.warn('Current step validation failed, cannot proceed');
+                    return;
+                }
+
                 this.isTransitioning = true;
                 this.setupStep++;
 
@@ -444,6 +466,19 @@
                 if (this.setupStep > 1) {
                     this.setupStep--;
                     this.render();
+                }
+            }
+
+            validateCurrentStep() {
+                switch (this.setupStep) {
+                    case 1: return !!this.userData.name;
+                    case 2: return (this.userData.goals || []).length > 0;
+                    case 3: return !!this.userData.experience;
+                    case 4: return (this.userData.equipment || []).length > 0;
+                    case 5: return (this.userData.focus || []).length > 0;
+                    case 6: return !!this.userData.frequency && !!this.userData.duration;
+                    case 7: return true;
+                    default: return false;
                 }
             }
 
@@ -524,28 +559,22 @@
             }
 
             async completeSetup() {
-                // Generiere Plan basierend auf userData
-                const plan = this.generateIntelligentPlan();
-                this.currentPlan = plan;
-                
-                // API Call falls verfügbar
+                console.log('Completing setup with data:', this.userData);
+
+                this.currentPlan = this.generateIntelligentPlan();
+
+                this.migrateToWeeklySystem();
+
+                localStorage.setItem('fitness_user_data', JSON.stringify(this.userData));
+                localStorage.setItem('fitness_current_plan', JSON.stringify(this.currentPlan));
+
                 try {
                     const result = await this.api.createUser(this.userData);
-                    if (result && result.id) {
-                        // Speichere Plan auch via API
-                        await this.api.saveSession({
-                            plan: plan,
-                            userData: this.userData
-                        });
-                    }
+                    console.log('User created via API:', result);
                 } catch (error) {
-                    console.log('API nicht verfügbar, nutze lokale Speicherung');
+                    console.log('API not available, using localStorage only:', error);
                 }
-                
-                // Lokale Speicherung als Fallback
-                localStorage.setItem('fitness_user_data', JSON.stringify(this.userData));
-                localStorage.setItem('fitness_current_plan', JSON.stringify(plan));
-                
+
                 this.currentView = 'overview';
                 this.render();
             }
@@ -1359,28 +1388,37 @@
             }
 
             renderSetup() {
-                const steps = [
-                    this.renderStep1_Welcome(),
-                    this.renderStep2_Goals(),
-                    this.renderStep3_Experience(),
-                    this.renderStep4_Equipment(),
-                    this.renderStep5_Focus(),
-                    this.renderStep6_Schedule(),
-                    this.renderStep7_Summary()
+                const stepMethods = [
+                    'renderStep1_Welcome',
+                    'renderStep2_Goals',
+                    'renderStep3_Experience',
+                    'renderStep4_Equipment',
+                    'renderStep5_Focus',
+                    'renderStep6_Schedule',
+                    'renderStep7_Summary'
                 ];
+
+                const missingMethods = stepMethods.filter(m => typeof this[m] !== 'function');
+                if (missingMethods.length > 0) {
+                    console.error('Missing step methods:', missingMethods);
+                    return `<div class="p-4 text-red-600">Setup Error: Missing methods ${missingMethods.join(', ')}</div>`;
+                }
+
+                const steps = stepMethods.map(m => this[m]());
+                const totalSteps = stepMethods.length;
 
                 return `
                     <div class="max-w-md mx-auto bg-white min-h-screen">
                         <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                             <h1 class="text-xl font-bold">🧙‍♂️ Trainingsplan-Assistent</h1>
-                            <p class="text-blue-100">Schritt ${this.setupStep} von 7</p>
+                            <p class="text-blue-100">Schritt ${this.setupStep} von ${totalSteps}</p>
                             <div class="mt-2 bg-white bg-opacity-20 rounded-full h-2">
-                                <div class="bg-white h-2 rounded-full transition-all duration-300" style="width: ${(this.setupStep / 7) * 100}%"></div>
+                                <div class="bg-white h-2 rounded-full transition-all duration-300" style="width: ${(this.setupStep / totalSteps) * 100}%"></div>
                             </div>
                         </div>
-                        
+
                         <div class="p-6">
-                            ${steps[this.setupStep - 1]}
+                            ${steps[this.setupStep - 1] || '<div>Step not found</div>'}
                         </div>
                     </div>
                 `;
@@ -1676,6 +1714,53 @@
                         <div class="text-xs text-gray-500 p-2 bg-gray-100 rounded">
                             Debug: Frequency="${frequency}", Duration="${duration}", Valid=${isValid}
                         </div>
+                    </div>
+                `;
+            }
+
+            renderStep7_Summary() {
+                const { name, goals, experience, equipment, focus, frequency, duration } = this.userData;
+
+                return `
+                    <div class="space-y-6">
+                      <div class="text-center">
+                        <div class="text-4xl mb-4">📋</div>
+                        <h2 class="text-xl font-bold text-gray-800">Perfekt, ${name || 'User'}!</h2>
+                        <p class="text-gray-600">Dein personalisierter Trainingsplan ist bereit</p>
+                      </div>
+
+                      <div class="bg-blue-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-800 mb-3">Deine Auswahl:</h3>
+                        <div class="text-sm space-y-2">
+                          <div><strong>Name:</strong> ${name || 'Nicht angegeben'}</div>
+                          <div><strong>Ziele:</strong> ${(goals || []).join(', ') || 'Keine ausgewählt'}</div>
+                          <div><strong>Erfahrung:</strong> ${experience || 'Nicht angegeben'}</div>
+                          <div><strong>Equipment:</strong> ${(equipment || []).join(', ') || 'Keine ausgewählt'}</div>
+                          <div><strong>Fokus:</strong> ${(focus || []).join(', ') || 'Nicht angegeben'}</div>
+                          <div><strong>Plan:</strong> ${frequency || '?'}x/Woche, ${duration || '?'} pro Einheit</div>
+                        </div>
+                      </div>
+
+                      <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center mb-2">
+                          <svg class="h-5 w-5 text-green-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                          <span class="font-semibold text-green-800">Alles bereit!</span>
+                        </div>
+                        <p class="text-sm text-green-700">
+                          Ich erstelle jetzt deinen personalisierten Trainingsplan basierend auf deinen Angaben.
+                        </p>
+                      </div>
+
+                      <div class="flex space-x-3">
+                        <button onclick="app.previousStep()" class="flex-1 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                          ← Zurück
+                        </button>
+                        <button onclick="app.completeSetup()" class="flex-1 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-colors">
+                          🎉 Plan erstellen!
+                        </button>
+                      </div>
                     </div>
                 `;
             }
