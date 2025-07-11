@@ -125,6 +125,8 @@ export class App {
   render() {
     console.log('🎨 Rendering view:', this.currentView);
     const container = document.getElementById('app');
+    // Clear previous content (e.g., initial loading screen)
+    container.innerHTML = '';
 
     this.components.forEach(c => c.unmount());
     this.components.clear();
