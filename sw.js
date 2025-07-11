@@ -4,6 +4,7 @@ const urlsToCache = [
   './index.html',
   './custom-tracker.html',
   './benni.html',
+  './css/tailwind.css',
   './manifest.json'
 ];
 
