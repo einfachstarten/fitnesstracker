@@ -1,4 +1,4 @@
-// Pure Function - NO Component class
+// Pure Function - NO CLASS!
 export function WelcomeStep(userData, handlers) {
   return {
     tag: 'div',
@@ -7,7 +7,7 @@ export function WelcomeStep(userData, handlers) {
       {
         tag: 'div',
         props: { className: 'step__emoji' },
-        children: ['\ud83c\udfcb\ufe0f']
+        children: ['🏋️‍♀️']
       },
       {
         tag: 'h2',
@@ -17,7 +17,7 @@ export function WelcomeStep(userData, handlers) {
       {
         tag: 'p',
         props: { className: 'step__text' },
-        children: ['Ich erstelle dir einen personalisierten Trainingsplan, der perfekt zu dir passt. Dazu stelle ich dir ein paar kurze Fragen.']
+        children: ['Ich erstelle dir einen personalisierten Trainingsplan, der perfekt zu dir passt.']
       },
       {
         tag: 'div',
@@ -36,29 +36,6 @@ export function WelcomeStep(userData, handlers) {
               className: 'form-input',
               placeholder: 'Dein Name',
               onInput: e => handlers.updateUserData('name', e.target.value)
-            }
-          }
-        ]
-      },
-      {
-        tag: 'div',
-        props: { className: 'form-group' },
-        children: [
-          {
-            tag: 'label',
-            props: { className: 'form-label' },
-            children: ['Wie alt bist du? (optional)']
-          },
-          {
-            tag: 'input',
-            props: {
-              type: 'number',
-              min: '12',
-              max: '100',
-              value: userData.age || '',
-              className: 'form-input',
-              placeholder: 'Dein Alter',
-              onInput: e => handlers.updateUserData('age', parseInt(e.target.value) || null)
             }
           }
         ]
