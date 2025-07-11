@@ -27,7 +27,8 @@
 
     <script type="module">
         try {
-            const { App } = await import('./src/core/App.js');
+            const cacheBust = Date.now();
+            const { App } = await import(`./src/core/App.js?v=${cacheBust}`);
             console.log('App module loaded successfully');
             window.fitnessApp = new App();
             console.log('App instance created');

@@ -1,3 +1,6 @@
+// VERSION IDENTIFIER - MUST BE FIRST LINE
+console.log('📦 App.js DEPLOYED - Version: 2024-07-11-18:15');
+
 import { EventBus } from './EventBus.js';
 import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
 import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
@@ -6,64 +9,59 @@ import { OverviewView } from '../components/Overview/OverviewView.js';
 import { WorkoutView } from '../components/WorkoutView/WorkoutView.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
 
-console.log('📦 App.js version: 2024-07-11-17:36');
-
 export class App {
   constructor() {
-    try {
-      console.log('🚀 App constructor started');
+    // MUST BE FIRST LINE IN CONSTRUCTOR
+    console.log('🚀 App constructor STARTED - Version: 2024-07-11-18:15');
+    
+    console.log('1️⃣ Creating EventBus...');
+    this.eventBus = new EventBus();
+    
+    console.log('2️⃣ Setting initial state...');
+    this.currentView = 'setup';
+    this.components = new Map();
+    this.exerciseDatabase = null;
+    this.planGenerator = null;
+    this.userData = null;
+    this.currentPlan = null;
 
-      console.log('Creating EventBus...');
-      this.eventBus = new EventBus();
+    console.log('3️⃣ Creating WeeklyDataManager...');
+    this.weeklyDataManager = new WeeklyDataManager();
+    console.log('✅ WeeklyDataManager created successfully');
 
-      console.log('Setting initial state...');
-      this.currentView = 'setup';
-      this.components = new Map();
-      this.exerciseDatabase = null;
-      this.planGenerator = null;
-      this.userData = null;
-      this.currentPlan = null;
-
-      console.log('Creating WeeklyDataManager...');
-      this.weeklyDataManager = new WeeklyDataManager();
-      console.log('WeeklyDataManager created successfully');
-
-      console.log('🎯 App constructor completed, calling init()');
-      this.init().catch(error => {
-        console.error('Init failed:', error);
-        this.showError('Initialization failed: ' + error.message);
-      });
-    } catch (error) {
-      console.error('App constructor failed:', error);
-      document.getElementById('app').innerHTML = `
-        <div class="p-8 text-center">
-          <h2 class="text-xl font-bold text-red-600 mb-4">Constructor Error</h2>
-          <pre>${error.message}\n${error.stack}</pre>
-        </div>
-      `;
-    }
+    console.log('4️⃣ Constructor complete, calling init()...');
+    this.init().catch(error => {
+      console.error('💥 Init failed:', error);
+      this.showError('Init failed: ' + error.message);
+    });
   }
 
   async init() {
+    console.log('🔄 INIT started');
     try {
-      console.log('🔄 App init started');
+      console.log('📚 Loading exercise database...');
       await this.loadExerciseDatabase();
-      console.log('📚 Exercise database loaded');
-
+      console.log('✅ Exercise database loaded');
+      
+      console.log('📋 Creating plan generator...');
       this.planGenerator = new WorkoutPlanGenerator(this.exerciseDatabase);
-      console.log('📋 Plan generator created');
-
+      console.log('✅ Plan generator created');
+      
+      console.log('🎯 Setting up event handlers...');
       this.setupEventHandlers();
-      console.log('🎯 Event handlers setup');
-
+      console.log('✅ Event handlers setup');
+      
+      console.log('💾 Checking existing data...');
       this.checkExistingData();
-      console.log('💾 Existing data checked, currentView:', this.currentView);
-
+      console.log('✅ Data checked, currentView:', this.currentView);
+      
+      console.log('🎨 Starting render...');
       this.render();
-      console.log('🎨 Initial render completed');
+      console.log('✅ Render completed');
+      
     } catch (error) {
-      console.error('App initialization failed:', error);
-      this.showError('App konnte nicht geladen werden: ' + error.message + '\n\n' + error.stack);
+      console.error('💥 App init failed:', error);
+      this.showError('App init failed: ' + error.message + '\n\n' + error.stack);
     }
   }
 
@@ -73,7 +71,7 @@ export class App {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       this.exerciseDatabase = await response.json();
     } catch (error) {
-      console.warn('Could not load exercises.json, using fallback');
+      console.warn('Using fallback exercises');
       this.exerciseDatabase = this.getFallbackExercises();
     }
   }
@@ -119,13 +117,13 @@ export class App {
   }
 
   changeView(viewName) {
-    console.log('Changing view to:', viewName);
+    console.log('🔄 Changing view to:', viewName);
     this.currentView = viewName;
     this.render();
   }
 
   render() {
-    console.log('Rendering view:', this.currentView);
+    console.log('🎨 Rendering view:', this.currentView);
     const container = document.getElementById('app');
 
     this.components.forEach(c => c.unmount());
@@ -158,7 +156,7 @@ export class App {
 
     if (viewComponent) {
       this.components.set(this.currentView, viewComponent);
-      console.log('Mounting component for view:', this.currentView);
+      console.log('🎯 Mounting component:', this.currentView);
       viewComponent.mount(container);
     }
   }
@@ -166,7 +164,7 @@ export class App {
   showError(message) {
     const container = document.getElementById('app');
     container.innerHTML = `
-      <div class="error-screen p-8 text-center">
+      <div class="p-8 text-center">
         <h2 class="text-xl font-bold text-red-600 mb-4">⚠️ Fehler</h2>
         <pre class="text-left bg-gray-100 p-4 rounded text-sm whitespace-pre-wrap">${message}</pre>
         <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">Neu laden</button>
@@ -177,8 +175,8 @@ export class App {
   getFallbackExercises() {
     return {
       "Eigengewicht": [
-        { "name": "Liegest\u00fctz", "muskelgruppen": ["Brust", "Trizeps"], "schwierigkeit": "Anf\u00e4nger" },
-        { "name": "Kniebeuge", "muskelgruppen": ["Beine", "Ges\u00e4\u00df"], "schwierigkeit": "Anf\u00e4nger" }
+        { "name": "Liegestütz", "muskelgruppen": ["Brust", "Trizeps"], "schwierigkeit": "Anfänger" },
+        { "name": "Kniebeuge", "muskelgruppen": ["Beine", "Gesäß"], "schwierigkeit": "Anfänger" }
       ]
     };
   }
