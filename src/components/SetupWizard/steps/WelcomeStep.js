@@ -1,4 +1,6 @@
-export class WelcomeStep {
+import { Component } from '../../../core/Component.js';
+
+export class WelcomeStep extends Component {
   render(userData, handlers) {
     return this.createElement('div', { className: 'welcome-step' }, [
       this.createElement('div', { className: 'step-icon' }, ['\ud83c\udfcb\ufe0f']),
@@ -13,7 +15,7 @@ export class WelcomeStep {
           type: 'text',
           value: userData.name || '',
           placeholder: 'Dein Name',
-          onInput: (e) => handlers.updateUserData('name', e.target.value)
+          onInput: e => handlers.updateUserData('name', e.target.value)
         })
       ]),
 
@@ -25,33 +27,10 @@ export class WelcomeStep {
           max: '100',
           value: userData.age || '',
           placeholder: 'Dein Alter',
-          onInput: (e) => handlers.updateUserData('age', parseInt(e.target.value) || null)
+          onInput: e =>
+            handlers.updateUserData('age', parseInt(e.target.value) || null)
         })
       ])
     ]);
-  }
-
-  createElement(tag, props = {}, children = []) {
-    const element = document.createElement(tag);
-
-    Object.entries(props).forEach(([key, value]) => {
-      if (key === 'className') {
-        element.className = value;
-      } else if (key === 'onInput') {
-        element.addEventListener('input', value);
-      } else {
-        element.setAttribute(key, value);
-      }
-    });
-
-    children.forEach(child => {
-      if (typeof child === 'string') {
-        element.appendChild(document.createTextNode(child));
-      } else {
-        element.appendChild(child);
-      }
-    });
-
-    return element;
   }
 }
