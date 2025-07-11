@@ -5,11 +5,10 @@ import { SetupWizard } from '../components/SetupWizard/SetupWizard.js';
 import { OverviewView } from '../components/Overview/OverviewView.js';
 import { WorkoutView } from '../components/WorkoutView/WorkoutView.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
-import { PerformanceMonitor } from '../utils/PerformanceMonitor.js';
-import { ErrorTracker } from '../utils/ErrorTracker.js';
 
 export class App {
   constructor() {
+    console.log('App constructor started');
     this.eventBus = new EventBus();
     this.currentView = 'setup';
     this.components = new Map();
@@ -21,25 +20,30 @@ export class App {
     this.userData = null;
     this.currentPlan = null;
 
-    this.performanceMonitor = new PerformanceMonitor();
-    this.errorTracker = new ErrorTracker();
-    window.addEventListener('load', () => {
-      this.performanceMonitor.trackAppMetrics();
-    });
-
+    console.log('App constructor completed, calling init()');
     this.init();
   }
 
   async init() {
     try {
+      console.log('App init started');
       await this.loadExerciseDatabase();
+      console.log('Exercise database loaded');
+
       this.planGenerator = new WorkoutPlanGenerator(this.exerciseDatabase);
+      console.log('Plan generator created');
+
       this.setupEventHandlers();
+      console.log('Event handlers setup');
+
       this.checkExistingData();
+      console.log('Existing data checked, currentView:', this.currentView);
+
       this.render();
+      console.log('Initial render completed');
     } catch (error) {
       console.error('App initialization failed:', error);
-      this.showError('App konnte nicht geladen werden: ' + error.message);
+      this.showError('App konnte nicht geladen werden: ' + error.message + '\n\n' + error.stack);
     }
   }
 
@@ -95,11 +99,13 @@ export class App {
   }
 
   changeView(viewName) {
+    console.log('Changing view to:', viewName);
     this.currentView = viewName;
     this.render();
   }
 
   render() {
+    console.log('Rendering view:', this.currentView);
     const container = document.getElementById('app');
 
     this.components.forEach(c => c.unmount());
@@ -132,6 +138,7 @@ export class App {
 
     if (viewComponent) {
       this.components.set(this.currentView, viewComponent);
+      console.log('Mounting component for view:', this.currentView);
       viewComponent.mount(container);
     }
   }
@@ -139,10 +146,10 @@ export class App {
   showError(message) {
     const container = document.getElementById('app');
     container.innerHTML = `
-      <div class="error-screen">
-        <h2>\u26a0\ufe0f Fehler</h2>
-        <p>${message}</p>
-        <button onclick="location.reload()">Neu laden</button>
+      <div class="error-screen p-8 text-center">
+        <h2 class="text-xl font-bold text-red-600 mb-4">⚠️ Fehler</h2>
+        <pre class="text-left bg-gray-100 p-4 rounded text-sm whitespace-pre-wrap">${message}</pre>
+        <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">Neu laden</button>
       </div>
     `;
   }
