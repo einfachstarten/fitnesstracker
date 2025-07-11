@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fitness Tracker - New Architecture</title>
     <link rel="stylesheet" href="css/tailwind.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            animation: {
+              'fade-in': 'fadeIn 0.3s ease-in-out',
+            }
+          }
+        }
+      }
+    </script>
     <style>
         .loading-initial {
             display: flex;
@@ -16,6 +28,11 @@
     </style>
 </head>
 <body>
+  <!-- Debug element to verify CSS works -->
+  <div id="css-test" class="hidden fixed top-4 right-4 bg-green-500 text-white p-2 rounded z-50">
+    ✅ CSS loaded
+  </div>
+
     <div id="app">
         <div class="loading-initial">
             <div class="text-center p-8">
@@ -42,6 +59,17 @@
                 </div>
             `;
         }
+    </script>
+    <script>
+  // Show CSS test after short delay
+  setTimeout(() => {
+    const test = document.getElementById('css-test');
+    if (test) {
+      test.classList.remove('hidden');
+      // Hide after 2 seconds
+      setTimeout(() => test.classList.add('hidden'), 2000);
+    }
+  }, 500);
     </script>
 </body>
 </html>

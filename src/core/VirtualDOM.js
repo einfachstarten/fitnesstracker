@@ -21,6 +21,8 @@ export class VirtualDOM {
           element.addEventListener(key.slice(2).toLowerCase(), value);
         } else if (key === 'className') {
           element.className = value;
+          // Ensure class attribute is also set for compatibility
+          if (value) element.setAttribute('class', value);
         } else if (key === 'style') {
           element.setAttribute('style', value);
         } else if (key === 'value') {
