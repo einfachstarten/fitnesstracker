@@ -1,3 +1,5 @@
+import { load, save } from '../utils/StorageUtils.js';
+
 export class WeeklyDataManager {
   constructor() {
     this.data = this.loadFromStorage();
@@ -92,15 +94,27 @@ export class WeeklyDataManager {
   }
 
   loadFromStorage() {
-    const stored = localStorage.getItem('weeklyTrainingData');
-    return stored ? JSON.parse(stored) : {
-      weeklyGoal: 3,
-      currentWeek: this.getCurrentWeek(),
-      weeks: {}
-    };
+    try {
+      return load('weeklyTrainingData', {
+        weeklyGoal: 3,
+        currentWeek: this.getCurrentWeek(),
+        weeks: {}
+      });
+    } catch (err) {
+      console.warn('Failed to load weeklyTrainingData', err);
+      return {
+        weeklyGoal: 3,
+        currentWeek: this.getCurrentWeek(),
+        weeks: {}
+      };
+    }
   }
 
   saveToStorage() {
-    localStorage.setItem('weeklyTrainingData', JSON.stringify(this.data));
+    try {
+      save('weeklyTrainingData', this.data);
+    } catch (err) {
+      console.warn('Failed to save weeklyTrainingData', err);
+    }
   }
 }

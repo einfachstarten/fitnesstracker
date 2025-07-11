@@ -6,6 +6,7 @@ export class Component {
     this.element = null;
     this.children = new Map();
     this.eventBus = props.eventBus || new EventBus();
+    this._handlers = [];
   }
 
   setState(newState) {
@@ -56,9 +57,36 @@ export class Component {
 
   on(event, handler) {
     this.eventBus.on(event, handler);
+    this._handlers.push({ event, handler });
   }
 
   off(event, handler) {
     this.eventBus.off(event, handler);
+  }
+
+  createElement(tag, props = {}, children = []) {
+    const el = document.createElement(tag);
+    Object.entries(props).forEach(([key, value]) => {
+      if (key === 'className') {
+        el.className = value;
+      } else if (key.startsWith('on')) {
+        el.addEventListener(key.slice(2).toLowerCase(), value);
+      } else {
+        el.setAttribute(key, value);
+      }
+    });
+    children.forEach(child => {
+      if (typeof child === 'string') {
+        el.appendChild(document.createTextNode(child));
+      } else if (child) {
+        el.appendChild(child);
+      }
+    });
+    return el;
+  }
+
+  onUnmount() {
+    this._handlers.forEach(h => this.eventBus.off(h.event, h.handler));
+    this._handlers = [];
   }
 }

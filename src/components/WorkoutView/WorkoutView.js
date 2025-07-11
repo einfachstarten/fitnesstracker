@@ -1,23 +1,15 @@
 import { Component } from '../../core/Component.js';
+import { ExerciseList } from './exercise/ExerciseList.js';
 
 export class WorkoutView extends Component {
   render() {
-    return this.createElement('div', { className: 'workout-view' }, [
-      this.createElement('h2', {}, ['Workout']),
-      this.createElement('p', {}, ['Workout Details hier'])
-    ]);
-  }
+    const { currentPlan } = this.props;
+    const day = Object.keys(currentPlan || {})[0];
+    const dayData = currentPlan ? currentPlan[day] : null;
 
-  createElement(tag, props = {}, children = []) {
-    const el = document.createElement(tag);
-    Object.entries(props).forEach(([k,v]) => {
-      if (k === 'className') el.className = v;
-      else el.setAttribute(k, v);
-    });
-    children.forEach(c => {
-      if (typeof c === 'string') el.appendChild(document.createTextNode(c));
-      else el.appendChild(c);
-    });
-    return el;
+    return this.createElement('div', { className: 'workout-view' }, [
+      this.createElement('h2', {}, [dayData ? dayData.title : 'Workout']),
+      dayData && new ExerciseList({ exercises: dayData.exercises }).render()
+    ]);
   }
 }
