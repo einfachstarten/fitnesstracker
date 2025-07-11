@@ -1,7 +1,16 @@
 import { Component } from '../../../core/Component.js';
 
 export class GoalsStep extends Component {
-  render(userData, handlers) {
+  constructor(props) {
+    super(props);
+    this.userData = props.userData || {};
+    this.handlers = props.handlers || {};
+  }
+
+  render() {
+    const userData = this.userData;
+    const handlers = this.handlers;
+
     return this.createElement('div', { className: 'goals-step' }, [
       this.createElement('h2', {}, ['Ziele']),
       this.createElement(

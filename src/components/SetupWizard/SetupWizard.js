@@ -28,23 +28,32 @@ export class SetupWizard extends Component {
       isTransitioning: false
     };
 
-    this.steps = [
-      new WelcomeStep(),
-      new GoalsStep(),
-      new ExperienceStep(),
-      new EquipmentStep(),
-      new FocusStep(),
-      new ScheduleStep(),
-      new SummaryStep()
+    // Components will be created dynamically per render
+  }
+
+  getCurrentStepComponent() {
+    const stepClasses = [
+      WelcomeStep,
+      GoalsStep,
+      ExperienceStep,
+      EquipmentStep,
+      FocusStep,
+      ScheduleStep,
+      SummaryStep
     ];
+
+    const StepClass = stepClasses[this.state.currentStep - 1];
+    return new StepClass({
+      userData: this.state.userData,
+      handlers: this.getStepHandlers(),
+      eventBus: this.eventBus
+    });
   }
 
   render() {
-    const currentStepComponent = this.steps[this.state.currentStep - 1];
-
     return this.createElement('div', { className: 'setup-wizard' }, [
       this.renderHeader(),
-      this.renderStepContent(currentStepComponent),
+      this.renderStepContent(),
       this.renderNavigation()
     ]);
   }
@@ -158,9 +167,10 @@ export class SetupWizard extends Component {
     ]);
   }
 
-  renderStepContent(stepComponent) {
+  renderStepContent() {
+    const stepComponent = this.getCurrentStepComponent();
     return this.createElement('div', { className: 'step-content' }, [
-      stepComponent.render(this.state.userData, this.getStepHandlers())
+      stepComponent.render()
     ]);
   }
 
