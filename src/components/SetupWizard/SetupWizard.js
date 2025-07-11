@@ -1,13 +1,5 @@
 import { Component } from '../../core/Component.js';
-import { VirtualDOM } from '../../core/VirtualDOM.js';
 import { WelcomeStep } from './steps/WelcomeStep.js';
-// Placeholder imports for remaining steps
-import { GoalsStep } from './steps/GoalsStep.js';
-import { ExperienceStep } from './steps/ExperienceStep.js';
-import { EquipmentStep } from './steps/EquipmentStep.js';
-import { FocusStep } from './steps/FocusStep.js';
-import { ScheduleStep } from './steps/ScheduleStep.js';
-import { SummaryStep } from './steps/SummaryStep.js';
 
 export class SetupWizard extends Component {
   constructor(props) {
@@ -27,27 +19,6 @@ export class SetupWizard extends Component {
       },
       isTransitioning: false
     };
-
-    // Components will be created dynamically per render
-  }
-
-  getCurrentStepComponent() {
-    const stepClasses = [
-      WelcomeStep,
-      GoalsStep,
-      ExperienceStep,
-      EquipmentStep,
-      FocusStep,
-      ScheduleStep,
-      SummaryStep
-    ];
-
-    const StepClass = stepClasses[this.state.currentStep - 1];
-    return new StepClass({
-      userData: this.state.userData,
-      handlers: this.getStepHandlers(),
-      eventBus: this.eventBus
-    });
   }
 
   render() {
@@ -58,13 +29,11 @@ export class SetupWizard extends Component {
     ]);
   }
 
-  onMount() {}
-
   renderHeader() {
     const progressPercentage = (this.state.currentStep / this.state.totalSteps) * 100;
 
     return this.createElement('div', { className: 'wizard__header' }, [
-      this.createElement('h1', { className: 'wizard__title' }, ['\ud83e\udd13 Trainingsplan-Assistent']),
+      this.createElement('h1', { className: 'wizard__title' }, ['\ud83d\udd2e Trainingsplan-Assistent']),
       this.createElement('p', { className: 'wizard__subtitle' }, [`Schritt ${this.state.currentStep} von ${this.state.totalSteps}`]),
       this.createElement('div', { className: 'wizard__progress' }, [
         this.createElement('div', {
@@ -75,11 +44,25 @@ export class SetupWizard extends Component {
     ]);
   }
 
+  // SIMPLE renderStepContent - direct function calls
   renderStepContent() {
-    const stepComponent = this.getCurrentStepComponent();
+    const userData = this.state.userData;
+    const handlers = this.getStepHandlers();
+
+    let stepVNode;
+    switch (this.state.currentStep) {
+      case 1:
+        stepVNode = WelcomeStep(userData, handlers);
+        break;
+      default:
+        stepVNode = {
+          tag: 'div',
+          children: [`Step ${this.state.currentStep} not implemented yet`]
+        };
+    }
 
     return this.createElement('div', { className: 'wizard__content' }, [
-      stepComponent.render()
+      stepVNode
     ]);
   }
 
@@ -89,14 +72,14 @@ export class SetupWizard extends Component {
     const canProceed = this.validateCurrentStep();
 
     const buttons = [];
-
+    
     if (!isFirstStep) {
       buttons.push(this.createElement('button', {
         className: 'btn btn--secondary',
         onClick: () => this.previousStep()
       }, ['\u2190 Zur\u00fcck']));
     }
-
+    
     buttons.push(this.createElement('button', {
       className: `btn ${canProceed ? 'btn--primary' : 'btn--disabled'}`,
       disabled: !canProceed,
@@ -159,17 +142,6 @@ export class SetupWizard extends Component {
   previousStep() {
     if (this.state.currentStep > 1) {
       this.setState({ currentStep: this.state.currentStep - 1 });
-    }
-  }
-
-  update() {
-    if (this.element) {
-      const newVNode = this.render();
-      const patches = VirtualDOM.diff(this.lastVNode, newVNode);
-      if (patches) {
-        this.applyPatches(this.element, patches);
-      }
-      this.lastVNode = newVNode;
     }
   }
 
