@@ -1,7 +1,15 @@
 import { Component } from '../../../core/Component.js';
 
 export class ScheduleStep extends Component {
-  render(userData, handlers) {
+  constructor(props) {
+    super(props);
+    this.userData = props.userData || {};
+    this.handlers = props.handlers || {};
+  }
+
+  render() {
+    const userData = this.userData;
+    const handlers = this.handlers;
     return this.createElement('div', {}, [
       this.createElement('h2', {}, ['Zeitplan']),
       this.createElement('label', {}, ['H\u00e4ufigkeit (Tage/Woche)']),
