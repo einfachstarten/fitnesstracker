@@ -4,6 +4,7 @@ import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
 import { SetupWizard } from '../components/SetupWizard/SetupWizard.js';
 import { OverviewView } from '../components/Overview/OverviewView.js';
 import { WorkoutView } from '../components/WorkoutView/WorkoutView.js';
+import { CalendarView } from '../components/CalendarView/CalendarView.js';
 
 export class App {
   constructor() {
@@ -37,6 +38,7 @@ export class App {
   async loadExerciseDatabase() {
     try {
       const response = await fetch('./exercises.json');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       this.exerciseDatabase = await response.json();
     } catch (error) {
       console.warn('Could not load exercises.json, using fallback');
@@ -107,6 +109,9 @@ export class App {
           currentPlan: this.currentPlan,
           weeklyDataManager: this.weeklyDataManager
         });
+        break;
+      case 'calendar':
+        viewComponent = new CalendarView({});
         break;
       case 'workout':
         viewComponent = new WorkoutView({
