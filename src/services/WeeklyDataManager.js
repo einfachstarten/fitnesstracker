@@ -2,7 +2,14 @@ import { load, save } from '../utils/StorageUtils.js';
 
 export class WeeklyDataManager {
   constructor() {
-    this.data = this.loadFromStorage();
+    try {
+      console.log('WeeklyDataManager constructor started');
+      this.data = this.loadFromStorage();
+      console.log('WeeklyDataManager constructor completed');
+    } catch (error) {
+      console.error('WeeklyDataManager constructor failed:', error);
+      throw error;
+    }
   }
 
   getCurrentWeek() {
