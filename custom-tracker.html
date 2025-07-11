@@ -11,6 +11,10 @@
     <title>Custom Fitness Tracker - Intelligenter Assistent</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import { MigrationController } from './src/utils/MigrationController.js';
+      MigrationController.redirectToCorrectVersion();
+    </script>
     <script>
       // Suppress Tailwind CDN production warning
       console.warn = function(message) {
@@ -2191,3 +2195,4 @@
     </script>
 </body>
 </html>
+
