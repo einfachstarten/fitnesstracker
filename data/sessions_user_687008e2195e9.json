@@ -1,0 +1,57 @@
+[
+    {
+        "day_index": null,
+        "completed_exercises": [],
+        "is_completed": false,
+        "workout_date": "2025-07-10",
+        "timestamp": "2025-07-10 20:39:30"
+    },
+    {
+        "day_index": 0,
+        "completed_exercises": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+        ],
+        "is_completed": true,
+        "workout_date": "2025-07-10",
+        "timestamp": "2025-07-10 20:40:55"
+    },
+    {
+        "day_index": 1,
+        "completed_exercises": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+        ],
+        "is_completed": true,
+        "workout_date": "2025-07-10",
+        "timestamp": "2025-07-10 20:52:15"
+    },
+    {
+        "day_index": 2,
+        "completed_exercises": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+        ],
+        "is_completed": true,
+        "workout_date": "2025-07-10",
+        "timestamp": "2025-07-10 20:52:49"
+    }
+]

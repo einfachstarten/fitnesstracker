@@ -1,0 +1,19 @@
+{
+    "id": "user_68702001e9184",
+    "name": "Mahesh",
+    "age": 25,
+    "experience": "Fortgeschritten",
+    "goals": [
+        "Muskelaufbau",
+        "Kraft",
+        "Gesundheit"
+    ],
+    "schedule": "3days",
+    "equipment": [
+        "Eigengewicht",
+        "Kurzhanteln",
+        "Langhanteln"
+    ],
+    "duration": "60min",
+    "created_at": "2025-07-10 22:18:09"
+}

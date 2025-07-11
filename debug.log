@@ -28,3 +28,165 @@ Parsed path: []
 Parsed path: []
 2025-07-10 15:35:09 - GET /demos/fitnesstracker/debug-api.php
 Parsed path: []
+2025-07-10 15:48:45 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 15:48:45 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 17:23:20 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 17:23:20 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 19:05:53 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 19:05:53 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:28:39 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:28:39 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:32:55 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 20:32:56 - POST /demos/fitnesstracker/debug-api.php/users/user_68700757dc5ce/session
+Parsed path: ["users","user_68700757dc5ce","session"]
+2025-07-10 20:38:43 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:38:43 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:39:30 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 20:39:30 - POST /demos/fitnesstracker/debug-api.php/users/user_687008e2195e9/session
+Parsed path: ["users","user_687008e2195e9","session"]
+2025-07-10 20:40:55 - POST /demos/fitnesstracker/debug-api.php/users/user_687008e2195e9/session
+Parsed path: ["users","user_687008e2195e9","session"]
+2025-07-10 20:52:15 - POST /demos/fitnesstracker/debug-api.php/users/user_687008e2195e9/session
+Parsed path: ["users","user_687008e2195e9","session"]
+2025-07-10 20:52:49 - POST /demos/fitnesstracker/debug-api.php/users/user_687008e2195e9/session
+Parsed path: ["users","user_687008e2195e9","session"]
+2025-07-10 20:57:37 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:57:37 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:57:49 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:57:49 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 20:59:22 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 20:59:22 - POST /demos/fitnesstracker/debug-api.php/users/user_68700d8a8d416/session
+Parsed path: ["users","user_68700d8a8d416","session"]
+2025-07-10 20:59:33 - POST /demos/fitnesstracker/debug-api.php/users/user_68700d8a8d416/session
+Parsed path: ["users","user_68700d8a8d416","session"]
+2025-07-10 21:01:00 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:01:00 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:28:17 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:28:18 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:39:14 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:39:14 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:40:00 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 21:41:13 - POST /demos/fitnesstracker/debug-api.php/users/user_6870171067f79/session
+Parsed path: ["users","user_6870171067f79","session"]
+2025-07-10 21:45:07 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:45:07 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:45:49 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 21:46:46 - POST /demos/fitnesstracker/debug-api.php/users/user_6870186dcf0ed/session
+Parsed path: ["users","user_6870186dcf0ed","session"]
+2025-07-10 21:52:12 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:52:13 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:52:13 - GET /demos/fitnesstracker/debug-api.php/users/user_6870186dcf0ed/sessions
+Parsed path: ["users","user_6870186dcf0ed","sessions"]
+2025-07-10 21:52:19 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:52:19 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 21:53:00 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 21:53:25 - POST /demos/fitnesstracker/debug-api.php/users/user_68701a1c7a6d9/session
+Parsed path: ["users","user_68701a1c7a6d9","session"]
+2025-07-10 21:54:34 - POST /demos/fitnesstracker/debug-api.php/users/user_68701a1c7a6d9/session
+Parsed path: ["users","user_68701a1c7a6d9","session"]
+2025-07-10 21:54:43 - POST /demos/fitnesstracker/debug-api.php/users/user_68701a1c7a6d9/session
+Parsed path: ["users","user_68701a1c7a6d9","session"]
+2025-07-10 21:54:58 - POST /demos/fitnesstracker/debug-api.php/users/user_68701a1c7a6d9/session
+Parsed path: ["users","user_68701a1c7a6d9","session"]
+2025-07-10 22:01:19 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:01:19 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:01:19 - GET /demos/fitnesstracker/debug-api.php/users/user_68701a1c7a6d9/sessions
+Parsed path: ["users","user_68701a1c7a6d9","sessions"]
+2025-07-10 22:01:46 - POST /demos/fitnesstracker/debug-api.php/users/user_68701a1c7a6d9/session
+Parsed path: ["users","user_68701a1c7a6d9","session"]
+2025-07-10 22:04:54 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:04:54 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:05:18 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 22:16:15 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:16:15 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:16:16 - GET /demos/fitnesstracker/debug-api.php/users/user_68701cfeacf38/sessions
+Parsed path: ["users","user_68701cfeacf38","sessions"]
+2025-07-10 22:17:44 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:17:44 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:18:09 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-10 22:18:25 - GET /demos/fitnesstracker/debug-api.php/users/user_68702001e9184/sessions
+Parsed path: ["users","user_68702001e9184","sessions"]
+2025-07-10 22:26:36 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:26:37 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-10 22:26:55 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-11 12:28:41 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-11 12:29:10 - POST /demos/fitnesstracker/debug-api.php/users/create
+Parsed path: ["users","create"]
+2025-07-11 12:29:50 - GET /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/sessions
+Parsed path: ["users","user_6870e776296fe","sessions"]
+2025-07-11 12:30:30 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:31 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:32 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:33 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:34 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:35 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:37 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:38 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:40 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:30:41 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:31:00 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 12:31:01 - POST /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/session
+Parsed path: ["users","user_6870e776296fe","session"]
+2025-07-11 15:52:49 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-11 15:52:49 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-11 15:52:49 - GET /demos/fitnesstracker/debug-api.php/users/user_6870220fc5e44/sessions
+Parsed path: ["users","user_6870220fc5e44","sessions"]

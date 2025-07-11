@@ -1,0 +1,19 @@
+{
+    "id": "user_6870e776296fe",
+    "name": "Haus",
+    "age": 25,
+    "experience": "Fortgeschritten",
+    "goals": [
+        "Muskelaufbau",
+        "Kraft",
+        "Gesundheit"
+    ],
+    "schedule": "3days",
+    "equipment": [
+        "Eigengewicht",
+        "Kurzhanteln",
+        "Langhanteln"
+    ],
+    "duration": "60min",
+    "created_at": "2025-07-11 12:29:10"
+}
