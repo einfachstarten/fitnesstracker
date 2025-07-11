@@ -6,10 +6,12 @@ import { OverviewView } from '../components/Overview/OverviewView.js';
 import { WorkoutView } from '../components/WorkoutView/WorkoutView.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
 
+console.log('📦 App.js version: 2024-07-11-17:36');
+
 export class App {
   constructor() {
     try {
-      console.log('App constructor started');
+      console.log('🚀 App constructor started');
 
       console.log('Creating EventBus...');
       this.eventBus = new EventBus();
@@ -24,9 +26,13 @@ export class App {
 
       console.log('Creating WeeklyDataManager...');
       this.weeklyDataManager = new WeeklyDataManager();
+      console.log('WeeklyDataManager created successfully');
 
-      console.log('App constructor completed, calling init()');
-      this.init();
+      console.log('🎯 App constructor completed, calling init()');
+      this.init().catch(error => {
+        console.error('Init failed:', error);
+        this.showError('Initialization failed: ' + error.message);
+      });
     } catch (error) {
       console.error('App constructor failed:', error);
       document.getElementById('app').innerHTML = `
@@ -40,21 +46,21 @@ export class App {
 
   async init() {
     try {
-      console.log('App init started');
+      console.log('🔄 App init started');
       await this.loadExerciseDatabase();
-      console.log('Exercise database loaded');
+      console.log('📚 Exercise database loaded');
 
       this.planGenerator = new WorkoutPlanGenerator(this.exerciseDatabase);
-      console.log('Plan generator created');
+      console.log('📋 Plan generator created');
 
       this.setupEventHandlers();
-      console.log('Event handlers setup');
+      console.log('🎯 Event handlers setup');
 
       this.checkExistingData();
-      console.log('Existing data checked, currentView:', this.currentView);
+      console.log('💾 Existing data checked, currentView:', this.currentView);
 
       this.render();
-      console.log('Initial render completed');
+      console.log('🎨 Initial render completed');
     } catch (error) {
       console.error('App initialization failed:', error);
       this.showError('App konnte nicht geladen werden: ' + error.message + '\n\n' + error.stack);
