@@ -1,75 +1,26 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fitness Tracker - New Architecture</title>
-    <link rel="stylesheet" href="css/tailwind.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              'fade-in': 'fadeIn 0.3s ease-in-out',
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-        .loading-initial {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>\uD83C\uDFCB\uFE0F Fitness Tracker - New Architecture</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f3f4f6;
+    }
+  </style>
 </head>
 <body>
-  <!-- Debug element to verify CSS works -->
-  <div id="css-test" class="hidden fixed top-4 right-4 bg-green-500 text-white p-2 rounded z-50">
-    ✅ CSS loaded
-  </div>
-
-    <div id="app">
-        <div class="loading-initial">
-            <div class="text-center p-8">
-                <div class="text-4xl mb-4">🧙‍♂️</div>
-                <div class="text-lg font-semibold">Neue Architektur wird geladen...</div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        try {
-            const cacheBust = Date.now();
-            const { App } = await import(`./src/core/App.js?v=${cacheBust}`);
-            console.log('App module loaded successfully');
-            window.fitnessApp = new App();
-            console.log('App instance created');
-        } catch (error) {
-            console.error('Critical error in new architecture:', error);
-            document.getElementById('app').innerHTML = `
-                <div class="p-8 text-center">
-                    <h2 class="text-xl font-bold text-red-600 mb-4">Loading Error</h2>
-                    <pre class="text-left bg-gray-100 p-4 rounded text-sm">${error.message}\n\n${error.stack}</pre>
-                    <button onclick="localStorage.clear(); location.reload();" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">Clear & Reload</button>
-                </div>
-            `;
-        }
-    </script>
-    <script>
-  // Show CSS test after short delay
-  setTimeout(() => {
-    const test = document.getElementById('css-test');
-    if (test) {
-      test.classList.remove('hidden');
-      // Hide after 2 seconds
-      setTimeout(() => test.classList.add('hidden'), 2000);
-    }
-  }, 500);
-    </script>
+  <div id="app"></div>
+  
+  <script type="module">
+    import { App } from './src/core/App.js';
+    console.log('App module loaded successfully');
+    const app = new App();
+    console.log('App instance created');
+  </script>
 </body>
 </html>
