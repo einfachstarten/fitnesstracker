@@ -20,17 +20,22 @@ export class Component {
   }
 
   render() {
-    throw new Error('Component must implement render() method');
+    throw new Error(`Component ${this.constructor.name} must implement render() method`);
   }
 
   mount(container) {
-    this.lastVNode = this.render();
-    const temp = document.createElement('div');
-    VirtualDOM.render(this.lastVNode, temp);
-    this.element = temp.firstChild;
-    container.appendChild(this.element);
-    this.onMount();
-    return this.element;
+    try {
+      this.lastVNode = this.render();
+      const temp = document.createElement('div');
+      VirtualDOM.render(this.lastVNode, temp);
+      this.element = temp.firstChild;
+      container.appendChild(this.element);
+      this.onMount();
+      return this.element;
+    } catch (error) {
+      console.error('Component mount failed:', error);
+      throw error;
+    }
   }
 
   unmount() {
