@@ -1,7 +1,7 @@
 import { Component } from '../../../core/Component.js';
 
 export class FocusStep extends Component {
-  constructor(props) {
+  constructor(props = {}) {
     super(props);
     this.userData = props.userData || {};
     this.handlers = props.handlers || {};
