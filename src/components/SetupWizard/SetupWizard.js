@@ -51,116 +51,24 @@ export class SetupWizard extends Component {
   }
 
   render() {
-    return this.createElement('div', { className: 'setup-wizard' }, [
+    return this.createElement('div', { className: 'wizard' }, [
       this.renderHeader(),
       this.renderStepContent(),
       this.renderNavigation()
     ]);
   }
 
-  onMount() {
-    // Force apply CSS classes after mount
-    this.applyCSSFix();
-  }
-
-  applyCSSFix() {
-    if (!this.element) return;
-
-    // Apply CSS directly to DOM elements after a short delay
-    setTimeout(() => {
-      const wizard = this.element;
-      if (wizard) {
-        // Header styling
-        const header = wizard.querySelector('.setup-wizard') || wizard;
-        if (header) {
-          header.style.cssText = `
-          max-width: 28rem;
-          margin: 0 auto;
-          background: white;
-          min-height: 100vh;
-        `;
-        }
-
-        // Header gradient
-        const headerDiv = wizard.querySelector('[class*="gradient"]') || wizard.firstElementChild;
-        if (headerDiv) {
-          headerDiv.style.cssText = `
-          padding: 1rem;
-          background: linear-gradient(to right, #2563eb, #4f46e5);
-          color: white;
-        `;
-        }
-
-        // Content area
-        const content = wizard.querySelector('[class*="p-6"]');
-        if (content) {
-          content.style.cssText = `
-          padding: 1.5rem;
-        `;
-        }
-
-        // Input fields
-        const inputs = wizard.querySelectorAll('input');
-        inputs.forEach(input => {
-          input.style.cssText = `
-          width: 100%;
-          padding: 0.75rem;
-          border: 1px solid #d1d5db;
-          border-radius: 0.5rem;
-          margin-bottom: 1rem;
-        `;
-        });
-
-        // Labels
-        const labels = wizard.querySelectorAll('label');
-        labels.forEach(label => {
-          label.style.cssText = `
-          display: block;
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: #374151;
-          margin-bottom: 0.5rem;
-        `;
-        });
-
-        // Buttons
-        const buttons = wizard.querySelectorAll('button');
-        buttons.forEach(button => {
-          if (button.disabled) {
-            button.style.cssText = `
-            flex: 1;
-            padding: 0.75rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            background: #d1d5db;
-            color: #6b7280;
-            cursor: not-allowed;
-          `;
-          } else {
-            button.style.cssText = `
-            flex: 1;
-            padding: 0.75rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            background: linear-gradient(to right, #2563eb, #4f46e5);
-            color: white;
-            cursor: pointer;
-          `;
-          }
-        });
-      }
-    }, 50);
-  }
+  onMount() {}
 
   renderHeader() {
     const progressPercentage = (this.state.currentStep / this.state.totalSteps) * 100;
 
-    return this.createElement('div', { className: 'setup-header' }, [
-      this.createElement('h1', { className: 'setup-title' }, ['\ud83e\udd13 Trainingsplan-Assistent']),
-      this.createElement('p', { className: 'setup-subtitle' }, [`Schritt ${this.state.currentStep} von ${this.state.totalSteps}`]),
-      this.createElement('div', { className: 'progress-bar' }, [
+    return this.createElement('div', { className: 'wizard__header' }, [
+      this.createElement('h1', { className: 'wizard__title' }, ['\ud83e\udd13 Trainingsplan-Assistent']),
+      this.createElement('p', { className: 'wizard__subtitle' }, [`Schritt ${this.state.currentStep} von ${this.state.totalSteps}`]),
+      this.createElement('div', { className: 'wizard__progress' }, [
         this.createElement('div', {
-          className: 'progress-fill',
+          className: 'wizard__progress-fill',
           style: `width: ${progressPercentage}%`
         })
       ])
@@ -169,7 +77,8 @@ export class SetupWizard extends Component {
 
   renderStepContent() {
     const stepComponent = this.getCurrentStepComponent();
-    return this.createElement('div', { className: 'step-content' }, [
+
+    return this.createElement('div', { className: 'wizard__content' }, [
       stepComponent.render()
     ]);
   }
@@ -179,18 +88,22 @@ export class SetupWizard extends Component {
     const isLastStep = this.state.currentStep === this.state.totalSteps;
     const canProceed = this.validateCurrentStep();
 
-    return this.createElement('div', { className: 'step-navigation' }, [
-      !isFirstStep && this.createElement('button', {
-        className: 'btn btn-secondary',
-        onClick: () => this.previousStep()
-      }, ['\u2190 Zur\u00fcck']),
+    const buttons = [];
 
-      this.createElement('button', {
-        className: `btn btn-primary ${!canProceed ? 'disabled' : ''}`,
-        onClick: () => isLastStep ? this.completeSetup() : this.nextStep(),
-        disabled: !canProceed
-      }, [isLastStep ? '\ud83c\udf89 Plan erstellen!' : 'Weiter \u2192'])
-    ]);
+    if (!isFirstStep) {
+      buttons.push(this.createElement('button', {
+        className: 'btn btn--secondary',
+        onClick: () => this.previousStep()
+      }, ['\u2190 Zur\u00fcck']));
+    }
+
+    buttons.push(this.createElement('button', {
+      className: `btn ${canProceed ? 'btn--primary' : 'btn--disabled'}`,
+      disabled: !canProceed,
+      onClick: () => isLastStep ? this.completeSetup() : this.nextStep()
+    }, [isLastStep ? '\ud83c\udf89 Plan erstellen!' : 'Weiter \u2192']));
+
+    return this.createElement('div', { className: 'wizard__navigation' }, buttons);
   }
 
   getStepHandlers() {
@@ -257,9 +170,6 @@ export class SetupWizard extends Component {
         this.applyPatches(this.element, patches);
       }
       this.lastVNode = newVNode;
-
-      // Reapply CSS after DOM update
-      this.applyCSSFix();
     }
   }
 

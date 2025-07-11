@@ -6,7 +6,6 @@ export class VirtualDOM {
   static render(vnode, container) {
     if (!vnode) return;
 
-    // Text nodes
     if (typeof vnode === 'string' || typeof vnode === 'number') {
       container.appendChild(document.createTextNode(String(vnode)));
       return;
@@ -15,27 +14,15 @@ export class VirtualDOM {
     if (vnode.tag) {
       const element = document.createElement(vnode.tag);
 
-      // Set attributes and event listeners with CSS persistence
+      // Simple attribute setting
       Object.entries(vnode.props || {}).forEach(([key, value]) => {
         if (key.startsWith('on') && typeof value === 'function') {
           const eventName = key.slice(2).toLowerCase();
           element.addEventListener(eventName, value);
         } else if (key === 'className') {
           element.className = value;
-          element.setAttribute('class', value);
-          // Force CSS recomputation
-          element.setAttribute('data-css-applied', 'true');
-        } else if (key === 'style') {
-          element.setAttribute('style', value);
-          if (value) {
-            const styles = value.split(';');
-            styles.forEach(style => {
-              const [prop, val] = style.split(':').map(s => s.trim());
-              if (prop && val) {
-                element.style[prop] = val;
-              }
-            });
-          }
+        } else if (key === 'style' && typeof value === 'string') {
+          element.style.cssText = value;
         } else if (key === 'value') {
           element.value = value;
         } else if (key === 'disabled') {
