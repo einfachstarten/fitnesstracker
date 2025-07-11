@@ -5,6 +5,8 @@ import { SetupWizard } from '../components/SetupWizard/SetupWizard.js';
 import { OverviewView } from '../components/Overview/OverviewView.js';
 import { WorkoutView } from '../components/WorkoutView/WorkoutView.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
+import { PerformanceMonitor } from '../utils/PerformanceMonitor.js';
+import { ErrorTracker } from '../utils/ErrorTracker.js';
 
 export class App {
   constructor() {
@@ -18,6 +20,12 @@ export class App {
 
     this.userData = null;
     this.currentPlan = null;
+
+    this.performanceMonitor = new PerformanceMonitor();
+    this.errorTracker = new ErrorTracker();
+    window.addEventListener('load', () => {
+      this.performanceMonitor.trackAppMetrics();
+    });
 
     this.init();
   }

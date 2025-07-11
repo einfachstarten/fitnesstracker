@@ -2,7 +2,7 @@
   "name": "Intelligenter Fitness Tracker",
   "short_name": "FitnessAI",
   "description": "KI-basierter Trainingsplan-Generator mit intelligentem Assistenten",
-  "start_url": "./custom-tracker.html",
+  "start_url": "./index-new.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2563eb",
@@ -22,14 +22,14 @@
   ],
   "shortcuts": [
     {
-      "name": "Neuer Plan",
-      "short_name": "Neu",
-      "description": "Erstelle einen neuen Trainingsplan",
-      "url": "./custom-tracker.html",
+      "name": "Fitness Tracker",
+      "short_name": "Training",
+      "description": "Starte dein Training",
+      "url": "./index-new.html",
       "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Benni's Tracker", 
+      "name": "Benni's Tracker",
       "short_name": "Benni",
       "description": "Spezial-Tracker für Jugendliche",
       "url": "./benni.html",
@@ -37,3 +37,4 @@
     }
   ]
 }
+

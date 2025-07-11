@@ -1,4 +1,5 @@
 import { EventBus } from "./EventBus.js";
+import { VirtualDOM } from "./VirtualDOM.js";
 export class Component {
   constructor(props = {}) {
     this.props = props;
@@ -23,7 +24,10 @@ export class Component {
   }
 
   mount(container) {
-    this.element = this.render();
+    this.lastVNode = this.render();
+    const temp = document.createElement('div');
+    VirtualDOM.render(this.lastVNode, temp);
+    this.element = temp.firstChild;
     container.appendChild(this.element);
     this.onMount();
     return this.element;
@@ -39,15 +43,48 @@ export class Component {
 
   update() {
     if (this.element) {
-      const newElement = this.render();
-      this.element.parentNode.replaceChild(newElement, this.element);
-      this.element = newElement;
+      const newVNode = this.render();
+      const patches = VirtualDOM.diff(this.lastVNode, newVNode);
+      if (patches) {
+        this.applyPatches(this.element, patches);
+      }
+      this.lastVNode = newVNode;
+    }
+  }
+
+  applyPatches(element, patch) {
+    if (!patch) return;
+    switch (patch.type) {
+      case 'REPLACE':
+        const wrapper = document.createElement('div');
+        VirtualDOM.render(patch.vnode, wrapper);
+        element.parentNode.replaceChild(wrapper.firstChild, element);
+        this.element = wrapper.firstChild;
+        break;
+      case 'CREATE':
+        const tmp = document.createElement('div');
+        VirtualDOM.render(patch.vnode, tmp);
+        element.appendChild(tmp.firstChild);
+        break;
+      case 'REMOVE':
+        element.parentNode && element.parentNode.removeChild(element);
+        break;
+      case 'UPDATE':
+        if (patch.props) {
+          Object.entries(patch.props).forEach(([key, value]) => {
+            if (value === null) {
+              element.removeAttribute(key);
+            } else {
+              element.setAttribute(key, value);
+            }
+          });
+        }
+        break;
     }
   }
 
   // Lifecycle hooks
   onMount() {}
-  onUnmount() {}
   onStateChange(prevState, newState) {}
 
   // Event handling
@@ -65,24 +102,7 @@ export class Component {
   }
 
   createElement(tag, props = {}, children = []) {
-    const el = document.createElement(tag);
-    Object.entries(props).forEach(([key, value]) => {
-      if (key === 'className') {
-        el.className = value;
-      } else if (key.startsWith('on')) {
-        el.addEventListener(key.slice(2).toLowerCase(), value);
-      } else {
-        el.setAttribute(key, value);
-      }
-    });
-    children.forEach(child => {
-      if (typeof child === 'string') {
-        el.appendChild(document.createTextNode(child));
-      } else if (child) {
-        el.appendChild(child);
-      }
-    });
-    return el;
+    return VirtualDOM.createElement(tag, props, children);
   }
 
   onUnmount() {
