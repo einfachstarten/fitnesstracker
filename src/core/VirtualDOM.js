@@ -15,16 +15,27 @@ export class VirtualDOM {
     if (vnode.tag) {
       const element = document.createElement(vnode.tag);
 
-      // Set attributes and event listeners
+      // Set attributes and event listeners with CSS persistence
       Object.entries(vnode.props || {}).forEach(([key, value]) => {
         if (key.startsWith('on') && typeof value === 'function') {
-          element.addEventListener(key.slice(2).toLowerCase(), value);
+          const eventName = key.slice(2).toLowerCase();
+          element.addEventListener(eventName, value);
         } else if (key === 'className') {
           element.className = value;
-          // Ensure class attribute is also set for compatibility
-          if (value) element.setAttribute('class', value);
+          element.setAttribute('class', value);
+          // Force CSS recomputation
+          element.setAttribute('data-css-applied', 'true');
         } else if (key === 'style') {
           element.setAttribute('style', value);
+          if (value) {
+            const styles = value.split(';');
+            styles.forEach(style => {
+              const [prop, val] = style.split(':').map(s => s.trim());
+              if (prop && val) {
+                element.style[prop] = val;
+              }
+            });
+          }
         } else if (key === 'value') {
           element.value = value;
         } else if (key === 'disabled') {
