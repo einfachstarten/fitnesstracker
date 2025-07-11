@@ -10,14 +10,9 @@ export class VirtualDOM {
       return;
     }
 
-    if (!vnode.tag) {
-      console.warn('VNode missing tag:', vnode);
-      return;
-    }
-
     const element = document.createElement(vnode.tag);
-    const props = vnode.props || {};
-    Object.entries(props).forEach(([key, value]) => {
+
+    Object.entries(vnode.props || {}).forEach(([key, value]) => {
       if (key.startsWith('on') && typeof value === 'function') {
         element.addEventListener(key.slice(2).toLowerCase(), value);
       } else if (key === 'className') {
@@ -27,7 +22,10 @@ export class VirtualDOM {
       }
     });
 
-    (vnode.children || []).forEach(child => this.render(child, element));
+    (vnode.children || []).forEach(child => {
+      this.render(child, element);
+    });
+
     container.appendChild(element);
   }
 

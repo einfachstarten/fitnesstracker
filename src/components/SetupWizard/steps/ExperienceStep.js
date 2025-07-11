@@ -1,4 +1,6 @@
-export class ExperienceStep {
+import { Component } from '../../../core/Component.js';
+
+export class ExperienceStep extends Component {
   render(userData, handlers) {
     return this.createElement('div', { className: 'experience-step' }, [
       this.createElement('h2', {}, ['Erfahrung']),
@@ -9,20 +11,5 @@ export class ExperienceStep {
         }, [level])
       )
     ]);
-  }
-
-  createElement(tag, props = {}, children = []) {
-    const el = document.createElement(tag);
-    Object.entries(props).forEach(([k,v]) => {
-      if (k === 'onClick') el.addEventListener('click', v);
-      else if (k === 'className') el.className = v;
-      else el.setAttribute(k, v);
-    });
-    children.forEach(c => {
-      if (c instanceof Node) el.appendChild(c);
-      else if (Array.isArray(c)) c.forEach(ch => el.appendChild(ch));
-      else el.appendChild(document.createTextNode(c));
-    });
-    return el;
   }
 }
