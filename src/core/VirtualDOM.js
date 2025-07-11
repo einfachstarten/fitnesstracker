@@ -4,13 +4,21 @@ export class VirtualDOM {
   }
 
   static render(vnode, container) {
+    if (!vnode) return;
     if (typeof vnode === 'string') {
       container.appendChild(document.createTextNode(vnode));
       return;
     }
+
+    if (!vnode.tag) {
+      console.warn('VNode missing tag:', vnode);
+      return;
+    }
+
     const element = document.createElement(vnode.tag);
-    Object.entries(vnode.props).forEach(([key, value]) => {
-      if (key.startsWith('on')) {
+    const props = vnode.props || {};
+    Object.entries(props).forEach(([key, value]) => {
+      if (key.startsWith('on') && typeof value === 'function') {
         element.addEventListener(key.slice(2).toLowerCase(), value);
       } else if (key === 'className') {
         element.className = value;
@@ -18,7 +26,8 @@ export class VirtualDOM {
         element.setAttribute(key, value);
       }
     });
-    vnode.children.forEach(child => this.render(child, element));
+
+    (vnode.children || []).forEach(child => this.render(child, element));
     container.appendChild(element);
   }
 

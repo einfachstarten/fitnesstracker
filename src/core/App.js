@@ -39,7 +39,7 @@ export class App {
       this.render();
     } catch (error) {
       console.error('App initialization failed:', error);
-      this.showError('App konnte nicht geladen werden');
+      this.showError('App konnte nicht geladen werden: ' + error.message);
     }
   }
 
