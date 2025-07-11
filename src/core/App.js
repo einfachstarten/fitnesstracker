@@ -8,20 +8,34 @@ import { CalendarView } from '../components/CalendarView/CalendarView.js';
 
 export class App {
   constructor() {
-    console.log('App constructor started');
-    this.eventBus = new EventBus();
-    this.currentView = 'setup';
-    this.components = new Map();
+    try {
+      console.log('App constructor started');
 
-    this.exerciseDatabase = null;
-    this.planGenerator = null;
-    this.weeklyDataManager = new WeeklyDataManager();
+      console.log('Creating EventBus...');
+      this.eventBus = new EventBus();
 
-    this.userData = null;
-    this.currentPlan = null;
+      console.log('Setting initial state...');
+      this.currentView = 'setup';
+      this.components = new Map();
+      this.exerciseDatabase = null;
+      this.planGenerator = null;
+      this.userData = null;
+      this.currentPlan = null;
 
-    console.log('App constructor completed, calling init()');
-    this.init();
+      console.log('Creating WeeklyDataManager...');
+      this.weeklyDataManager = new WeeklyDataManager();
+
+      console.log('App constructor completed, calling init()');
+      this.init();
+    } catch (error) {
+      console.error('App constructor failed:', error);
+      document.getElementById('app').innerHTML = `
+        <div class="p-8 text-center">
+          <h2 class="text-xl font-bold text-red-600 mb-4">Constructor Error</h2>
+          <pre>${error.message}\n${error.stack}</pre>
+        </div>
+      `;
+    }
   }
 
   async init() {
