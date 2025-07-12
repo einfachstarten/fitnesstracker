@@ -1,5 +1,5 @@
 // Pure Function - NO CLASS!
-export function WelcomeStep(userData, handlers) {
+export function WelcomeStep(userData = {}, handlers = {}) {
   return {
     tag: 'div',
     props: { className: 'step' },
