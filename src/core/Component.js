@@ -102,6 +102,38 @@ export class Component {
         }
         break;
     }
+
+    if (patch.children && Array.isArray(patch.children)) {
+      patch.children.forEach(childPatch => {
+        const idx = childPatch.index;
+        const childElement = element.childNodes[idx];
+        const cp = childPatch.patch;
+        if (!cp) return;
+        switch (cp.type) {
+          case 'CREATE': {
+            const tmp = document.createElement('div');
+            VirtualDOM.render(cp.vnode, tmp);
+            const ref = element.childNodes[idx];
+            if (ref) element.insertBefore(tmp.firstChild, ref);
+            else element.appendChild(tmp.firstChild);
+            break;
+          }
+          case 'REMOVE':
+            if (childElement) element.removeChild(childElement);
+            break;
+          case 'MOVE': {
+            const fromEl = element.childNodes[cp.from];
+            if (fromEl) {
+              const ref = element.childNodes[idx];
+              element.insertBefore(fromEl, ref);
+            }
+            break;
+          }
+          default:
+            this.applyPatches(childElement, cp);
+        }
+      });
+    }
   }
 
   // Lifecycle hooks
