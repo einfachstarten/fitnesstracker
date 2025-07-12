@@ -77,7 +77,23 @@ export class Component {
       case 'UPDATE':
         if (patch.props) {
           Object.entries(patch.props).forEach(([key, value]) => {
-            if (value === null) {
+            if (key === 'disabled') {
+              if (value) {
+                element.setAttribute('disabled', 'disabled');
+                element.disabled = true;
+              } else {
+                element.removeAttribute('disabled');
+                element.disabled = false;
+              }
+            } else if (key === 'className') {
+              if (value === null) {
+                element.removeAttribute('class');
+              } else {
+                element.className = value;
+              }
+            } else if (key === 'value') {
+              element.value = value ?? '';
+            } else if (value === null) {
               element.removeAttribute(key);
             } else {
               element.setAttribute(key, value);
