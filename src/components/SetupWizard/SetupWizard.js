@@ -132,22 +132,13 @@ export class SetupWizard extends Component {
       console.log('Can proceed:', this.validateCurrentStep());
 
       const canProceed = this.validateCurrentStep();
-      let button = null;
 
-      // Try querying within this.element first
-      if (this.element) {
-        button = this.element.querySelector('.btn--primary, .btn--disabled');
-      }
+      // Prefer the mounted element but gracefully fall back to a document query
+      const root = this.element || document.querySelector('.wizard');
 
-      // Fallback to a document level query
-      if (!button) {
-        button = document.querySelector('.wizard .btn--primary, .wizard .btn--disabled');
-      }
-
-      // Final fallback to any disabled button within the wizard
-      if (!button) {
-        button = document.querySelector('.wizard button[disabled], .wizard .btn');
-      }
+      let button = root?.querySelector('.btn--primary, .btn--disabled') ||
+                   document.querySelector('.wizard .btn--primary, .wizard .btn--disabled') ||
+                   document.querySelector('.wizard button[disabled], .wizard .btn');
 
       if (button) {
         button.disabled = !canProceed;
