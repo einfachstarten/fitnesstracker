@@ -47,13 +47,15 @@ export class Component {
   }
 
   update() {
-    if (this.element) {
-      const newVNode = this.render();
-      const patches = VirtualDOM.diff(this.lastVNode, newVNode);
-      if (patches) {
-        this.applyPatches(this.element, patches);
-      }
-      this.lastVNode = newVNode;
+    if (this.element && this.element.parentNode) {
+      const parent = this.element.parentNode;
+      parent.removeChild(this.element);
+      this.lastVNode = this.render();
+      const temp = document.createElement('div');
+      VirtualDOM.render(this.lastVNode, temp);
+      this.element = temp.firstChild;
+      parent.appendChild(this.element);
+      console.log(`${this.constructor.name} re-rendered`);
     }
   }
 
