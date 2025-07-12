@@ -1,176 +1,222 @@
-import { Component } from '../../core/Component.js';
-import { WelcomeStep } from './steps/WelcomeStep.js';
-import { GoalsStep } from './steps/GoalsStep.js';
-import { ExperienceStep } from './steps/ExperienceStep.js';
-import { EquipmentStep } from './steps/EquipmentStep.js';
-import { FocusStep } from './steps/FocusStep.js';
-import { ScheduleStep } from './steps/ScheduleStep.js';
-import { SummaryStep } from './steps/SummaryStep.js';
-
-export class SetupWizard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentStep: 1,
-      totalSteps: 7,
-      userData: {
-        name: '',
-        age: null,
-        goals: [],
-        experience: '',
-        equipment: [],
-        focus: [],
-        frequency: '',
-        duration: ''
-      }
+export class SetupWizard {
+  constructor(props = {}) {
+    this.eventBus = props.eventBus;
+    this.currentStep = 1;
+    this.totalSteps = 7;
+    this.userData = {
+      name: '',
+      age: null,
+      goals: [],
+      experience: '',
+      equipment: [],
+      focus: [],
+      frequency: '',
+      duration: ''
     };
+  }
+
+  mount(container) {
+    this.container = container;
+    window.wizard = this;
+    this.render();
   }
 
   render() {
-    return this.createElement('div', { className: 'wizard' }, [
-      this.renderHeader(),
-      this.renderStepContent(),
-      this.renderNavigation()
-    ]);
+    if (!this.container) return;
+    this.container.innerHTML = this.template();
+  }
+
+  template() {
+    return `
+      <div class="wizard">
+        ${this.renderHeader()}
+        <div class="wizard__content">${this.renderStepContent()}</div>
+        ${this.renderNavigation()}
+      </div>
+    `;
   }
 
   renderHeader() {
-    const progressPercentage = (this.state.currentStep / this.state.totalSteps) * 100;
-
-    return this.createElement('div', { className: 'wizard__header' }, [
-      this.createElement('h1', { className: 'wizard__title' }, ['\ud83d\udd2e Trainingsplan-Assistent']),
-      this.createElement('p', { className: 'wizard__subtitle' }, [`Schritt ${this.state.currentStep} von ${this.state.totalSteps}`]),
-      this.createElement('div', { className: 'wizard__progress' }, [
-        this.createElement('div', {
-          className: 'wizard__progress-fill',
-          style: `width: ${progressPercentage}%`
-        })
-      ])
-    ]);
+    const progress = (this.currentStep / this.totalSteps) * 100;
+    return `
+      <div class="wizard__header">
+        <h1 class="wizard__title">🔮 Trainingsplan-Assistent</h1>
+        <p class="wizard__subtitle">Schritt ${this.currentStep} von ${this.totalSteps}</p>
+        <div class="wizard__progress">
+          <div class="wizard__progress-fill" style="width:${progress}%"></div>
+        </div>
+      </div>
+    `;
   }
 
-  // SIMPLE renderStepContent - direct function calls
   renderStepContent() {
-    const userData = this.state.userData;
-    const handlers = this.getStepHandlers();
-
-    let stepVNode;
-    switch (this.state.currentStep) {
-      case 1:
-        stepVNode = WelcomeStep(userData, handlers);
-        break;
-      case 2:
-        stepVNode = GoalsStep(userData, handlers);
-        break;
-      case 3:
-        stepVNode = ExperienceStep(userData, handlers);
-        break;
-      case 4:
-        stepVNode = EquipmentStep(userData, handlers);
-        break;
-      case 5:
-        stepVNode = FocusStep(userData, handlers);
-        break;
-      case 6:
-        stepVNode = ScheduleStep(userData, handlers);
-        break;
-      case 7:
-        stepVNode = SummaryStep(userData);
-        break;
-      default:
-        stepVNode = {
-          tag: 'div',
-          children: [`Step ${this.state.currentStep} not implemented yet`]
-        };
+    switch (this.currentStep) {
+      case 1: return this.stepWelcome();
+      case 2: return this.stepGoals();
+      case 3: return this.stepExperience();
+      case 4: return this.stepEquipment();
+      case 5: return this.stepFocus();
+      case 6: return this.stepSchedule();
+      case 7: return this.stepSummary();
+      default: return '<div>Unbekannter Schritt</div>';
     }
+  }
 
-    return this.createElement('div', { className: 'wizard__content' }, [
-      stepVNode
-    ]);
+  stepWelcome() {
+    return `
+      <div class="step">
+        <div class="step__emoji">🏋️‍♀️</div>
+        <h2 class="step__title">Willkommen!</h2>
+        <p class="step__text">Ich erstelle dir einen personalisierten Trainingsplan, der perfekt zu dir passt.</p>
+        <div class="form-group">
+          <label class="form-label">Wie heißt du?</label>
+          <input type="text" value="${this.userData.name || ''}" placeholder="Dein Name"
+                 oninput="wizard.updateUserData('name', this.value)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Wie alt bist du? (optional)</label>
+          <input type="number" min="12" max="100" value="${this.userData.age ?? ''}" placeholder="Dein Alter"
+                 oninput="wizard.updateUserData('age', this.value ? parseInt(this.value) : null)">
+        </div>
+      </div>
+    `;
+  }
+
+  stepGoals() {
+    const options = [
+      { id: 'Muskelaufbau', icon: '💪', title: 'Muskelaufbau' },
+      { id: 'Kraft', icon: '🏋️', title: 'Kraft steigern' },
+      { id: 'Ausdauer', icon: '🏃', title: 'Ausdauer' },
+      { id: 'Gesundheit', icon: '❤️', title: 'Gesundheit' }
+    ];
+    return `
+      <div class="step">
+        <div class="step__emoji">🎯</div>
+        <h2 class="step__title">Was ist dein Hauptziel?</h2>
+        <p class="step__text">Du kannst mehrere Ziele auswählen</p>
+        <div class="goals">
+          ${options.map(o => `<button class="goal-button ${this.userData.goals.includes(o.id) ? 'goal-button--selected' : ''}" onclick="wizard.toggleArrayItem('goals','${o.id}')">${o.icon} ${o.title}</button>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  stepExperience() {
+    const levels = ['Anfänger', 'Fortgeschritten', 'Profi'];
+    return `
+      <div class="step">
+        <h2 class="step__title">Erfahrung</h2>
+        <div class="experience-options">
+          ${levels.map(l => `<button class="${this.userData.experience === l ? 'selected' : ''}" onclick="wizard.updateUserData('experience','${l}')">${l}</button>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  stepEquipment() {
+    const equipments = ['Eigengewicht', 'Kurzhanteln', 'Langhanteln', 'Gym-Geräte'];
+    return `
+      <div class="step">
+        ${equipments.map(eq => `<button class="${this.userData.equipment.includes(eq) ? 'selected' : ''}" onclick="wizard.toggleArrayItem('equipment','${eq}')">${eq}</button>`).join('')}
+      </div>
+    `;
+  }
+
+  stepFocus() {
+    const areas = ['Ganzkörper', 'Oberkörper', 'Unterkörper', 'Core'];
+    return `
+      <div class="step">
+        ${areas.map(a => `<button class="${this.userData.focus.includes(a) ? 'selected' : ''}" onclick="wizard.toggleArrayItem('focus','${a}')">${a}</button>`).join('')}
+      </div>
+    `;
+  }
+
+  stepSchedule() {
+    const freq = this.userData.frequency || '';
+    const dur = this.userData.duration || '';
+    return `
+      <div class="step">
+        <label>Häufigkeit (Tage/Woche)</label>
+        <input type="number" min="1" max="7" value="${freq}" oninput="wizard.updateUserData('frequency', this.value)">
+        <label>Dauer pro Einheit</label>
+        <select oninput="wizard.updateUserData('duration', this.value)">
+          <option value="30min" ${dur === '30min' ? 'selected' : ''}>30min</option>
+          <option value="45min" ${dur === '45min' ? 'selected' : ''}>45min</option>
+          <option value="60min" ${dur === '60min' ? 'selected' : ''}>60min</option>
+          <option value="90min" ${dur === '90min' ? 'selected' : ''}>90min</option>
+        </select>
+      </div>
+    `;
+  }
+
+  stepSummary() {
+    const u = this.userData;
+    return `
+      <div class="step">
+        <h2 class="step__title">Zusammenfassung</h2>
+        <pre>${JSON.stringify(u, null, 2)}</pre>
+      </div>
+    `;
   }
 
   renderNavigation() {
-    const isFirstStep = this.state.currentStep === 1;
-    const isLastStep = this.state.currentStep === this.state.totalSteps;
+    const isFirst = this.currentStep === 1;
+    const isLast = this.currentStep === this.totalSteps;
     const canProceed = this.validateCurrentStep();
-
-    const buttons = [];
-    
-    if (!isFirstStep) {
-      buttons.push(this.createElement('button', {
-        className: 'btn btn--secondary',
-        onClick: () => this.previousStep()
-      }, ['\u2190 Zur\u00fcck']));
-    }
-    
-    buttons.push(this.createElement('button', {
-      className: `btn ${canProceed ? 'btn--primary' : 'btn--disabled'}`,
-      disabled: !canProceed,
-      onClick: () => isLastStep ? this.completeSetup() : this.nextStep()
-    }, [isLastStep ? '\ud83c\udf89 Plan erstellen!' : 'Weiter \u2192']));
-
-    return this.createElement('div', { className: 'wizard__navigation' }, buttons);
-  }
-
-  getStepHandlers() {
-    return {
-      updateUserData: (key, value) => this.updateUserData(key, value),
-      toggleArrayItem: (arrayKey, item) => this.toggleArrayItem(arrayKey, item)
-    };
+    return `
+      <div class="wizard__navigation">
+        ${!isFirst ? `<button class="btn btn--secondary" onclick="wizard.previousStep()">← Zurück</button>` : ''}
+        <button class="btn ${canProceed ? 'btn--primary' : 'btn--disabled'}" ${!canProceed ? 'disabled' : ''}
+          onclick="${isLast ? 'wizard.completeSetup()' : 'wizard.nextStep()'}">
+          ${isLast ? '🎉 Plan erstellen!' : 'Weiter →'}
+        </button>
+      </div>
+    `;
   }
 
   updateUserData(key, value) {
-    // Direct state mutation followed by immediate re-render
-    this.state.userData[key] = value;
-    this.update();
+    this.userData[key] = value;
+    this.render();
   }
 
   toggleArrayItem(arrayKey, item) {
-    if (!Array.isArray(this.state.userData[arrayKey])) {
-      this.state.userData[arrayKey] = [];
-    }
-
-    const array = this.state.userData[arrayKey];
-    const index = array.indexOf(item);
-
-    if (index > -1) {
-      array.splice(index, 1);
-    } else {
-      array.push(item);
-    }
-
-    this.update();
+    if (!Array.isArray(this.userData[arrayKey])) this.userData[arrayKey] = [];
+    const arr = this.userData[arrayKey];
+    const idx = arr.indexOf(item);
+    if (idx > -1) arr.splice(idx, 1); else arr.push(item);
+    this.render();
   }
 
   validateCurrentStep() {
-    const validators = {
-      1: () => !!this.state.userData.name,
-      2: () => this.state.userData.goals.length > 0,
-      3: () => !!this.state.userData.experience,
-      4: () => this.state.userData.equipment.length > 0,
-      5: () => this.state.userData.focus.length > 0,
-      6: () => this.state.userData.frequency && this.state.userData.duration,
-      7: () => true
-    };
-
-    return validators[this.state.currentStep]?.() || false;
+    const u = this.userData;
+    switch (this.currentStep) {
+      case 1: return !!u.name;
+      case 2: return u.goals.length > 0;
+      case 3: return !!u.experience;
+      case 4: return u.equipment.length > 0;
+      case 5: return u.focus.length > 0;
+      case 6: return u.frequency && u.duration;
+      case 7: return true;
+      default: return false;
+    }
   }
 
   nextStep() {
     if (!this.validateCurrentStep()) return;
-
-    this.state.currentStep += 1;
-    this.update();
+    if (this.currentStep < this.totalSteps) {
+      this.currentStep += 1;
+      this.render();
+    }
   }
 
   previousStep() {
-    if (this.state.currentStep > 1) {
-      this.state.currentStep -= 1;
-      this.update();
+    if (this.currentStep > 1) {
+      this.currentStep -= 1;
+      this.render();
     }
   }
 
   completeSetup() {
-    this.emit('setup:complete', this.state.userData);
+    if (this.eventBus) this.eventBus.emit('setup:complete', this.userData);
   }
 }
