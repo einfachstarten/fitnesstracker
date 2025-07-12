@@ -22,8 +22,7 @@ export class SetupWizard extends Component {
         focus: [],
         frequency: '',
         duration: ''
-      },
-      isTransitioning: false
+      }
     };
   }
 
@@ -121,19 +120,26 @@ export class SetupWizard extends Component {
   }
 
   updateUserData(key, value) {
-    // Directly mutate state like in custom tracker and trigger immediate update
-    const userData = { ...this.state.userData, [key]: value };
-    this.setState({ userData });
+    // Direct state mutation followed by immediate re-render
+    this.state.userData[key] = value;
+    this.update();
   }
 
   toggleArrayItem(arrayKey, item) {
-    const array = this.state.userData[arrayKey] || [];
-    const index = array.indexOf(item);
-    const newArray = index > -1
-      ? array.filter(i => i !== item)
-      : [...array, item];
+    if (!Array.isArray(this.state.userData[arrayKey])) {
+      this.state.userData[arrayKey] = [];
+    }
 
-    this.updateUserData(arrayKey, newArray);
+    const array = this.state.userData[arrayKey];
+    const index = array.indexOf(item);
+
+    if (index > -1) {
+      array.splice(index, 1);
+    } else {
+      array.push(item);
+    }
+
+    this.update();
   }
 
   validateCurrentStep() {
@@ -151,21 +157,16 @@ export class SetupWizard extends Component {
   }
 
   nextStep() {
-    if (this.state.isTransitioning || !this.validateCurrentStep()) return;
+    if (!this.validateCurrentStep()) return;
 
-    this.setState({ isTransitioning: true });
-
-    setTimeout(() => {
-      this.setState({
-        currentStep: this.state.currentStep + 1,
-        isTransitioning: false
-      });
-    }, 300);
+    this.state.currentStep += 1;
+    this.update();
   }
 
   previousStep() {
     if (this.state.currentStep > 1) {
-      this.setState({ currentStep: this.state.currentStep - 1 });
+      this.state.currentStep -= 1;
+      this.update();
     }
   }
 
