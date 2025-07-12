@@ -125,10 +125,19 @@ export class SetupWizard extends Component {
     this.setState({
       userData: { ...this.state.userData, [key]: value }
     });
+
+    // Force navigation re-render after state change
     setTimeout(() => {
       console.log('New state:', this.state.userData);
       console.log('Can proceed:', this.validateCurrentStep());
-    }, 0);
+
+      const canProceed = this.validateCurrentStep();
+      const button = this.element.querySelector('.btn--primary, .btn--disabled');
+      if (button) {
+        button.disabled = !canProceed;
+        button.className = `btn ${canProceed ? 'btn--primary' : 'btn--disabled'}`;
+      }
+    }, 10);
   }
 
   toggleArrayItem(arrayKey, item) {
