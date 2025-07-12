@@ -211,3 +211,28 @@
   background: var(--color-primary);
   color: white;
 }
+
+/* New simple goal buttons for GoalsStep */
+.goal-button {
+  display: block;
+  width: 100%;
+  padding: var(--space-4);
+  margin-bottom: var(--space-2);
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  cursor: pointer;
+  font-size: var(--text-base);
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.goal-button:hover {
+  border-color: var(--color-primary);
+}
+
+.goal-button--selected {
+  border-color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.05);
+  font-weight: 600;
+}
