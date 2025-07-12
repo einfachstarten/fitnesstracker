@@ -1,5 +1,11 @@
 import { Component } from '../../core/Component.js';
 import { WelcomeStep } from './steps/WelcomeStep.js';
+import { GoalsStep } from './steps/GoalsStep.js';
+import { ExperienceStep } from './steps/ExperienceStep.js';
+import { EquipmentStep } from './steps/EquipmentStep.js';
+import { FocusStep } from './steps/FocusStep.js';
+import { ScheduleStep } from './steps/ScheduleStep.js';
+import { SummaryStep } from './steps/SummaryStep.js';
 
 export class SetupWizard extends Component {
   constructor(props) {
@@ -54,6 +60,24 @@ export class SetupWizard extends Component {
       case 1:
         stepVNode = WelcomeStep(userData, handlers);
         break;
+      case 2:
+        stepVNode = new GoalsStep({ userData, handlers }).render();
+        break;
+      case 3:
+        stepVNode = new ExperienceStep({ userData, handlers }).render();
+        break;
+      case 4:
+        stepVNode = new EquipmentStep({ userData, handlers }).render();
+        break;
+      case 5:
+        stepVNode = new FocusStep({ userData, handlers }).render();
+        break;
+      case 6:
+        stepVNode = new ScheduleStep({ userData, handlers }).render();
+        break;
+      case 7:
+        stepVNode = new SummaryStep({ userData }).render();
+        break;
       default:
         stepVNode = {
           tag: 'div',
@@ -97,9 +121,14 @@ export class SetupWizard extends Component {
   }
 
   updateUserData(key, value) {
+    console.log('Updating:', key, value);
     this.setState({
       userData: { ...this.state.userData, [key]: value }
     });
+    setTimeout(() => {
+      console.log('New state:', this.state.userData);
+      console.log('Can proceed:', this.validateCurrentStep());
+    }, 0);
   }
 
   toggleArrayItem(arrayKey, item) {
