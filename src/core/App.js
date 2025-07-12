@@ -160,6 +160,9 @@ export class App {
       this.components.set(this.currentView, viewComponent);
       console.log('🎯 Mounting component:', this.currentView);
       viewComponent.mount(container);
+      if (this.currentView === 'setup') {
+        window.wizard = viewComponent;
+      }
     }
   }
 
