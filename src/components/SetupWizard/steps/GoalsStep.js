@@ -29,41 +29,47 @@ export function GoalsStep(userData = {}, handlers = {}) {
       {
         tag: 'div',
         props: { className: 'goals-options' },
-        children: goalOptions.map(goal => ({
-          tag: 'div',
-          props: {
-            className: `goal-card ${goals.includes(goal.id) ? 'goal-card--selected' : ''}`,
-            onClick: () => handlers.toggleArrayItem('goals', goal.id)
-          },
-          children: [
-            {
-              tag: 'div',
-              props: { className: 'goal-card__icon' },
-              children: [goal.icon]
+        children: goalOptions.map(goal => {
+          const isSelected = goals.includes(goal.id);
+          return {
+            tag: 'div',
+            props: {
+              className: `goal-card ${isSelected ? 'goal-card--selected' : ''}`,
+              onClick: (e) => {
+                e.preventDefault();
+                handlers.toggleArrayItem('goals', goal.id);
+              }
             },
-            {
-              tag: 'div',
-              props: { className: 'goal-card__content' },
-              children: [
-                {
-                  tag: 'div',
-                  props: { className: 'goal-card__title' },
-                  children: [goal.title]
-                },
-                {
-                  tag: 'div',
-                  props: { className: 'goal-card__desc' },
-                  children: [goal.desc]
-                }
-              ]
-            },
-            {
-              tag: 'div',
-              props: { className: 'goal-card__check' },
-              children: [goals.includes(goal.id) ? '✓' : '']
-            }
-          ]
-        }))
+            children: [
+              {
+                tag: 'div',
+                props: { className: 'goal-card__icon' },
+                children: [goal.icon]
+              },
+              {
+                tag: 'div',
+                props: { className: 'goal-card__content' },
+                children: [
+                  {
+                    tag: 'div',
+                    props: { className: 'goal-card__title' },
+                    children: [goal.title]
+                  },
+                  {
+                    tag: 'div',
+                    props: { className: 'goal-card__desc' },
+                    children: [goal.desc]
+                  }
+                ]
+              },
+              {
+                tag: 'div',
+                props: { className: 'goal-card__check' },
+                children: [isSelected ? '✓' : '']
+              }
+            ]
+          };
+        })
       }
     ]
   };

@@ -4,7 +4,12 @@ export class VirtualDOM {
   }
 
   static render(vnode, container) {
-    if (!vnode) return;
+    if (vnode === null || vnode === undefined) return;
+
+    if (Array.isArray(vnode)) {
+      vnode.forEach(child => this.render(child, container));
+      return;
+    }
 
     if (typeof vnode === 'string' || typeof vnode === 'number') {
       container.appendChild(document.createTextNode(String(vnode)));
@@ -40,7 +45,11 @@ export class VirtualDOM {
 
       // Render children
       (vnode.children || []).forEach(child => {
-        this.render(child, element);
+        if (Array.isArray(child)) {
+          child.forEach(subChild => this.render(subChild, element));
+        } else {
+          this.render(child, element);
+        }
       });
 
       container.appendChild(element);
