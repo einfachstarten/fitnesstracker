@@ -17,8 +17,16 @@
   <div id="app"></div>
   
   <script type="module">
+    // Initialize global state management
+    window.appState = null;
+    window.updateAppState = null;
+    window.toggleArrayItem = null;
+    window.getAppState = null;
+    window.initializeAppState = null;
+
     import { App } from './src/core/App.js';
-    console.log('App module loaded successfully');
+
+    // Create app instance
     const app = new App();
     console.log('App instance created');
   </script>
