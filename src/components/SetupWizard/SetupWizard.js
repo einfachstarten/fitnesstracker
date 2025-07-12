@@ -121,33 +121,9 @@ export class SetupWizard extends Component {
   }
 
   updateUserData(key, value) {
-    console.log('Updating:', key, value);
-    this.setState({
-      userData: { ...this.state.userData, [key]: value }
-    });
-
-    // Force navigation re-render after state change with defensive checks
-    setTimeout(() => {
-      console.log('New state:', this.state.userData);
-      console.log('Can proceed:', this.validateCurrentStep());
-
-      const canProceed = this.validateCurrentStep();
-
-      // Prefer the mounted element but gracefully fall back to a document query
-      const root = this.element || document.querySelector('.wizard');
-
-      let button = root?.querySelector('.btn--primary, .btn--disabled') ||
-                   document.querySelector('.wizard .btn--primary, .wizard .btn--disabled') ||
-                   document.querySelector('.wizard button[disabled], .wizard .btn');
-
-      if (button) {
-        button.disabled = !canProceed;
-        button.className = `btn ${canProceed ? 'btn--primary' : 'btn--disabled'}`;
-        console.log('✅ Button force-updated via fallback:', canProceed ? 'enabled' : 'disabled');
-      } else {
-        console.log('❌ No button found with any method');
-      }
-    }, 10);
+    // Directly mutate state like in custom tracker and trigger immediate update
+    const userData = { ...this.state.userData, [key]: value };
+    this.setState({ userData });
   }
 
   toggleArrayItem(arrayKey, item) {
