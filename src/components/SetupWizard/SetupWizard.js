@@ -61,22 +61,22 @@ export class SetupWizard extends Component {
         stepVNode = WelcomeStep(userData, handlers);
         break;
       case 2:
-        stepVNode = new GoalsStep({ userData, handlers }).render();
+        stepVNode = GoalsStep(userData, handlers);
         break;
       case 3:
-        stepVNode = new ExperienceStep({ userData, handlers }).render();
+        stepVNode = ExperienceStep(userData, handlers);
         break;
       case 4:
-        stepVNode = new EquipmentStep({ userData, handlers }).render();
+        stepVNode = EquipmentStep(userData, handlers);
         break;
       case 5:
-        stepVNode = new FocusStep({ userData, handlers }).render();
+        stepVNode = FocusStep(userData, handlers);
         break;
       case 6:
-        stepVNode = new ScheduleStep({ userData, handlers }).render();
+        stepVNode = ScheduleStep(userData, handlers);
         break;
       case 7:
-        stepVNode = new SummaryStep({ userData }).render();
+        stepVNode = SummaryStep(userData);
         break;
       default:
         stepVNode = {
