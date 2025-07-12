@@ -126,16 +126,35 @@ export class SetupWizard extends Component {
       userData: { ...this.state.userData, [key]: value }
     });
 
-    // Force navigation re-render after state change
+    // Force navigation re-render after state change with defensive checks
     setTimeout(() => {
       console.log('New state:', this.state.userData);
       console.log('Can proceed:', this.validateCurrentStep());
 
       const canProceed = this.validateCurrentStep();
-      const button = this.element.querySelector('.btn--primary, .btn--disabled');
+      let button = null;
+
+      // Try querying within this.element first
+      if (this.element) {
+        button = this.element.querySelector('.btn--primary, .btn--disabled');
+      }
+
+      // Fallback to a document level query
+      if (!button) {
+        button = document.querySelector('.wizard .btn--primary, .wizard .btn--disabled');
+      }
+
+      // Final fallback to any disabled button within the wizard
+      if (!button) {
+        button = document.querySelector('.wizard button[disabled], .wizard .btn');
+      }
+
       if (button) {
         button.disabled = !canProceed;
         button.className = `btn ${canProceed ? 'btn--primary' : 'btn--disabled'}`;
+        console.log('✅ Button force-updated via fallback:', canProceed ? 'enabled' : 'disabled');
+      } else {
+        console.log('❌ No button found with any method');
       }
     }, 10);
   }
