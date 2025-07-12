@@ -25,7 +25,9 @@ export class VirtualDOM {
           const eventName = key.slice(2).toLowerCase();
           element.addEventListener(eventName, value);
         } else if (key === 'className') {
-          element.className = value;
+          if (value && value.trim()) {
+            element.className = value;
+          }
         } else if (key === 'style' && typeof value === 'string') {
           element.style.cssText = value;
         } else if (key === 'value') {
@@ -38,7 +40,7 @@ export class VirtualDOM {
           element.type = value;
         } else if (key === 'min' || key === 'max') {
           element.setAttribute(key, value);
-        } else if (value !== null && value !== undefined) {
+        } else if (value !== null && value !== undefined && value !== '') {
           element.setAttribute(key, value);
         }
       });

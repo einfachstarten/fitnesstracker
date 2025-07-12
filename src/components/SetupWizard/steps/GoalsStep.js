@@ -29,8 +29,11 @@ export function GoalsStep(userData = {}, handlers = {}) {
       ...goalOptions.map(goal => ({
         tag: 'button',
         props: {
-          className: `goal-button ${goals.includes(goal.id) ? 'goal-button--selected' : ''}`,
-          onClick: () => handlers.toggleArrayItem('goals', goal.id)
+          className: `goal-button ${goals.includes(goal.id) ? 'goal-button--selected' : ''}`.trim(),
+          onClick: () => {
+            console.log('Goal clicked:', goal.id);
+            handlers.toggleArrayItem('goals', goal.id);
+          }
         },
         children: [`${goal.icon} ${goal.title}`]
       }))
