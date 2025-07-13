@@ -437,3 +437,233 @@
 .overview button, .workout button, .calendar button {
   margin-top: 1rem;
 }
+
+/* Overview Container */
+.overview-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background: #f9fafb;
+  min-height: 100vh;
+}
+
+/* Overview Header */
+.overview-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.overview-welcome {
+  flex: 1;
+}
+
+.overview-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+}
+
+.overview-subtitle {
+  opacity: 0.9;
+  margin: 0;
+}
+
+.overview-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.2);
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 80px;
+}
+
+.stat-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-top: 0.25rem;
+}
+
+/* Plan Section */
+.plan-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.plan-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.plan-card-header {
+  margin-bottom: 1rem;
+}
+
+.plan-card-title {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.plan-card-subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.plan-card-exercises {
+  margin-bottom: 1rem;
+}
+
+.exercise-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.exercise-preview:last-child {
+  border-bottom: none;
+}
+
+.exercise-name {
+  color: #374151;
+  font-weight: 500;
+}
+
+.exercise-sets {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.exercise-more {
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 0.5rem 0;
+  font-style: italic;
+}
+
+.plan-card-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.plan-card-button:hover {
+  background: #2563eb;
+}
+
+/* Info Section */
+.info-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.info-value {
+  color: #6b7280;
+  text-align: right;
+}
+
+/* Overview Actions */
+.overview-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.overview-actions .btn {
+  flex: 1;
+  max-width: 200px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .overview-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .overview-stats {
+    justify-content: center;
+  }
+
+  .plan-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-actions {
+    flex-direction: column;
+  }
+
+  .overview-actions .btn {
+    max-width: none;
+  }
+}
