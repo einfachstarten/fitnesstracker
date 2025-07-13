@@ -4,9 +4,6 @@ console.log('📦 App.js DEPLOYED - Version: 2024-07-11-18:15');
 import { EventBus } from './EventBus.js';
 import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
 import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
-import { OverviewView } from '../components/Overview/OverviewView.js';
-import { WorkoutView } from '../components/WorkoutView/WorkoutView.js';
-import { CalendarView } from '../components/CalendarView/CalendarView.js';
 
 // Global state object
 window.appState = {
@@ -399,27 +396,32 @@ export class App {
   }
 
   renderOverview(container) {
-    const view = new OverviewView({
-      eventBus: this.eventBus,
-      userData: window.appState.userData,
-      currentPlan: window.appState.currentPlan,
-      weeklyDataManager: this.weeklyDataManager
-    });
-    view.mount(container);
+    container.innerHTML = `
+      <div class="overview">
+        <h1>Plan Overview</h1>
+        <p>User: ${window.appState.userData.name}</p>
+        <p>Goals: ${(window.appState.userData.goals || []).join(', ')}</p>
+        <button onclick="window.updateAppState({currentView: 'setup'})">Back to Setup</button>
+      </div>
+    `;
   }
 
   renderWorkout(container) {
-    const view = new WorkoutView({
-      eventBus: this.eventBus,
-      currentPlan: window.appState.currentPlan,
-      weeklyDataManager: this.weeklyDataManager
-    });
-    view.mount(container);
+    container.innerHTML = `
+      <div class="workout">
+        <h1>Workout View</h1>
+        <button onclick="window.updateAppState({currentView: 'overview'})">Back to Overview</button>
+      </div>
+    `;
   }
 
   renderCalendar(container) {
-    const view = new CalendarView({});
-    view.mount(container);
+    container.innerHTML = `
+      <div class="calendar">
+        <h1>Calendar View</h1>
+        <button onclick="window.updateAppState({currentView: 'overview'})">Back to Overview</button>
+      </div>
+    `;
   }
 
   showError(message) {
