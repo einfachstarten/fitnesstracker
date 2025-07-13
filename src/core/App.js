@@ -68,6 +68,34 @@ window.toggleArrayItem = function(arrayPath, item) {
   window.updateAppState({});
 };
 
+// Input-specific updater to avoid full re-render
+window.updateInputField = function(field, value) {
+  console.log('🔄 Input update:', field, value);
+  if (field === 'name') {
+    window.appState.userData.name = value;
+  } else if (field === 'age') {
+    window.appState.userData.age = parseInt(value) || null;
+  }
+  localStorage.setItem('fitness_app_state', JSON.stringify(window.appState));
+  window.updateNavigationButtons();
+  console.log('✅ Input updated, no re-render');
+};
+
+// Update only the navigation button state
+window.updateNavigationButtons = function() {
+  const canProceed = window.app.validateCurrentStep();
+  const button = document.querySelector('.btn--primary, .btn--disabled');
+  if (button) {
+    button.disabled = !canProceed;
+    button.className = `btn ${canProceed ? 'btn--primary' : 'btn--disabled'}`;
+  }
+};
+
+// Start workout for a given day
+window.startWorkout = function(dayName) {
+  window.updateAppState({ currentView: 'workout', selectedDay: dayName });
+};
+
 // State initialization
 window.initializeAppState = function() {
   const saved = localStorage.getItem('fitness_app_state');
@@ -196,15 +224,15 @@ export class App {
         <p class="step__text">Ich erstelle dir einen personalisierten Trainingsplan.</p>
         <div class="form-group">
           <label class="form-label">Wie heißt du?</label>
-          <input type="text" class="form-input" placeholder="Dein Name" 
+          <input type="text" class="form-input" placeholder="Dein Name"
                  value="${userData.name || ''}"
-                 oninput="window.updateAppState({userData: {...window.appState.userData, name: this.value}})">
+                 oninput="window.updateInputField('name', this.value)">
         </div>
         <div class="form-group">
           <label class="form-label">Alter (optional)</label>
-          <input type="number" class="form-input" placeholder="Dein Alter" 
+          <input type="number" class="form-input" placeholder="Dein Alter"
                  value="${userData.age || ''}"
-                 oninput="window.updateAppState({userData: {...window.appState.userData, age: parseInt(this.value) || null}})">
+                 oninput="window.updateInputField('age', this.value)">
         </div>
       </div>
     `;
@@ -396,14 +424,94 @@ export class App {
   }
 
   renderOverview(container) {
+    const state = window.appState;
+    const plan = state.currentPlan;
+    const userData = state.userData;
+
     container.innerHTML = `
-      <div class="overview">
-        <h1>Plan Overview</h1>
-        <p>User: ${window.appState.userData.name}</p>
-        <p>Goals: ${(window.appState.userData.goals || []).join(', ')}</p>
-        <button onclick="window.updateAppState({currentView: 'setup'})">Back to Setup</button>
+      <div class="overview-container">
+        <div class="overview-header">
+          <div class="overview-welcome">
+            <h1 class="overview-title">Hi ${userData.name}! 👋</h1>
+            <p class="overview-subtitle">Dein personalisierter Trainingsplan ist bereit</p>
+          </div>
+          <div class="overview-stats">
+            <div class="stat-card">
+              <div class="stat-number">${userData.frequency || 0}</div>
+              <div class="stat-label">Tage/Woche</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">${userData.duration || '0min'}</div>
+              <div class="stat-label">pro Einheit</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="plan-section">
+          <h2 class="section-title">📋 Dein Trainingsplan</h2>
+          <div class="plan-grid">
+            ${this.generatePlanCards(plan)}
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3 class="section-title">ℹ️ Plan Details</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Ziele:</span>
+              <span class="info-value">${(userData.goals || []).join(', ')}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Erfahrung:</span>
+              <span class="info-value">${userData.experience}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Equipment:</span>
+              <span class="info-value">${(userData.equipment || []).join(', ')}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fokus:</span>
+              <span class="info-value">${(userData.focus || []).join(', ')}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="overview-actions">
+          <button class="btn btn--secondary" onclick="window.updateAppState({currentView: 'setup'})">
+            ⚙️ Plan anpassen
+          </button>
+          <button class="btn btn--primary" onclick="window.updateAppState({currentView: 'workout'})">
+            🚀 Training starten
+          </button>
+        </div>
       </div>
     `;
+  }
+
+  generatePlanCards(plan) {
+    if (!plan) return '<p class="no-plan">Kein Plan verfügbar</p>';
+    return Object.entries(plan).map(([dayName, dayData]) => `
+      <div class="plan-card">
+        <div class="plan-card-header">
+          <h3 class="plan-card-title">${dayName}</h3>
+          <span class="plan-card-subtitle">${dayData.title}</span>
+        </div>
+        <div class="plan-card-exercises">
+          ${(dayData.exercises || []).slice(0, 3).map(ex => `
+            <div class="exercise-preview">
+              <span class="exercise-name">${ex.name || ex}</span>
+              <span class="exercise-sets">${ex.sets || '3x8-12'}</span>
+            </div>
+          `).join('')}
+          ${(dayData.exercises || []).length > 3 ?
+            `<div class="exercise-more">+${(dayData.exercises || []).length - 3} weitere</div>` :
+            ''}
+        </div>
+        <button class="plan-card-button" onclick="window.startWorkout('${dayName}')">
+          Starten
+        </button>
+      </div>
+    `).join('');
   }
 
   renderWorkout(container) {
