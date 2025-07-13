@@ -1,5 +1,5 @@
 // VERSION IDENTIFIER - MUST BE FIRST LINE
-console.log('📦 App.js DEPLOYED - Version: 2024-07-11-18:15');
+console.log('📦 App.js DEPLOYED - Version: 2025-07-14-00:00');
 
 import { EventBus } from './EventBus.js';
 import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
