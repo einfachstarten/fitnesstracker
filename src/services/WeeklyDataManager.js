@@ -100,6 +100,66 @@ export class WeeklyDataManager {
     };
   }
 
+  getPreviousWeek(weekString = this.data.currentWeek) {
+    const [year, week] = weekString.split('-W').map(Number);
+    const prev = week - 1;
+    if (prev <= 0) {
+      return `${year - 1}-W52`;
+    }
+    return `${year}-W${String(prev).padStart(2, '0')}`;
+  }
+
+  getNextWeek(weekString = this.data.currentWeek) {
+    const [year, week] = weekString.split('-W').map(Number);
+    const next = week + 1;
+    if (next > 52) {
+      return `${year + 1}-W01`;
+    }
+    return `${year}-W${String(next).padStart(2, '0')}`;
+  }
+
+  migrateToWeeklySystem(userData) {
+    if (load('weeklyTrainingData')) return;
+    const currentWeek = this.getISOWeek(new Date());
+    const bounds = this.getWeekBounds(currentWeek);
+    this.data = {
+      weeklyGoal: parseInt(userData.frequency),
+      currentWeek,
+      weeks: {
+        [currentWeek]: {
+          startDate: bounds.start.toISOString().split('T')[0],
+          endDate: bounds.end.toISOString().split('T')[0],
+          target: parseInt(userData.frequency),
+          completed: 0,
+          workouts: [],
+          isWeekCompleted: false
+        }
+      }
+    };
+    this.saveToStorage();
+  }
+
+  updateWeekCompletion(weekString) {
+    const weekData = this.getWeekData(weekString);
+    weekData.isWeekCompleted = weekData.completed >= weekData.target;
+    this.saveToStorage();
+  }
+
+  getTodayWorkout() {
+    const today = new Date().toISOString().split('T')[0];
+    return this.getWorkoutForDate(today);
+  }
+
+  getLastWorkout() {
+    const weeks = Object.keys(this.data.weeks).sort().reverse();
+    for (const week of weeks) {
+      const workouts = this.data.weeks[week].workouts.slice().reverse();
+      const last = workouts.find(w => w.isCompleted);
+      if (last) return last;
+    }
+    return null;
+  }
+
   loadFromStorage() {
     try {
       return load('weeklyTrainingData', {

@@ -4,6 +4,8 @@ console.log('📦 App.js DEPLOYED - Version: 2025-07-14-00:00');
 import { EventBus } from './EventBus.js';
 import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
 import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
+import { WeeklyTracker } from '../services/WeeklyTracker.js';
+import { CalendarView } from '../components/CalendarView/CalendarView.js';
 
 // Global state object
 window.appState = {
@@ -120,6 +122,7 @@ export class App {
     this.exerciseDatabase = null;
     this.planGenerator = null;
     this.weeklyDataManager = new WeeklyDataManager();
+    this.weeklyTracker = new WeeklyTracker(this.weeklyDataManager);
     this.init().catch(error => {
       console.error('💥 Init failed:', error);
       this.showError('Init failed: ' + error.message);
@@ -406,6 +409,7 @@ export class App {
   completeSetup() {
     const userData = window.appState.userData;
     const currentPlan = this.planGenerator.generatePlan(userData);
+    this.weeklyTracker.migrateToWeeklySystem(userData);
     window.updateAppState({
       currentPlan: currentPlan,
       currentView: 'overview'
@@ -480,6 +484,9 @@ export class App {
           <button class="btn btn--secondary" onclick="window.updateAppState({currentView: 'setup'})">
             ⚙️ Plan anpassen
           </button>
+          <button class="btn btn--secondary" onclick="window.updateAppState({currentView: 'calendar'})">
+            📅 Kalender
+          </button>
           <button class="btn btn--primary" onclick="window.updateAppState({currentView: 'workout'})">
             🚀 Training starten
           </button>
@@ -524,12 +531,8 @@ export class App {
   }
 
   renderCalendar(container) {
-    container.innerHTML = `
-      <div class="calendar">
-        <h1>Calendar View</h1>
-        <button onclick="window.updateAppState({currentView: 'overview'})">Back to Overview</button>
-      </div>
-    `;
+    const view = new CalendarView({ weeklyDataManager: this.weeklyDataManager });
+    view.mount(container);
   }
 
   showError(message) {
