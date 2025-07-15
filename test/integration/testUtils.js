@@ -17,7 +17,7 @@ export async function setupTestUser(page) {
 }
 
 export async function completePartialWorkout(page) {
-  await page.click('button:has-text("Training starten")');
+  await page.click('button:has-text("Heute trainieren")');
   await page.locator('.exercise-item').first().click();
   await page.click('button:has-text("Tag als geschafft markieren")');
   await page.click('button:has-text("Zurück zur Übersicht")');
