@@ -6,7 +6,7 @@ test.describe('Workout Completion Flow', () => {
     await page.goto('./index-new.html');
     await setupTestUser(page);
 
-    await page.click('button:has-text("Training starten")');
+    await page.click('button:has-text("Heute trainieren")');
 
     const exercises = page.locator('.exercise-item');
     const exerciseCount = await exercises.count();
