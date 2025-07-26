@@ -2,7 +2,6 @@
 console.log('📦 App.js DEPLOYED - Version: 2025-07-14-00:00');
 
 import { EventBus } from './EventBus.js';
-import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
 import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
 import { WeeklyTracker } from '../services/WeeklyTracker.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
@@ -241,16 +240,19 @@ export class App {
     console.log('🔄 INIT started');
 
     try {
+      const module = await import(`../services/WorkoutPlanGenerator.js?v=${window.CACHE_VERSION}`);
+      const { WorkoutPlanGenerator } = module;
+
       if (typeof WorkoutPlanGenerator === 'undefined') {
         throw new Error('WorkoutPlanGenerator class not found - import failed');
       }
 
       this.planGenerator = new WorkoutPlanGenerator();
       console.log('✅ Plan generator created:', this.planGenerator);
-      console.log('✅ generateTrainingPool method exists:', typeof this.planGenerator.generateTrainingPool);
+      console.log('✅ generatePlan method exists:', typeof this.planGenerator.generatePlan);
 
-      if (typeof this.planGenerator.generateTrainingPool !== 'function') {
-        throw new Error('generateTrainingPool method not found on PlanGenerator instance');
+      if (typeof this.planGenerator.generatePlan !== 'function') {
+        throw new Error('generatePlan method not found on PlanGenerator instance');
       }
 
     } catch (error) {
@@ -555,31 +557,26 @@ export class App {
     try {
       console.log('🎯 Setup completion started');
       console.log('🔍 PlanGenerator check:', this.planGenerator);
-      console.log('🔍 generateTrainingPool method:', typeof this.planGenerator?.generateTrainingPool);
+      console.log('🔍 generatePlan method:', typeof this.planGenerator?.generatePlan);
 
       if (!this.planGenerator) {
         throw new Error('Plan generator not initialized');
       }
 
-      if (typeof this.planGenerator.generateTrainingPool !== 'function') {
-        throw new Error('generateTrainingPool method not available');
+      if (typeof this.planGenerator.generatePlan !== 'function') {
+        throw new Error('generatePlan method not available');
       }
 
       const userData = window.appState.userData;
       console.log('📊 User data for plan generation:', userData);
 
-      const trainings = await this.planGenerator.generateTrainingPool(userData);
-      console.log('✅ Training pool generated:', trainings);
+      const currentPlan = await this.planGenerator.generatePlan(userData);
+      console.log('✅ Plan generated:', currentPlan);
 
-      const pool = {
-        week_start: getStartOfWeek(new Date()),
-        total_workouts: trainings.length,
-        completed_workouts: 0,
-        available_trainings: trainings
-      };
+      this.weeklyTracker.migrateToWeeklySystem(userData);
 
       window.updateAppState({
-        trainingPool: pool,
+        currentPlan: currentPlan,
         currentView: 'overview'
       });
 
