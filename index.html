@@ -4,8 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>\uD83C\uDFCB\uFE0F Fitness Tracker - New Architecture</title>
-  <link rel="stylesheet" href="css/theme.css?v=20250726">
-  <link rel="stylesheet" href="css/app-responsive.css?v=20250726">
+  <script>
+    window.CACHE_VERSION = '20250726-' + Date.now();
+    ['css/theme.css', 'css/app-responsive.css'].forEach(file => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `${file}?v=${window.CACHE_VERSION}`;
+      document.head.appendChild(link);
+    });
+  </script>
   <style>
     body {
       margin: 0;
@@ -18,11 +25,10 @@
   <div id="app"></div>
   
   <script type="module">
-    import { App } from './src/core/App.js?v=20250726';
-
-    // Create app instance
-    const app = new App();
-    console.log('App instance created');
+    import(`./src/core/App.js?v=${window.CACHE_VERSION}`).then(({ App }) => {
+      const app = new App();
+      console.log('App instance created');
+    });
   </script>
 </body>
 </html>
