@@ -23,6 +23,18 @@
 </head>
 <body>
   <div id="app"></div>
+
+  <script>
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        names.forEach(name => {
+          if (name.includes('fitness')) {
+            caches.delete(name);
+          }
+        });
+      });
+    }
+  </script>
   
   <script type="module">
     import(`./src/core/App.js?v=${window.CACHE_VERSION}`).then(({ App }) => {
