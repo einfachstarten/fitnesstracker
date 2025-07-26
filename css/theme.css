@@ -899,42 +899,69 @@
   padding: 20px 0;
 }
 
-.training-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  min-height: 180px;
-  cursor: pointer;
-}
 
-.training-card:hover:not(.completed) {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(59,130,246,0.2);
-}
-
-.training-card.completed {
-  opacity: 0.6;
-  background: #f8fafc;
-  cursor: default;
-}
 
 .card-icon {
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 12px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.card-exercises {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 16px 0;
+  backdrop-filter: blur(10px);
+}
+
+.card-exercises span {
+  display: block;
+  font-size: 0.9rem;
+  margin: 2px 0;
+  opacity: 0.9;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.duration {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.card-button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .card-button.start {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.3);
   color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  width: 100%;
-  transition: all 0.2s;
+}
+
+.card-button.start:hover {
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-2px);
 }
 
 .card-button.completed {
@@ -955,3 +982,201 @@
   height: 100%;
   background: #3b82f6;
 }
+
+/* Premium Training Card Redesign */
+.training-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  min-height: 180px;
+  cursor: pointer;
+}
+
+.training-card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+  background-size: 300% 300%;
+  animation: gradient 3s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.training-card:hover:not(.completed) {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(31, 38, 135, 0.5);
+}
+
+.training-card.completed {
+  opacity: 0.6;
+  pointer-events: none;
+  background: #f8fafc !important;
+  color: #6b7280 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+}
+
+.exercise-item {
+  background: #fff;
+  border-radius: 16px;
+  margin: 12px 0;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.exercise-item.completed {
+  background: #f0f9ff;
+  border-left: 4px solid #10b981;
+}
+
+.exercise-header {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.exercise-header:hover {
+  background: #f8fafc;
+}
+
+.exercise-checkbox {
+  position: relative;
+  margin-right: 16px;
+}
+
+.exercise-checkbox input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+}
+
+.checkmark {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.exercise-checkbox input:checked + .checkmark {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.exercise-checkbox input:checked + .checkmark:after {
+  content: "✓";
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.exercise-main {
+  flex: 1;
+}
+
+.exercise-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #1f2937;
+}
+
+.exercise-reps {
+  color: #6b7280;
+  font-size: 0.9rem;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.exercise-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.exercise-details.expanded {
+  max-height: 500px;
+}
+
+.exercise-description {
+  padding: 0 16px 16px 56px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.muscle-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.muscle-tag {
+  background: #3b82f6;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.workout-progress {
+  margin-bottom: 20px;
+}
+
+.workout-progress .progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.workout-progress .progress-bar {
+  background: #e5e7eb;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.workout-progress .progress-fill {
+  height: 100%;
+  background: #10b981;
+}
+
+/* Training type themes */
+.training-card.theme-push:not(.completed)  { background: linear-gradient(135deg, #ff9a9e, #fecfef) !important; }
+.training-card.theme-pull:not(.completed)  { background: linear-gradient(135deg, #667eea, #764ba2) !important; }
+.training-card.theme-legs:not(.completed)  { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
+.training-card.theme-cardio:not(.completed) { background: linear-gradient(135deg, #ffecd2, #fcb69f) !important; }

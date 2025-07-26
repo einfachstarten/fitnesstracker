@@ -6,7 +6,7 @@ import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
 import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
 import { WeeklyTracker } from '../services/WeeklyTracker.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
-import { generateTrainingPool } from '../services/TrainingPoolGenerator.js';
+import { ExerciseDetailProvider } from '../services/ExerciseDetailProvider.js';
 import { getStartOfWeek } from '../utils/DateUtils.js';
 
 // Global state object
@@ -33,7 +33,8 @@ window.appState = {
   showDayModal: false,
   completedExercises: {},
   completedDays: {},
-  expandedExercises: {}
+  expandedExercises: {},
+  workoutState: null
 };
 
 // State update function
@@ -106,7 +107,22 @@ window.startPoolTraining = function(trainingId) {
   const pool = window.appState.trainingPool;
   const training = pool?.available_trainings.find(t => t.id === trainingId);
   if (training) {
-    window.updateAppState({ currentView: 'workout', selectedTraining: training });
+    const exercisesState = {};
+    training.exercises.forEach((ex, idx) => {
+      const key = ex.id || `ex${idx}`;
+      exercisesState[key] = { completed: false, expanded: false };
+    });
+    window.updateAppState({
+      currentView: 'workout',
+      selectedTraining: training,
+      workoutState: {
+        trainingId: training.id,
+        exercises: exercisesState,
+        start_time: Date.now(),
+        completed_exercises: 0,
+        total_exercises: training.exercises.length
+      }
+    });
   }
 };
 
@@ -120,8 +136,75 @@ window.finishTraining = function(trainingId) {
     pool.completed_workouts++;
     pool.available_trainings = pool.available_trainings.filter(t => !t.completed);
   }
-  window.updateAppState({ currentView: 'overview', trainingPool: pool, selectedTraining: null });
+  window.updateAppState({ currentView: 'overview', trainingPool: pool, selectedTraining: null, workoutState: null });
 };
+
+window.toggleExercise = function(exId) {
+  const ws = window.appState.workoutState;
+  if (!ws) return;
+  const current = ws.exercises[exId].expanded;
+  Object.keys(ws.exercises).forEach(id => (ws.exercises[id].expanded = false));
+  ws.exercises[exId].expanded = !current;
+  window.updateAppState({ workoutState: ws }, true);
+  window.app.render();
+};
+
+window.completeExercise = function(exId, checked) {
+  const ws = window.appState.workoutState;
+  if (!ws) return;
+  ws.exercises[exId].completed = checked;
+  ws.completed_exercises = Object.values(ws.exercises).filter(e => e.completed).length;
+  window.updateAppState({ workoutState: ws }, true);
+  window.app.render();
+  if (ws.completed_exercises === ws.total_exercises) {
+    // simple celebration effect could be added here
+  }
+};
+
+function renderExerciseAccordion(exercise, expanded, completed, provider) {
+  const details = provider.getExerciseDetails(exercise.id);
+  if (!details) return '';
+  return `
+    <div class="exercise-item ${completed ? 'completed' : ''}">
+      <div class="exercise-header" onclick="toggleExercise('${exercise.id}')">
+        <div class="exercise-checkbox">
+          <input type="checkbox" ${completed ? 'checked' : ''} onchange="completeExercise('${exercise.id}', this.checked)">
+          <span class="checkmark"></span>
+        </div>
+        <div class="exercise-main">
+          <h4 class="exercise-name">${details.name}</h4>
+          <span class="exercise-reps">${details.reps || ''}</span>
+        </div>
+        <div class="exercise-toggle">
+          <span class="toggle-icon ${expanded ? 'expanded' : ''}">▼</span>
+        </div>
+      </div>
+      ${expanded ? `
+      <div class="exercise-details expanded">
+        <div class="exercise-description">
+          <p class="description-text">${details.description || ''}</p>
+          <div class="exercise-instructions">
+            <h5>📋 Ausführung:</h5>
+            <ol class="instruction-list">
+              ${(details.instructions || []).map(i => `<li>${i}</li>`).join('')}
+            </ol>
+          </div>
+          <div class="exercise-tips">
+            <h5>💡 Tipps:</h5>
+            <ul class="tips-list">
+              ${(details.tips || []).map(t => `<li>${t}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="exercise-muscles">
+            <h5>🎯 Zielmuskeln:</h5>
+            <div class="muscle-tags">
+              ${(details.muscleGroups || []).map(m => `<span class="muscle-tag">${m}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>` : ''}
+    </div>`;
+}
 
 // State initialization
 window.initializeAppState = function() {
@@ -141,10 +224,10 @@ window.initializeAppState = function() {
 export class App {
   constructor() {
     console.log('🚀 App constructor STARTED - Version: 2024-07-11-18:15');
+    this.forceCacheRefresh();
     window.initializeAppState();
     window.app = this;
     this.eventBus = new EventBus();
-    this.exerciseDatabase = null;
     this.planGenerator = null;
     this.weeklyDataManager = new WeeklyDataManager();
     this.weeklyTracker = new WeeklyTracker(this.weeklyDataManager);
@@ -156,9 +239,7 @@ export class App {
 
   async init() {
     console.log('🔄 INIT started');
-    this.exerciseDatabase = await this.loadExerciseDatabase();
-    console.log('✅ Exercise database loaded');
-    this.planGenerator = new WorkoutPlanGenerator(this.exerciseDatabase);
+    this.planGenerator = new WorkoutPlanGenerator();
     console.log('✅ Plan generator created');
     this.setupEventHandlers();
     console.log('✅ Event handlers setup');
@@ -452,9 +533,9 @@ export class App {
     }
   }
 
-  completeSetup() {
+  async completeSetup() {
     const userData = window.appState.userData;
-    const trainings = generateTrainingPool(userData, this.planGenerator);
+    const trainings = await this.planGenerator.generateTrainingPool(userData);
     const pool = {
       week_start: getStartOfWeek(new Date()),
       total_workouts: trainings.length,
@@ -467,22 +548,13 @@ export class App {
     });
   }
 
-  async loadExerciseDatabase() {
-    try {
-      const response = await fetch('./exercises.json');
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.warn('Using fallback exercises');
-      return this.getFallbackExercises();
-    }
-  }
 
-  renderOverview(container) {
+
+  async renderOverview(container) {
     const state = window.appState;
     let pool = state.trainingPool;
     if (!pool) {
-      const trainings = generateTrainingPool(state.userData, this.planGenerator);
+      const trainings = await this.planGenerator.generateTrainingPool(state.userData);
       pool = {
         week_start: getStartOfWeek(new Date()),
         total_workouts: trainings.length,
@@ -491,7 +563,7 @@ export class App {
       };
       window.updateAppState({ trainingPool: pool }, true);
     } else if (pool.week_start !== getStartOfWeek(new Date())) {
-      const trainings = generateTrainingPool(state.userData, this.planGenerator);
+      const trainings = await this.planGenerator.generateTrainingPool(state.userData);
       pool = {
         week_start: getStartOfWeek(new Date()),
         total_workouts: trainings.length,
@@ -501,7 +573,9 @@ export class App {
       window.updateAppState({ trainingPool: pool }, true);
     }
 
-    const progress = Math.round((pool.completed_workouts / pool.total_workouts) * 100);
+    const progress = pool.total_workouts
+      ? Math.round((pool.completed_workouts / pool.total_workouts) * 100)
+      : 0;
     container.innerHTML = `
       <div class="training-pool-container">
         <div class="pool-header">
@@ -515,7 +589,7 @@ export class App {
         </div>
         <div class="training-grid">
           ${pool.available_trainings.map(t => `
-            <div class="training-card ${t.completed ? 'completed' : 'available'}" onclick="${t.completed ? '' : `startPoolTraining('${t.id}')`}">
+            <div class="training-card theme-${t.type} ${t.completed ? 'completed' : 'available'}" onclick="${t.completed ? '' : `startPoolTraining('${t.id}')`}">
               <div class="card-icon">${t.icon}</div>
               <h3 class="card-title">${t.title}</h3>
               <div class="card-exercises">
@@ -562,19 +636,37 @@ export class App {
 
   renderWorkout(container) {
     const training = window.appState.selectedTraining;
-    if (!training) {
+    const ws = window.appState.workoutState;
+    if (!training || !ws) {
       container.innerHTML = '<div class="p-4">Kein Training gefunden.</div>';
       return;
     }
+    const progress = ws.total_exercises
+      ? Math.round((ws.completed_exercises / ws.total_exercises) * 100)
+      : 0;
+    const provider = new ExerciseDetailProvider(this.planGenerator.exerciseManager, training.difficulty);
+    const items = training.exercises
+      .map((ex, idx) => {
+        const key = ex.id || `ex${idx}`;
+        const st = ws.exercises[key];
+        const exWithId = { ...ex, id: key };
+        return renderExerciseAccordion(exWithId, st.expanded, st.completed, provider);
+      })
+      .join('');
+
     container.innerHTML = `
       <div class="workout">
         <h2>${training.title}</h2>
-        <ul class="exercise-list">
-          ${training.exercises.map(ex => `<li>${ex.name || ex}</li>`).join('')}
-        </ul>
-        <button onclick="finishTraining('${training.id}')" class="plan-card-button">Training abschließen</button>
-      </div>
-    `;
+        <div class="workout-progress">
+          <div class="progress-header">
+            <h3>Trainingsfortschritt</h3>
+            <span class="progress-text">${ws.completed_exercises}/${ws.total_exercises} Übungen</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+        </div>
+        <div class="exercise-list">${items}</div>
+        <button onclick="finishTraining('${training.id}')" class="plan-card-button" ${ws.completed_exercises === ws.total_exercises ? '' : 'disabled'}>Training abschließen</button>
+      </div>`;
   }
 
   renderCalendar(container) {
@@ -593,14 +685,7 @@ export class App {
     `;
   }
 
-  getFallbackExercises() {
-    return {
-      "Eigengewicht": [
-        { "name": "Liegestütz", "muskelgruppen": ["Brust", "Trizeps"], "schwierigkeit": "Anfänger" },
-        { "name": "Kniebeuge", "muskelgruppen": ["Beine", "Gesäß"], "schwierigkeit": "Anfänger" }
-      ]
-    };
-  }
+
 
   /* ------------------------------------------------------------------
    *  Weekly System Helpers
@@ -800,8 +885,8 @@ export class App {
     this.render();
   }
 
-  resetTrainingPool() {
-    const trainings = generateTrainingPool(window.appState.userData, this.planGenerator);
+  async resetTrainingPool() {
+    const trainings = await this.planGenerator.generateTrainingPool(window.appState.userData);
     const pool = {
       week_start: getStartOfWeek(new Date()),
       total_workouts: trainings.length,
@@ -890,7 +975,7 @@ export class App {
 
         <div class="week-summary">
           <div class="progress-bar-container">
-            <div class="progress-bar" style="width: ${(weekData.completed/weekData.target)*100}%"></div>
+            <div class="progress-bar" style="width: ${weekData.target ? (weekData.completed / weekData.target) * 100 : 0}%"></div>
           </div>
           <div class="summary-text">
             ${weekData.completed} von ${weekData.target} Trainings abgeschlossen
@@ -983,6 +1068,21 @@ export class App {
 
   isWorkoutCompleted(dateStr, weekData) {
     return weekData.workouts.some(w => w.date === dateStr && w.isCompleted);
+  }
+
+  forceCacheRefresh() {
+    if ('serviceWorker' in navigator && 'caches' in window) {
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName.startsWith('fitness-tracker-v')) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      });
+    }
   }
 
   saveToLocalStorage() {

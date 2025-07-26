@@ -1,11 +1,14 @@
-const CACHE_NAME = 'fitness-tracker-v1.0.4';
+const CACHE_VERSION = '20250726-' + Date.now();
+const CACHE_NAME = 'fitness-tracker-v' + CACHE_VERSION;
 const urlsToCache = [
   './',
   './index.html',
   './archive/benni-specialized.html',
   './css/tailwind.css',
   './manifest.json',
-  './src/core/App.js?v=20250726'
+  `./css/theme.css?v=${CACHE_VERSION}`,
+  `./css/app-responsive.css?v=${CACHE_VERSION}`,
+  `./src/core/App.js?v=${CACHE_VERSION}`
 ];
 
 // Installation des Service Workers
@@ -31,7 +34,7 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
+          if (cacheName.startsWith('fitness-tracker-v') && cacheName !== CACHE_NAME) {
             console.log('Service Worker: Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
