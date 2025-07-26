@@ -1027,6 +1027,7 @@
   pointer-events: none;
   background: #f8fafc !important;
   color: #6b7280 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
 }
 
 .exercise-item {
