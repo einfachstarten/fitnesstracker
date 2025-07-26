@@ -327,6 +327,8 @@ export class App {
       { id: 'Ab Wheel', icon: '🛞', title: 'Ab Roller' }
     ];
 
+    console.log('\uD83D\uDD27 Equipment step - rendering', equipmentOptions.length, 'options');
+
     return `
       <div class="step">
         <div class="step__emoji">🏋️</div>

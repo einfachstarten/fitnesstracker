@@ -1,10 +1,11 @@
-const CACHE_NAME = 'fitness-tracker-v1.0.3';
+const CACHE_NAME = 'fitness-tracker-v1.0.4';
 const urlsToCache = [
   './',
   './index.html',
   './archive/benni-specialized.html',
   './css/tailwind.css',
-  './manifest.json'
+  './manifest.json',
+  './src/core/App.js?v=20250726'
 ];
 
 // Installation des Service Workers
