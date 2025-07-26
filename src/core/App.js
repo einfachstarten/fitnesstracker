@@ -239,8 +239,26 @@ export class App {
 
   async init() {
     console.log('🔄 INIT started');
-    this.planGenerator = new WorkoutPlanGenerator();
-    console.log('✅ Plan generator created');
+
+    try {
+      if (typeof WorkoutPlanGenerator === 'undefined') {
+        throw new Error('WorkoutPlanGenerator class not found - import failed');
+      }
+
+      this.planGenerator = new WorkoutPlanGenerator();
+      console.log('✅ Plan generator created:', this.planGenerator);
+      console.log('✅ generateTrainingPool method exists:', typeof this.planGenerator.generateTrainingPool);
+
+      if (typeof this.planGenerator.generateTrainingPool !== 'function') {
+        throw new Error('generateTrainingPool method not found on PlanGenerator instance');
+      }
+
+    } catch (error) {
+      console.error('💥 Plan generator creation failed:', error);
+      this.showError('Plan generator initialization failed: ' + error.message);
+      return;
+    }
+
     this.setupEventHandlers();
     console.log('✅ Event handlers setup');
     this.checkExistingData();
@@ -534,18 +552,42 @@ export class App {
   }
 
   async completeSetup() {
-    const userData = window.appState.userData;
-    const trainings = await this.planGenerator.generateTrainingPool(userData);
-    const pool = {
-      week_start: getStartOfWeek(new Date()),
-      total_workouts: trainings.length,
-      completed_workouts: 0,
-      available_trainings: trainings
-    };
-    window.updateAppState({
-      trainingPool: pool,
-      currentView: 'overview'
-    });
+    try {
+      console.log('🎯 Setup completion started');
+      console.log('🔍 PlanGenerator check:', this.planGenerator);
+      console.log('🔍 generateTrainingPool method:', typeof this.planGenerator?.generateTrainingPool);
+
+      if (!this.planGenerator) {
+        throw new Error('Plan generator not initialized');
+      }
+
+      if (typeof this.planGenerator.generateTrainingPool !== 'function') {
+        throw new Error('generateTrainingPool method not available');
+      }
+
+      const userData = window.appState.userData;
+      console.log('📊 User data for plan generation:', userData);
+
+      const trainings = await this.planGenerator.generateTrainingPool(userData);
+      console.log('✅ Training pool generated:', trainings);
+
+      const pool = {
+        week_start: getStartOfWeek(new Date()),
+        total_workouts: trainings.length,
+        completed_workouts: 0,
+        available_trainings: trainings
+      };
+
+      window.updateAppState({
+        trainingPool: pool,
+        currentView: 'overview'
+      });
+
+      console.log('🎉 Setup completed successfully');
+    } catch (error) {
+      console.error('💥 Setup completion failed:', error);
+      this.showError('Setup konnte nicht abgeschlossen werden: ' + error.message);
+    }
   }
 
 
@@ -677,10 +719,12 @@ export class App {
   showError(message) {
     const container = document.getElementById('app');
     container.innerHTML = `
-      <div class="p-8 text-center">
-        <h2 class="text-xl font-bold text-red-600 mb-4">⚠️ Fehler</h2>
-        <pre class="text-left bg-gray-100 p-4 rounded text-sm whitespace-pre-wrap">${message}</pre>
-        <button onclick="location.reload()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded">Neu laden</button>
+      <div class="error-container">
+        <h2>🚨 Fehler aufgetreten</h2>
+        <p>${message}</p>
+        <button onclick="location.reload()" class="btn btn--primary">
+          🔄 Seite neu laden
+        </button>
       </div>
     `;
   }
