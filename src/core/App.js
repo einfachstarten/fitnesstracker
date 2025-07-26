@@ -224,6 +224,7 @@ window.initializeAppState = function() {
 export class App {
   constructor() {
     console.log('🚀 App constructor STARTED - Version: 2024-07-11-18:15');
+    this.forceCacheRefresh();
     window.initializeAppState();
     window.app = this;
     this.eventBus = new EventBus();
@@ -1063,6 +1064,21 @@ export class App {
 
   isWorkoutCompleted(dateStr, weekData) {
     return weekData.workouts.some(w => w.date === dateStr && w.isCompleted);
+  }
+
+  forceCacheRefresh() {
+    if ('serviceWorker' in navigator && 'caches' in window) {
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName.startsWith('fitness-tracker-v')) {
+              console.log('Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      });
+    }
   }
 
   saveToLocalStorage() {
