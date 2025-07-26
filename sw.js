@@ -2,8 +2,7 @@ const CACHE_NAME = 'fitness-tracker-v1.0.3';
 const urlsToCache = [
   './',
   './index.html',
-  './custom-tracker.html',
-  './benni.html',
+  './archive/benni-specialized.html',
   './css/tailwind.css',
   './manifest.json'
 ];

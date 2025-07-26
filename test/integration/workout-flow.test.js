@@ -3,7 +3,7 @@ import { setupTestUser, completePartialWorkout } from './testUtils.js';
 
 test.describe('Workout Completion Flow', () => {
   test('complete workout updates progress', async ({ page }) => {
-    await page.goto('./index-new.html');
+    await page.goto('./index.html');
     await setupTestUser(page);
 
     await page.click('button:has-text("Heute trainieren")');
