@@ -80,7 +80,21 @@ export class WorkoutPlanGenerator {
       'Eigengewicht': 'Eigengewicht',
       'Kurzhanteln': 'Kurzhanteln',
       'Langhanteln': 'Langhanteln',
-      'Gym-Ger\u00e4te': 'Gym-Ger\u00e4te'
+      'Gym-Ger\u00e4te': 'Gym-Ger\u00e4te',
+
+      'Langhantel': 'Langhanteln',
+      'Kettlebell': 'Kurzhanteln',
+      'Widerstandsbänder': 'Eigengewicht',
+      'Schlingentrainer': 'Eigengewicht',
+      'Trainingsmatte': 'Eigengewicht',
+      'Gewichtsscheiben': 'Langhanteln',
+      'Klimmzugstange': 'Eigengewicht',
+      'Medizinball': 'Kurzhanteln',
+      'Gymnastikball': 'Gym-Ger\u00e4te',
+      'Springseil': 'Eigengewicht',
+      'Resistance Loops': 'Eigengewicht',
+      'Liegest\u00fctzgriffe': 'Eigengewicht',
+      'Ab Wheel': 'Eigengewicht'
     };
     return mapping[equipment];
   }

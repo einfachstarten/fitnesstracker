@@ -284,17 +284,36 @@ export class App {
 
   generateStep4HTML() {
     const equipment = window.appState.userData.equipment || [];
-    const equipmentOptions = ['Eigengewicht', 'Kurzhanteln', 'Langhanteln', 'Gym-Geräte'];
+    const equipmentOptions = [
+      { id: 'Eigengewicht', icon: '🤸‍♂️', title: 'Bodyweight' },
+      { id: 'Kurzhanteln', icon: '🏋️‍♂️', title: 'Dumbbells' },
+      { id: 'Langhantel', icon: '🏋️‍♀️', title: 'Barbell' },
+      { id: 'Kettlebell', icon: '⚫', title: 'Kettlebell' },
+      { id: 'Widerstandsbänder', icon: '🟠', title: 'Resistance Bands' },
+      { id: 'Schlingentrainer', icon: '🔗', title: 'TRX' },
+      { id: 'Trainingsmatte', icon: '🟫', title: 'Exercise Mat' },
+      { id: 'Gewichtsscheiben', icon: '⚪', title: 'Weight Plates' },
+      { id: 'Klimmzugstange', icon: '🚪', title: 'Pull-up Bar' },
+      { id: 'Medizinball', icon: '⚽', title: 'Medicine Ball' },
+      { id: 'Gymnastikball', icon: '🔵', title: 'Exercise Ball' },
+      { id: 'Springseil', icon: '➰', title: 'Jump Rope' },
+      { id: 'Resistance Loops', icon: '🟡', title: 'Mini Bands' },
+      { id: 'Liegestützgriffe', icon: '📐', title: 'Push-up Handles' },
+      { id: 'Ab Wheel', icon: '🛞', title: 'Ab Roller' }
+    ];
+
     return `
       <div class="step">
         <div class="step__emoji">🏋️</div>
         <h2 class="step__title">Welche Ausrüstung hast du?</h2>
-        ${equipmentOptions.map(eq => `
-          <button class="goal-button ${equipment.includes(eq) ? 'goal-button--selected' : ''}"
-                  onclick="window.toggleArrayItem('userData.equipment', '${eq}')">
-            ${eq}
-          </button>
-        `).join('')}
+        <div class="equipment-grid">
+          ${equipmentOptions.map(eq => `
+            <div class="equipment-card ${equipment.includes(eq.id) ? 'selected' : ''}" onclick="window.toggleArrayItem('userData.equipment', '${eq.id}')">
+              <div class="equipment-icon">${eq.icon}</div>
+              <div class="equipment-name">${eq.title}</div>
+            </div>
+          `).join('')}
+        </div>
       </div>
     `;
   }

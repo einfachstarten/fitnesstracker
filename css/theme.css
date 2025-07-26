@@ -365,6 +365,51 @@
   font-weight: 600;
 }
 
+/* Equipment Selection Grid */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.equipment-card {
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.equipment-card:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.equipment-card.selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.equipment-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.equipment-name {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 /* Button Styles */
 .btn {
   padding: 0.75rem 1.5rem;
