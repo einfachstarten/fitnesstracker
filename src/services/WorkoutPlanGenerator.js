@@ -5,6 +5,11 @@ export class WorkoutPlanGenerator {
         this.exerciseManager = new ExerciseManager();
     }
 
+    // Compatibility wrapper for older code paths
+    async generatePlan(userData) {
+        return this.generateTrainingPool(userData);
+    }
+
     async generateTrainingPool(userData) {
         await this.exerciseManager.loadExercises();
         const { equipment, frequency, experience } = userData;
