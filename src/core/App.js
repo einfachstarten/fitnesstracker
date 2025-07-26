@@ -6,7 +6,7 @@ import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
 import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
 import { WeeklyTracker } from '../services/WeeklyTracker.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
-import { generateTrainingPool } from '../services/TrainingPoolGenerator.js';
+import { ExerciseDetailProvider } from '../services/ExerciseDetailProvider.js';
 import { getStartOfWeek } from '../utils/DateUtils.js';
 
 // Global state object
@@ -108,8 +108,9 @@ window.startPoolTraining = function(trainingId) {
   const training = pool?.available_trainings.find(t => t.id === trainingId);
   if (training) {
     const exercisesState = {};
-    training.exercises.forEach((_, idx) => {
-      exercisesState[idx] = { completed: false, expanded: false };
+    training.exercises.forEach((ex, idx) => {
+      const key = ex.id || `ex${idx}`;
+      exercisesState[key] = { completed: false, expanded: false };
     });
     window.updateAppState({
       currentView: 'workout',
@@ -160,6 +161,51 @@ window.completeExercise = function(exId, checked) {
   }
 };
 
+function renderExerciseAccordion(exercise, expanded, completed, provider) {
+  const details = provider.getExerciseDetails(exercise.id);
+  if (!details) return '';
+  return `
+    <div class="exercise-item ${completed ? 'completed' : ''}">
+      <div class="exercise-header" onclick="toggleExercise('${exercise.id}')">
+        <div class="exercise-checkbox">
+          <input type="checkbox" ${completed ? 'checked' : ''} onchange="completeExercise('${exercise.id}', this.checked)">
+          <span class="checkmark"></span>
+        </div>
+        <div class="exercise-main">
+          <h4 class="exercise-name">${details.name}</h4>
+          <span class="exercise-reps">${details.reps || ''}</span>
+        </div>
+        <div class="exercise-toggle">
+          <span class="toggle-icon ${expanded ? 'expanded' : ''}">▼</span>
+        </div>
+      </div>
+      ${expanded ? `
+      <div class="exercise-details expanded">
+        <div class="exercise-description">
+          <p class="description-text">${details.description || ''}</p>
+          <div class="exercise-instructions">
+            <h5>📋 Ausführung:</h5>
+            <ol class="instruction-list">
+              ${(details.instructions || []).map(i => `<li>${i}</li>`).join('')}
+            </ol>
+          </div>
+          <div class="exercise-tips">
+            <h5>💡 Tipps:</h5>
+            <ul class="tips-list">
+              ${(details.tips || []).map(t => `<li>${t}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="exercise-muscles">
+            <h5>🎯 Zielmuskeln:</h5>
+            <div class="muscle-tags">
+              ${(details.muscleGroups || []).map(m => `<span class="muscle-tag">${m}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>` : ''}
+    </div>`;
+}
+
 // State initialization
 window.initializeAppState = function() {
   const saved = localStorage.getItem('fitness_app_state');
@@ -181,7 +227,6 @@ export class App {
     window.initializeAppState();
     window.app = this;
     this.eventBus = new EventBus();
-    this.exerciseDatabase = null;
     this.planGenerator = null;
     this.weeklyDataManager = new WeeklyDataManager();
     this.weeklyTracker = new WeeklyTracker(this.weeklyDataManager);
@@ -193,9 +238,7 @@ export class App {
 
   async init() {
     console.log('🔄 INIT started');
-    this.exerciseDatabase = await this.loadExerciseDatabase();
-    console.log('✅ Exercise database loaded');
-    this.planGenerator = new WorkoutPlanGenerator(this.exerciseDatabase);
+    this.planGenerator = new WorkoutPlanGenerator();
     console.log('✅ Plan generator created');
     this.setupEventHandlers();
     console.log('✅ Event handlers setup');
@@ -489,9 +532,9 @@ export class App {
     }
   }
 
-  completeSetup() {
+  async completeSetup() {
     const userData = window.appState.userData;
-    const trainings = generateTrainingPool(userData, this.planGenerator);
+    const trainings = await this.planGenerator.generateTrainingPool(userData);
     const pool = {
       week_start: getStartOfWeek(new Date()),
       total_workouts: trainings.length,
@@ -504,22 +547,13 @@ export class App {
     });
   }
 
-  async loadExerciseDatabase() {
-    try {
-      const response = await fetch('./exercises.json');
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.warn('Using fallback exercises');
-      return this.getFallbackExercises();
-    }
-  }
 
-  renderOverview(container) {
+
+  async renderOverview(container) {
     const state = window.appState;
     let pool = state.trainingPool;
     if (!pool) {
-      const trainings = generateTrainingPool(state.userData, this.planGenerator);
+      const trainings = await this.planGenerator.generateTrainingPool(state.userData);
       pool = {
         week_start: getStartOfWeek(new Date()),
         total_workouts: trainings.length,
@@ -528,7 +562,7 @@ export class App {
       };
       window.updateAppState({ trainingPool: pool }, true);
     } else if (pool.week_start !== getStartOfWeek(new Date())) {
-      const trainings = generateTrainingPool(state.userData, this.planGenerator);
+      const trainings = await this.planGenerator.generateTrainingPool(state.userData);
       pool = {
         week_start: getStartOfWeek(new Date()),
         total_workouts: trainings.length,
@@ -605,31 +639,14 @@ export class App {
       return;
     }
     const progress = Math.round((ws.completed_exercises / ws.total_exercises) * 100);
+    const provider = new ExerciseDetailProvider(this.planGenerator.exerciseManager, training.difficulty);
     const items = training.exercises
-      .map((ex, idx) => `
-        <div class="exercise-item ${ws.exercises[idx].completed ? 'completed' : ''}" data-exercise="${idx}">
-          <div class="exercise-header" onclick="toggleExercise('${idx}')">
-            <div class="exercise-checkbox">
-              <input type="checkbox" ${ws.exercises[idx].completed ? 'checked' : ''} onchange="completeExercise('${idx}', this.checked)">
-              <span class="checkmark"></span>
-            </div>
-            <div class="exercise-main">
-              <h4 class="exercise-name">${ex.name || ex}</h4>
-              <span class="exercise-reps">${ex.reps || '3x8-12'}</span>
-            </div>
-            <div class="exercise-toggle">
-              <span class="toggle-icon ${ws.exercises[idx].expanded ? 'expanded' : ''}">▼</span>
-            </div>
-          </div>
-          <div class="exercise-details ${ws.exercises[idx].expanded ? 'expanded' : ''}">
-            <div class="exercise-description">
-              <p>${ex.beschreibung || ex.ausführung || ''}</p>
-              ${ex.tips ? `<div class="exercise-tips"><h5>💡 Ausführung:</h5><ul>${ex.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>` : ''}
-              ${ex.muskelgruppen ? `<div class="exercise-muscles"><h5>🎯 Zielmuskeln:</h5><div class="muscle-tags">${ex.muskelgruppen.map(m => `<span class="muscle-tag">${m}</span>`).join('')}</div></div>` : ''}
-            </div>
-          </div>
-        </div>
-      `)
+      .map((ex, idx) => {
+        const key = ex.id || `ex${idx}`;
+        const st = ws.exercises[key];
+        const exWithId = { ...ex, id: key };
+        return renderExerciseAccordion(exWithId, st.expanded, st.completed, provider);
+      })
       .join('');
 
     container.innerHTML = `
@@ -663,14 +680,7 @@ export class App {
     `;
   }
 
-  getFallbackExercises() {
-    return {
-      "Eigengewicht": [
-        { "name": "Liegestütz", "muskelgruppen": ["Brust", "Trizeps"], "schwierigkeit": "Anfänger" },
-        { "name": "Kniebeuge", "muskelgruppen": ["Beine", "Gesäß"], "schwierigkeit": "Anfänger" }
-      ]
-    };
-  }
+
 
   /* ------------------------------------------------------------------
    *  Weekly System Helpers
@@ -870,8 +880,8 @@ export class App {
     this.render();
   }
 
-  resetTrainingPool() {
-    const trainings = generateTrainingPool(window.appState.userData, this.planGenerator);
+  async resetTrainingPool() {
+    const trainings = await this.planGenerator.generateTrainingPool(window.appState.userData);
     const pool = {
       week_start: getStartOfWeek(new Date()),
       total_workouts: trainings.length,
