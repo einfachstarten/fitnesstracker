@@ -1027,7 +1027,6 @@
   pointer-events: none;
   background: #f8fafc !important;
   color: #6b7280 !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
 }
 
 .exercise-item {
@@ -1176,7 +1175,7 @@
 }
 
 /* Training type themes */
-.training-card.theme-push:not(.completed)  { background: linear-gradient(135deg, #ff9a9e, #fecfef) !important; }
-.training-card.theme-pull:not(.completed)  { background: linear-gradient(135deg, #667eea, #764ba2) !important; }
-.training-card.theme-legs:not(.completed)  { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
-.training-card.theme-cardio:not(.completed) { background: linear-gradient(135deg, #ffecd2, #fcb69f) !important; }
+.training-card.theme-push:not(.completed)  { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%) !important; }
+.training-card.theme-pull:not(.completed)  { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+.training-card.theme-legs:not(.completed)  { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important; }
+.training-card.theme-cardio:not(.completed) { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%) !important; }

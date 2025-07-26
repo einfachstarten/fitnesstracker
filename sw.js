@@ -1,4 +1,4 @@
-const CACHE_VERSION = '20250726-' + Date.now();
+const CACHE_VERSION = '20250726-132608';
 const CACHE_NAME = 'fitness-tracker-v' + CACHE_VERSION;
 const urlsToCache = [
   './',
