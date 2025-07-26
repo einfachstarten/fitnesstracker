@@ -14,7 +14,11 @@ function logRequest() {
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
     $method = $_SERVER['REQUEST_METHOD'] ?? 'unknown';
+    $contentType = $_SERVER['CONTENT_TYPE'] ?? 'unknown';
+    $contentLength = $_SERVER['CONTENT_LENGTH'] ?? 'unknown';
+
     writeLog("WEBHOOK_TRIGGERED - IP: $ip, Method: $method, User-Agent: $userAgent");
+    writeLog("HEADERS - Content-Type: $contentType, Content-Length: $contentLength");
 }
 
 function logPayload($payload) {
@@ -33,6 +37,8 @@ function logPayload($payload) {
             $removed = count($payload['head_commit']['removed']);
             writeLog("FILES_CHANGED - Added: $added, Modified: $modified, Removed: $removed");
         }
+    } else {
+        writeLog("PAYLOAD_STRUCTURE - Keys: " . implode(', ', array_keys($payload)));
     }
 }
 
@@ -70,16 +76,62 @@ try {
         exit('Method not allowed');
     }
 
-    $input = file_get_contents('php://input');
-    $payload = json_decode($input, true);
+    if (strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') === false) {
+        writeLog("INVALID_CONTENT_TYPE - Expected application/json, got: " . ($_SERVER['CONTENT_TYPE'] ?? 'none'), 'ERROR');
+    }
 
-    if (json_last_error() !== JSON_ERROR_NONE) {
-        writeLog("INVALID_JSON - " . json_last_error_msg(), 'ERROR');
+    $input = file_get_contents('php://input');
+    if (substr($input, 0, 3) === "\xEF\xBB\xBF") {
+        $input = substr($input, 3);
+        writeLog("BOM_REMOVED - UTF-8 BOM detected and removed");
+    }
+    $inputLength = strlen($input);
+    writeLog("RAW_INPUT - Length: $inputLength bytes");
+    $inputPreview = substr($input, 0, 200);
+    $inputPreview = preg_replace('/[^\x20-\x7E]/', '?', $inputPreview);
+    writeLog("RAW_INPUT_PREVIEW - First 200 chars: $inputPreview");
+
+    if (empty($input)) {
+        writeLog("EMPTY_INPUT - No payload received", 'ERROR');
         http_response_code(400);
-        exit('Invalid JSON');
+        exit('Empty payload');
+    }
+
+    $firstChar = substr($input, 0, 1);
+    $lastChar = substr($input, -1);
+    writeLog("JSON_BOUNDARIES - First char: '$firstChar', Last char: '$lastChar'");
+
+    $payload = json_decode($input, true);
+    $jsonError = json_last_error();
+    $jsonErrorMsg = json_last_error_msg();
+
+    if ($jsonError !== JSON_ERROR_NONE) {
+        writeLog("JSON_DECODE_FAILED - Error code: $jsonError, Message: $jsonErrorMsg", 'ERROR');
+        writeLog("JSON_ERROR_DETAIL - Input length: $inputLength, First 100 chars: " . substr($input, 0, 100), 'ERROR');
+        $cleanInput = trim($input);
+        $cleanInput = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', $cleanInput);
+        writeLog("RETRY_CLEAN_JSON - Attempting with cleaned input", 'INFO');
+        $payload = json_decode($cleanInput, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            writeLog("CLEAN_JSON_FAILED - Still invalid after cleaning", 'ERROR');
+            http_response_code(400);
+            exit('Invalid JSON payload');
+        } else {
+            writeLog("CLEAN_JSON_SUCCESS - Parsed after cleaning", 'SUCCESS');
+        }
+    } else {
+        writeLog("JSON_DECODE_SUCCESS - Payload parsed successfully", 'SUCCESS');
+    }
+
+    if (isset($payload['zen'])) {
+        writeLog("PING_EVENT - GitHub webhook ping received");
+        http_response_code(200);
+        echo "pong";
+        exit;
     }
 
     logPayload($payload);
+    writeLog("DEPLOYMENT_START - Proceeding with git operations");
 
     $secret = 'your_webhook_secret_here';
     if (!empty($secret)) {
