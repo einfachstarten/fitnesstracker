@@ -573,7 +573,9 @@ export class App {
       window.updateAppState({ trainingPool: pool }, true);
     }
 
-    const progress = Math.round((pool.completed_workouts / pool.total_workouts) * 100);
+    const progress = pool.total_workouts
+      ? Math.round((pool.completed_workouts / pool.total_workouts) * 100)
+      : 0;
     container.innerHTML = `
       <div class="training-pool-container">
         <div class="pool-header">
@@ -639,7 +641,9 @@ export class App {
       container.innerHTML = '<div class="p-4">Kein Training gefunden.</div>';
       return;
     }
-    const progress = Math.round((ws.completed_exercises / ws.total_exercises) * 100);
+    const progress = ws.total_exercises
+      ? Math.round((ws.completed_exercises / ws.total_exercises) * 100)
+      : 0;
     const provider = new ExerciseDetailProvider(this.planGenerator.exerciseManager, training.difficulty);
     const items = training.exercises
       .map((ex, idx) => {
@@ -971,7 +975,7 @@ export class App {
 
         <div class="week-summary">
           <div class="progress-bar-container">
-            <div class="progress-bar" style="width: ${(weekData.completed/weekData.target)*100}%"></div>
+            <div class="progress-bar" style="width: ${weekData.target ? (weekData.completed / weekData.target) * 100 : 0}%"></div>
           </div>
           <div class="summary-text">
             ${weekData.completed} von ${weekData.target} Trainings abgeschlossen
