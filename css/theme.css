@@ -900,32 +900,68 @@
 }
 
 
-.training-card:hover:not(.completed) {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(59,130,246,0.2);
-}
-
-.training-card.completed {
-  opacity: 0.6;
-  background: #f8fafc;
-  cursor: default;
-}
 
 .card-icon {
   font-size: 2.5rem;
   text-align: center;
   margin-bottom: 12px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.card-exercises {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 16px 0;
+  backdrop-filter: blur(10px);
+}
+
+.card-exercises span {
+  display: block;
+  font-size: 0.9rem;
+  margin: 2px 0;
+  opacity: 0.9;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.duration {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.card-button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .card-button.start {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.3);
   color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  width: 100%;
-  transition: all 0.2s;
+}
+
+.card-button.start:hover {
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-2px);
 }
 
 .card-button.completed {
@@ -959,6 +995,8 @@
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  min-height: 180px;
+  cursor: pointer;
 }
 
 .training-card:before {
@@ -979,7 +1017,7 @@
   100% { background-position: 0% 50%; }
 }
 
-.training-card:hover {
+.training-card:hover:not(.completed) {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 16px 48px rgba(31, 38, 135, 0.5);
 }
@@ -987,6 +1025,8 @@
 .training-card.completed {
   opacity: 0.6;
   pointer-events: none;
+  background: #f8fafc !important;
+  color: #6b7280 !important;
 }
 
 .exercise-item {
@@ -1135,7 +1175,7 @@
 }
 
 /* Training type themes */
-.training-card.theme-push { background: linear-gradient(135deg, #ff9a9e, #fecfef) !important; }
-.training-card.theme-pull { background: linear-gradient(135deg, #667eea, #764ba2) !important; }
-.training-card.theme-legs { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
-.training-card.theme-cardio { background: linear-gradient(135deg, #ffecd2, #fcb69f) !important; }
+.training-card.theme-push:not(.completed)  { background: linear-gradient(135deg, #ff9a9e, #fecfef) !important; }
+.training-card.theme-pull:not(.completed)  { background: linear-gradient(135deg, #667eea, #764ba2) !important; }
+.training-card.theme-legs:not(.completed)  { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
+.training-card.theme-cardio:not(.completed) { background: linear-gradient(135deg, #ffecd2, #fcb69f) !important; }
