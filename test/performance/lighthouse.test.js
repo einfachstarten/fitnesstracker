@@ -2,7 +2,7 @@ import { test } from '@playwright/test';
 import { playAudit } from 'playwright-lighthouse';
 
 test('lighthouse performance audit', async ({ page }) => {
-  await page.goto('./index-new.html');
+  await page.goto('./index.html');
   await playAudit({
     page,
     thresholds: {

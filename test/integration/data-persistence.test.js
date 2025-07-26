@@ -3,7 +3,7 @@ import { setupTestUser, completePartialWorkout } from './testUtils.js';
 
 test.describe('Data Persistence', () => {
   test('data survives page reload', async ({ page }) => {
-    await page.goto('./index-new.html');
+    await page.goto('./index.html');
     await setupTestUser(page);
     await completePartialWorkout(page);
 

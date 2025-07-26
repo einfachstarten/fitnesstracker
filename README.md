@@ -12,10 +12,8 @@ Ein KI-basierter Trainingsplan-Generator mit intelligentem Assistenten, der pers
 
 ## 📁 File-Struktur
 
-### 🎯 Haupt-Apps
-- **`custom-tracker.html`** - Intelligenter Assistent (HAUPT-APP)
-- **`benni.html`** - Spezieller Tracker für Jugendliche (13J)
-- **`index.html`** - Original Fitness-Tracker mit festem Plan
+### 🎯 Haupt-App
+- **`index.html`** - Intelligenter Fitness Tracker (7-Schritt Assistent)
 
 ### ⚙️ System-Files  
 - **`manifest.json`** - PWA Konfiguration
@@ -25,7 +23,7 @@ Ein KI-basierter Trainingsplan-Generator mit intelligentem Assistenten, der pers
 
 ## 🚀 Quick Start
 
-1. **Direkt nutzen**: `custom-tracker.html` öffnen
+1. **Direkt nutzen**: `index.html` öffnen
 2. **7-Schritt Setup** durchlaufen
 3. **Personalisierten Plan** erhalten
 4. **Training tracken** und Fortschritt sehen
@@ -95,13 +93,13 @@ localStorage.setItem('fitness_current_plan', plan);
 
 ## 🎯 Spezialisierte Tracker
 
-### Benni's Tracker (`benni.html`)
+### Benni's Tracker (archiviert)
 - **Jugend-optimiert** (13 Jahre)
 - **Gym-Geräte Fokus** - Stepper, Ergometer, Maschinen
 - **Detaillierte Erklärungen** - Jede Übung erklärt
 - **7-Tage Oberkörper Plan** - Arm & Core Training
 
-### Original Tracker (`index.html`)  
+### Original Tracker (archiviert)
 - **Fester 2-Wochen Plan** - Push/Pull/Legs
 - **Erwachsenen-orientiert** - Komplexere Übungen
 - **Timer-Integration** - Satzpausen tracking
@@ -156,4 +154,5 @@ Schedule: 5x/Woche, 60min
 
 ---
 
-**🎉 Ready to get fit? Start with `custom-tracker.html`!**
+**🎉 Ready to get fit? Start with `index.html`!**
+

@@ -30,14 +30,9 @@ export class MigrationController {
   }
 
   static redirectToCorrectVersion() {
-    if (this.shouldUseNewArchitecture()) {
-      if (window.location.pathname.includes('custom-tracker.html')) {
-        window.location.href = './index-new.html';
-      }
-    } else {
-      if (window.location.pathname.includes('index-new.html')) {
-        window.location.href = './custom-tracker.html';
-      }
+    const path = window.location.pathname;
+    if (path.includes('custom-tracker.html') || path.includes('index-new.html')) {
+      window.location.href = './index.html';
     }
   }
 }

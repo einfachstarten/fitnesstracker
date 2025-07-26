@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Setup Wizard Flow', () => {
   test('complete setup creates valid plan', async ({ page }) => {
-    await page.goto('./index-new.html');
+    await page.goto('./index.html');
 
     await page.fill('input[placeholder="Dein Name"]', 'Test User');
     await page.fill('input[placeholder="Dein Alter"]', '25');
