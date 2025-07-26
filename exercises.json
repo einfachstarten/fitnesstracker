@@ -1,14 +1,25 @@
 {
   "Eigengewicht": [
     {
+      "id": "pushup",
       "name": "Liegestütz",
+      "reps": "3x8-12",
+      "beschreibung": "Klassische Oberkörperübung für Brust, Schultern und Trizeps",
+      "tips": [
+        "Körper in gerader Linie halten",
+        "Langsam und kontrolliert ausführen",
+        "Ellbogen nicht zu weit abspreizen"
+      ],
       "muskelgruppen": [
         "Brust (großer Brustmuskel)",
         "Trizeps",
         "Vordere Schulter (Deltamuskel)"
       ],
       "ausführung": "Aus der Bauchlage stützt man sich mit den Händen schulterbreit auf dem Boden ab. Der Körper bleibt gerade. Die Arme beugen, um den Oberkörper kontrolliert abzusenken, dann wieder strecken, bis die Ellbogen fast durchgestreckt sind.",
-      "schwierigkeit": "Anfänger"
+      "equipment": ["Eigengewicht"],
+      "schwierigkeit": "Anfänger",
+      "video_url": null,
+      "image_url": null
     },
     {
       "name": "Kniebeuge (ohne Gewicht)",

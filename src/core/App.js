@@ -33,7 +33,8 @@ window.appState = {
   showDayModal: false,
   completedExercises: {},
   completedDays: {},
-  expandedExercises: {}
+  expandedExercises: {},
+  workoutState: null
 };
 
 // State update function
@@ -106,7 +107,21 @@ window.startPoolTraining = function(trainingId) {
   const pool = window.appState.trainingPool;
   const training = pool?.available_trainings.find(t => t.id === trainingId);
   if (training) {
-    window.updateAppState({ currentView: 'workout', selectedTraining: training });
+    const exercisesState = {};
+    training.exercises.forEach((_, idx) => {
+      exercisesState[idx] = { completed: false, expanded: false };
+    });
+    window.updateAppState({
+      currentView: 'workout',
+      selectedTraining: training,
+      workoutState: {
+        trainingId: training.id,
+        exercises: exercisesState,
+        start_time: Date.now(),
+        completed_exercises: 0,
+        total_exercises: training.exercises.length
+      }
+    });
   }
 };
 
@@ -120,7 +135,29 @@ window.finishTraining = function(trainingId) {
     pool.completed_workouts++;
     pool.available_trainings = pool.available_trainings.filter(t => !t.completed);
   }
-  window.updateAppState({ currentView: 'overview', trainingPool: pool, selectedTraining: null });
+  window.updateAppState({ currentView: 'overview', trainingPool: pool, selectedTraining: null, workoutState: null });
+};
+
+window.toggleExercise = function(exId) {
+  const ws = window.appState.workoutState;
+  if (!ws) return;
+  const current = ws.exercises[exId].expanded;
+  Object.keys(ws.exercises).forEach(id => (ws.exercises[id].expanded = false));
+  ws.exercises[exId].expanded = !current;
+  window.updateAppState({ workoutState: ws }, true);
+  window.app.render();
+};
+
+window.completeExercise = function(exId, checked) {
+  const ws = window.appState.workoutState;
+  if (!ws) return;
+  ws.exercises[exId].completed = checked;
+  ws.completed_exercises = Object.values(ws.exercises).filter(e => e.completed).length;
+  window.updateAppState({ workoutState: ws }, true);
+  window.app.render();
+  if (ws.completed_exercises === ws.total_exercises) {
+    // simple celebration effect could be added here
+  }
 };
 
 // State initialization
@@ -515,7 +552,7 @@ export class App {
         </div>
         <div class="training-grid">
           ${pool.available_trainings.map(t => `
-            <div class="training-card ${t.completed ? 'completed' : 'available'}" onclick="${t.completed ? '' : `startPoolTraining('${t.id}')`}">
+            <div class="training-card theme-${t.type} ${t.completed ? 'completed' : 'available'}" onclick="${t.completed ? '' : `startPoolTraining('${t.id}')`}">
               <div class="card-icon">${t.icon}</div>
               <h3 class="card-title">${t.title}</h3>
               <div class="card-exercises">
@@ -562,19 +599,52 @@ export class App {
 
   renderWorkout(container) {
     const training = window.appState.selectedTraining;
-    if (!training) {
+    const ws = window.appState.workoutState;
+    if (!training || !ws) {
       container.innerHTML = '<div class="p-4">Kein Training gefunden.</div>';
       return;
     }
+    const progress = Math.round((ws.completed_exercises / ws.total_exercises) * 100);
+    const items = training.exercises
+      .map((ex, idx) => `
+        <div class="exercise-item ${ws.exercises[idx].completed ? 'completed' : ''}" data-exercise="${idx}">
+          <div class="exercise-header" onclick="toggleExercise('${idx}')">
+            <div class="exercise-checkbox">
+              <input type="checkbox" ${ws.exercises[idx].completed ? 'checked' : ''} onchange="completeExercise('${idx}', this.checked)">
+              <span class="checkmark"></span>
+            </div>
+            <div class="exercise-main">
+              <h4 class="exercise-name">${ex.name || ex}</h4>
+              <span class="exercise-reps">${ex.reps || '3x8-12'}</span>
+            </div>
+            <div class="exercise-toggle">
+              <span class="toggle-icon ${ws.exercises[idx].expanded ? 'expanded' : ''}">▼</span>
+            </div>
+          </div>
+          <div class="exercise-details ${ws.exercises[idx].expanded ? 'expanded' : ''}">
+            <div class="exercise-description">
+              <p>${ex.beschreibung || ex.ausführung || ''}</p>
+              ${ex.tips ? `<div class="exercise-tips"><h5>💡 Ausführung:</h5><ul>${ex.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>` : ''}
+              ${ex.muskelgruppen ? `<div class="exercise-muscles"><h5>🎯 Zielmuskeln:</h5><div class="muscle-tags">${ex.muskelgruppen.map(m => `<span class="muscle-tag">${m}</span>`).join('')}</div></div>` : ''}
+            </div>
+          </div>
+        </div>
+      `)
+      .join('');
+
     container.innerHTML = `
       <div class="workout">
         <h2>${training.title}</h2>
-        <ul class="exercise-list">
-          ${training.exercises.map(ex => `<li>${ex.name || ex}</li>`).join('')}
-        </ul>
-        <button onclick="finishTraining('${training.id}')" class="plan-card-button">Training abschließen</button>
-      </div>
-    `;
+        <div class="workout-progress">
+          <div class="progress-header">
+            <h3>Trainingsfortschritt</h3>
+            <span class="progress-text">${ws.completed_exercises}/${ws.total_exercises} Übungen</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+        </div>
+        <div class="exercise-list">${items}</div>
+        <button onclick="finishTraining('${training.id}')" class="plan-card-button" ${ws.completed_exercises === ws.total_exercises ? '' : 'disabled'}>Training abschließen</button>
+      </div>`;
   }
 
   renderCalendar(container) {
