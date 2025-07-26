@@ -190,3 +190,7 @@ Parsed path: []
 Parsed path: []
 2025-07-11 15:52:49 - GET /demos/fitnesstracker/debug-api.php/users/user_6870220fc5e44/sessions
 Parsed path: ["users","user_6870220fc5e44","sessions"]
+2025-07-12 11:02:52 - GET /demos/fitnesstracker/debug-api.php
+Parsed path: []
+2025-07-12 11:02:53 - GET /demos/fitnesstracker/debug-api.php/users/user_6870e776296fe/sessions
+Parsed path: ["users","user_6870e776296fe","sessions"]
