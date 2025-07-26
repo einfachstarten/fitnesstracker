@@ -122,6 +122,17 @@ php -S localhost:8000
 - Chrome: "Zur Startseite hinzufügen"
 - iOS Safari: "Zum Home-Bildschirm"
 
+### Webhook Logging
+Das Skript `webhook.php` legt alle Deployments in `webhook.log` ab. Um zu verhindern,
+dass die Logdatei zu groß wird, sollte eine tägliche Rotation per Cronjob
+eingerichtet werden:
+
+```bash
+0 0 * * * cd /var/www/html/fitnesstrack && mv webhook.log webhook.log.$(date +\%Y\%m\%d) && touch webhook.log && find . -name "webhook.log.*" -mtime +7 -delete
+```
+
+Mit `tail -f webhook.log` lässt sich der aktuelle Deploy-Status überwachen.
+
 ## 🔮 Roadmap
 
 - [ ] **Ernährungs-Integration** - Meal planning
