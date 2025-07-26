@@ -6,6 +6,8 @@ import { WorkoutPlanGenerator } from '../services/WorkoutPlanGenerator.js';
 import { WeeklyDataManager } from '../services/WeeklyDataManager.js';
 import { WeeklyTracker } from '../services/WeeklyTracker.js';
 import { CalendarView } from '../components/CalendarView/CalendarView.js';
+import { generateTrainingPool } from '../services/TrainingPoolGenerator.js';
+import { getStartOfWeek } from '../utils/DateUtils.js';
 
 // Global state object
 window.appState = {
@@ -24,7 +26,9 @@ window.appState = {
     duration: ''
   },
   currentPlan: null,
+  trainingPool: null,
   selectedDay: null,
+  selectedTraining: null,
   selectedDate: null,
   showDayModal: false,
   completedExercises: {},
@@ -98,6 +102,27 @@ window.startWorkout = function(dayName) {
   window.updateAppState({ currentView: 'workout', selectedDay: dayName });
 };
 
+window.startPoolTraining = function(trainingId) {
+  const pool = window.appState.trainingPool;
+  const training = pool?.available_trainings.find(t => t.id === trainingId);
+  if (training) {
+    window.updateAppState({ currentView: 'workout', selectedTraining: training });
+  }
+};
+
+window.finishTraining = function(trainingId) {
+  const pool = window.appState.trainingPool;
+  if (!pool) return;
+  const training = pool.available_trainings.find(t => t.id === trainingId);
+  if (training && !training.completed) {
+    training.completed = true;
+    training.completed_date = new Date().toISOString().split('T')[0];
+    pool.completed_workouts++;
+    pool.available_trainings = pool.available_trainings.filter(t => !t.completed);
+  }
+  window.updateAppState({ currentView: 'overview', trainingPool: pool, selectedTraining: null });
+};
+
 // State initialization
 window.initializeAppState = function() {
   const saved = localStorage.getItem('fitness_app_state');
@@ -145,7 +170,7 @@ export class App {
 
   checkExistingData() {
     const state = window.appState;
-    if (state.userData && state.userData.name && state.currentPlan) {
+    if (state.userData && state.userData.name && state.trainingPool) {
       window.updateAppState({ currentView: 'overview' }, true);
     } else {
       window.updateAppState({ currentView: 'setup' }, true);
@@ -427,10 +452,15 @@ export class App {
 
   completeSetup() {
     const userData = window.appState.userData;
-    const currentPlan = this.planGenerator.generatePlan(userData);
-    this.weeklyTracker.migrateToWeeklySystem(userData);
+    const trainings = generateTrainingPool(userData, this.planGenerator);
+    const pool = {
+      week_start: getStartOfWeek(new Date()),
+      total_workouts: trainings.length,
+      completed_workouts: 0,
+      available_trainings: trainings
+    };
     window.updateAppState({
-      currentPlan: currentPlan,
+      trainingPool: pool,
       currentView: 'overview'
     });
   }
@@ -448,25 +478,58 @@ export class App {
 
   renderOverview(container) {
     const state = window.appState;
-    const plan = state.currentPlan;
-    const userData = state.userData;
-
-    // Initialize weekly system if not exists
-    if (!state.weeklyData) {
-      this.initializeWeeklySystem();
+    let pool = state.trainingPool;
+    if (!pool) {
+      const trainings = generateTrainingPool(state.userData, this.planGenerator);
+      pool = {
+        week_start: getStartOfWeek(new Date()),
+        total_workouts: trainings.length,
+        completed_workouts: 0,
+        available_trainings: trainings
+      };
+      window.updateAppState({ trainingPool: pool }, true);
+    } else if (pool.week_start !== getStartOfWeek(new Date())) {
+      const trainings = generateTrainingPool(state.userData, this.planGenerator);
+      pool = {
+        week_start: getStartOfWeek(new Date()),
+        total_workouts: trainings.length,
+        completed_workouts: 0,
+        available_trainings: trainings
+      };
+      window.updateAppState({ trainingPool: pool }, true);
     }
 
-    const currentWeek = state.weeklyData.currentWeek;
-    const weekData = state.weeklyData.weeks[currentWeek];
-    const weekProgress = Math.round((weekData.completed / weekData.target) * 100);
-
+    const progress = Math.round((pool.completed_workouts / pool.total_workouts) * 100);
     container.innerHTML = `
-      <div class="fitness-app">
-        ${this.renderMainHeader(userData, weekData, weekProgress)}
-        ${this.renderWeeklyCalendar(currentWeek, weekData, plan)}
-        ${this.renderQuickActions()}
-      </div>
-    `;
+      <div class="training-pool-container">
+        <div class="pool-header">
+          <h2>Deine Trainings diese Woche</h2>
+          <div class="week-progress">
+            <span class="progress-text">${pool.completed_workouts} von ${pool.total_workouts} Trainings</span>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progress}%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="training-grid">
+          ${pool.available_trainings.map(t => `
+            <div class="training-card ${t.completed ? 'completed' : 'available'}" onclick="${t.completed ? '' : `startPoolTraining('${t.id}')`}">
+              <div class="card-icon">${t.icon}</div>
+              <h3 class="card-title">${t.title}</h3>
+              <div class="card-exercises">
+                ${t.exercises.slice(0,3).map(ex => `<span>${ex.name || ex}</span>`).join('')}
+              </div>
+              <div class="card-footer">
+                <span class="duration">${t.duration}</span>
+                <button class="card-button ${t.completed ? 'completed' : 'start'}">
+                  ${t.completed ? '✓ ERLEDIGT' : '▶ STARTEN'}
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <button class="reset-pool" style="display:none" onclick="window.app.resetTrainingPool()">Reset Pool</button>
+      </div>`;
   }
 
   generatePlanCards(plan) {
@@ -496,10 +559,18 @@ export class App {
   }
 
   renderWorkout(container) {
+    const training = window.appState.selectedTraining;
+    if (!training) {
+      container.innerHTML = '<div class="p-4">Kein Training gefunden.</div>';
+      return;
+    }
     container.innerHTML = `
       <div class="workout">
-        <h1>Workout View</h1>
-        <button onclick="window.updateAppState({currentView: 'overview'})">Back to Overview</button>
+        <h2>${training.title}</h2>
+        <ul class="exercise-list">
+          ${training.exercises.map(ex => `<li>${ex.name || ex}</li>`).join('')}
+        </ul>
+        <button onclick="finishTraining('${training.id}')" class="plan-card-button">Training abschließen</button>
       </div>
     `;
   }
@@ -698,11 +769,10 @@ export class App {
   }
 
   startTodayWorkout() {
-    const today = new Date().toISOString().split('T')[0];
-    const workout = this.getWorkoutForDate(today, window.appState.currentPlan);
-    if (workout) {
-      window.updateAppState({ currentView: 'workout', selectedWorkout: workout });
-      this.render();
+    const pool = window.appState.trainingPool;
+    const next = pool?.available_trainings[0];
+    if (next) {
+      window.startPoolTraining(next.id);
     }
   }
 
@@ -725,6 +795,18 @@ export class App {
 
   editPlan() {
     window.updateAppState({ currentView: 'setup', currentStep: 1 });
+    this.render();
+  }
+
+  resetTrainingPool() {
+    const trainings = generateTrainingPool(window.appState.userData, this.planGenerator);
+    const pool = {
+      week_start: getStartOfWeek(new Date()),
+      total_workouts: trainings.length,
+      completed_workouts: 0,
+      available_trainings: trainings
+    };
+    window.updateAppState({ trainingPool: pool });
     this.render();
   }
 
