@@ -398,11 +398,11 @@
 <body>
     <div id="app">
         <!-- Loading state -->
-        <div class="max-w-md mx-auto bg-white min-h-screen flex items-center justify-center">
+        <div class="max-w-md mx-auto bg-white dark:bg-gray-900 min-h-screen flex items-center justify-center">
             <div class="text-center">
                 <div class="text-4xl mb-4">🧙‍♂️</div>
-                <div class="text-lg font-semibold text-gray-800 mb-2">Intelligenter Trainingsplan-Assistent</div>
-                <div class="text-sm text-gray-600">Wird geladen...</div>
+                <div class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Intelligenter Trainingsplan-Assistent</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Wird geladen...</div>
             </div>
         </div>
     </div>
@@ -575,12 +575,12 @@
                 } catch (error) {
                     console.error('App initialization failed:', error);
                     document.getElementById('app').innerHTML = `
-                      <div class="max-w-md mx-auto bg-white min-h-screen flex items-center justify-center">
+                      <div class="max-w-md mx-auto bg-white dark:bg-gray-900 min-h-screen flex items-center justify-center">
                         <div class="text-center p-6">
                           <div class="text-4xl mb-4">⚠️</div>
                           <h2 class="text-xl font-bold text-red-600 mb-2">Fehler beim Laden</h2>
-                          <p class="text-gray-600 mb-4">Die App konnte nicht geladen werden.</p>
-                          <button onclick="location.reload()" class="px-4 py-2 bg-blue-600 text-white rounded-lg">
+                          <p class="text-gray-600 dark:text-gray-400 mb-4">Die App konnte nicht geladen werden.</p>
+                          <button onclick="location.reload()" class="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg">
                             Neu laden
                           </button>
                         </div>
@@ -1105,15 +1105,15 @@
 
                 return `
                   <div class="p-4">
-                    <div class="bg-white rounded-lg shadow-md p-4">
-                      <h3 class="font-semibold text-gray-800 mb-4">
+                    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
+                      <h3 class="font-semibold text-gray-800 dark:text-gray-100 mb-4">
                         Woche ${weekString.split('-W')[1]} (${start.getDate()}.${start.getMonth()+1} - ${end.getDate()}.${end.getMonth()+1})
                       </h3>
                       <div class="calendar-grid-container mb-4">
                         ${days.join('')}
                       </div>
                       <div class="text-center">
-                        <button onclick="app.handleDayClick('${todayStr}')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700">
+                        <button onclick="app.handleDayClick('${todayStr}')" class="px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-700">
                           + Training für heute
                         </button>
                       </div>
@@ -1348,11 +1348,11 @@
                           <div class="text-2xl">🏃‍♂️</div>
                         </div>
                         ${todayWorkout ? `
-                          <button onclick="app.startTodayWorkout()" class="w-full bg-white bg-opacity-20 rounded-lg py-2 px-3 text-sm font-semibold hover:bg-opacity-30 transition-colors">
+                          <button onclick="app.startTodayWorkout()" class="w-full bg-white dark:bg-gray-900 bg-opacity-20 rounded-lg py-2 px-3 text-sm font-semibold hover:bg-opacity-30 transition-colors">
                             ${todayWorkout.isCompleted ? '👁️ Anzeigen' : '🚀 Starten'}
                           </button>
                         ` : `
-                          <button onclick="app.addTodayWorkout()" class="w-full bg-white bg-opacity-20 rounded-lg py-2 px-3 text-sm font-semibold hover:bg-opacity-30 transition-colors">
+                          <button onclick="app.addTodayWorkout()" class="w-full bg-white dark:bg-gray-900 bg-opacity-20 rounded-lg py-2 px-3 text-sm font-semibold hover:bg-opacity-30 transition-colors">
                             ➕ Training planen
                           </button>
                         `}
@@ -1363,7 +1363,7 @@
                           <h4 class="font-bold">Vorlage</h4>
                           <div class="text-2xl">⚡</div>
                         </div>
-                        <button onclick="app.showQuickTemplates()" class="w-full bg-white bg-opacity-20 rounded-lg py-2 px-3 text-sm font-semibold hover:bg-opacity-30 transition-colors">
+                        <button onclick="app.showQuickTemplates()" class="w-full bg-white dark:bg-gray-900 bg-opacity-20 rounded-lg py-2 px-3 text-sm font-semibold hover:bg-opacity-30 transition-colors">
                           🔄 Letztes wiederholen
                         </button>
                       </div>
@@ -1376,9 +1376,9 @@
                 const motivationalMessage = this.getMotivationalMessage(completionRate);
 
                 return `
-                    <div class="bg-white rounded-2xl shadow-lg p-4 mb-4">
+                    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-4 mb-4">
                       <div class="flex items-center justify-between mb-3">
-                        <h4 class="font-bold text-gray-800">Wochenbilanz</h4>
+                        <h4 class="font-bold text-gray-800 dark:text-gray-100">Wochenbilanz</h4>
                         <div class="text-2xl">${completionRate >= 100 ? '🏆' : completionRate >= 75 ? '🔥' : '💪'}</div>
                       </div>
                       <div class="grid grid-cols-3 gap-4 mb-4">
@@ -1396,8 +1396,8 @@
                         </div>
                       </div>
                       <div class="bg-gray-100 rounded-lg p-3">
-                        <div class="text-sm font-medium text-gray-800 mb-1">${motivationalMessage.title}</div>
-                        <div class="text-xs text-gray-600">${motivationalMessage.subtitle}</div>
+                        <div class="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1">${motivationalMessage.title}</div>
+                        <div class="text-xs text-gray-600 dark:text-gray-400">${motivationalMessage.subtitle}</div>
                       </div>
                     </div>
                 `;
@@ -1457,7 +1457,7 @@
                       <div class="relative p-4">
                         <div class="flex items-center justify-between mb-4">
                           <div class="flex items-center">
-                            <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                            <div class="w-12 h-12 bg-white dark:bg-gray-900 bg-opacity-20 rounded-full flex items-center justify-center mr-3">
                               <span class="text-lg font-bold">${this.userData.name[0].toUpperCase()}</span>
                             </div>
                             <div>
@@ -1465,30 +1465,30 @@
                               <p class="text-blue-100 text-sm">Bereit für dein Training?</p>
                             </div>
                           </div>
-                          <button onclick="app.showSettings()" class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                          <button onclick="app.showSettings()" class="w-10 h-10 bg-white dark:bg-gray-900 bg-opacity-20 rounded-full flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                           </button>
                         </div>
                         <div class="grid grid-cols-3 gap-3 mb-4">
-                          <div class="bg-white bg-opacity-15 backdrop-blur-sm rounded-xl p-3 text-center">
+                          <div class="bg-white dark:bg-gray-900 bg-opacity-15 backdrop-blur-sm rounded-xl p-3 text-center">
                             <div class="text-2xl font-bold">${weekData.completed}</div>
                             <div class="text-xs text-blue-100">Diese Woche</div>
                           </div>
-                          <div class="bg-white bg-opacity-15 backdrop-blur-sm rounded-xl p-3 text-center">
+                          <div class="bg-white dark:bg-gray-900 bg-opacity-15 backdrop-blur-sm rounded-xl p-3 text-center">
                             <div class="text-2xl font-bold">${streak}</div>
                             <div class="text-xs text-blue-100">Tage Streak 🔥</div>
                           </div>
-                          <div class="bg-white bg-opacity-15 backdrop-blur-sm rounded-xl p-3 text-center">
+                          <div class="bg-white dark:bg-gray-900 bg-opacity-15 backdrop-blur-sm rounded-xl p-3 text-center">
                             <div class="text-2xl font-bold">${monthStats.total}</div>
                             <div class="text-xs text-blue-100">Diesen Monat</div>
                           </div>
                         </div>
-                        <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4">
+                        <div class="bg-white dark:bg-gray-900 bg-opacity-10 backdrop-blur-sm rounded-xl p-4">
                           <div class="flex items-center justify-between mb-2">
                             <span class="font-semibold">Woche ${currentWeek.split('-W')[1]} Progress</span>
-                            <span class="text-sm bg-white bg-opacity-20 px-2 py-1 rounded-full">${weekData.completed}/${weekData.target}</span>
+                            <span class="text-sm bg-white dark:bg-gray-900 bg-opacity-20 px-2 py-1 rounded-full">${weekData.completed}/${weekData.target}</span>
                           </div>
-                          <div class="w-full bg-white bg-opacity-20 rounded-full h-3 mb-2">
+                          <div class="w-full bg-white dark:bg-gray-900 bg-opacity-20 rounded-full h-3 mb-2">
                             <div class="bg-gradient-to-r from-green-400 to-emerald-400 h-3 rounded-full transition-all duration-700 shadow-lg" style="width: ${weekProgress}%"></div>
                           </div>
                           <div class="flex justify-between text-xs text-blue-100">
@@ -1504,7 +1504,7 @@
             renderAdvancedCalendar(currentWeek, weekData) {
                 return `
                     <div class="p-4">
-                      <div class="bg-white rounded-2xl shadow-lg p-4 mb-6">
+                      <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-4 mb-6">
                         ${this.renderCleanWeekHeader(currentWeek, weekData)}
                         <div class="calendar-grid-clean">
                           ${this.renderEnhancedCalendarDays(currentWeek, weekData)}
@@ -1617,12 +1617,12 @@
                 const totalSteps = stepMethods.length;
 
                 return `
-                    <div class="max-w-md mx-auto bg-white min-h-screen">
+                    <div class="max-w-md mx-auto bg-white dark:bg-gray-900 min-h-screen">
                         <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                             <h1 class="text-xl font-bold">🧙‍♂️ Trainingsplan-Assistent</h1>
                             <p class="text-blue-100">Schritt ${this.setupStep} von ${totalSteps}</p>
-                            <div class="mt-2 bg-white bg-opacity-20 rounded-full h-2">
-                                <div class="bg-white h-2 rounded-full transition-all duration-300" style="width: ${(this.setupStep / totalSteps) * 100}%"></div>
+                            <div class="mt-2 bg-white dark:bg-gray-900 bg-opacity-20 rounded-full h-2">
+                                <div class="bg-white dark:bg-gray-900 h-2 rounded-full transition-all duration-300" style="width: ${(this.setupStep / totalSteps) * 100}%"></div>
                             </div>
                         </div>
 
@@ -1635,13 +1635,13 @@
             renderCheckboxOption(item, selectedArray, toggleFunction) {
               const isSelected = selectedArray.includes(item.id);
               return `
-                <div class="cursor-pointer p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                <div class="cursor-pointer p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 dark:border-gray-700'}"
                      onclick="app.${toggleFunction}('${item.id}')">
                   <div class="flex items-center">
                     <div class="text-2xl mr-4">${item.icon}</div>
                     <div class="flex-1">
-                      <div class="font-semibold text-gray-800">${item.title}</div>
-                      <div class="text-sm text-gray-600">${item.desc || ''}</div>
+                      <div class="font-semibold text-gray-800 dark:text-gray-100">${item.title}</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">${item.desc || ''}</div>
                     </div>
                     <div class="ml-4">
                       ${isSelected ? 
@@ -1657,13 +1657,13 @@
             renderRadioOption(item, selectedValue, setFunction) {
               const isSelected = selectedValue === item.id;
               return `
-                <div class="cursor-pointer p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                <div class="cursor-pointer p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 dark:border-gray-700'}"
                      onclick="app.${setFunction}('${item.id}')">
                   <div class="flex items-center">
                     <div class="text-2xl mr-4">${item.icon}</div>
                     <div class="flex-1">
-                      <div class="font-semibold text-gray-800">${item.title}</div>
-                      <div class="text-sm text-gray-600">${item.desc || ''}</div>
+                      <div class="font-semibold text-gray-800 dark:text-gray-100">${item.title}</div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">${item.desc || ''}</div>
                     </div>
                     <div class="ml-4">
                       ${isSelected ? 
@@ -1680,8 +1680,8 @@
                 return `
                     <div class="text-center space-y-6">
                         <div class="text-6xl">🏋️‍♀️</div>
-                        <h2 class="text-2xl font-bold text-gray-800">Willkommen!</h2>
-                        <p class="text-gray-600 leading-relaxed">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Willkommen!</h2>
+                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
                             Ich erstelle dir einen personalisierten Trainingsplan, der perfekt zu dir passt. 
                             Dazu stelle ich dir ein paar kurze Fragen.
                         </p>
@@ -1731,8 +1731,8 @@
                     <div class="space-y-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">🎯</div>
-                            <h2 class="text-xl font-bold text-gray-800">Was ist dein Hauptziel?</h2>
-                            <p class="text-gray-600 mt-2">Du kannst mehrere Ziele auswählen</p>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Was ist dein Hauptziel?</h2>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2">Du kannst mehrere Ziele auswählen</p>
                         </div>
                         
                         <div class="space-y-3">
@@ -1765,8 +1765,8 @@
                     <div class="space-y-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">📊</div>
-                            <h2 class="text-xl font-bold text-gray-800">Wie viel Trainingserfahrung hast du?</h2>
-                            <p class="text-gray-600 mt-2">Sei ehrlich - das hilft mir, den richtigen Plan zu erstellen</p>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Wie viel Trainingserfahrung hast du?</h2>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2">Sei ehrlich - das hilft mir, den richtigen Plan zu erstellen</p>
                         </div>
                         
                         <div class="space-y-3">
@@ -1800,8 +1800,8 @@
                     <div class="space-y-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">🏋️‍♂️</div>
-                            <h2 class="text-xl font-bold text-gray-800">Welche Ausrüstung hast du?</h2>
-                            <p class="text-gray-600 mt-2">Wähle alles aus, was dir zur Verfügung steht</p>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Welche Ausrüstung hast du?</h2>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2">Wähle alles aus, was dir zur Verfügung steht</p>
                         </div>
                         
                         <div class="space-y-3">
@@ -1835,8 +1835,8 @@
                     <div class="space-y-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">🎯</div>
-                            <h2 class="text-xl font-bold text-gray-800">Welche Bereiche willst du trainieren?</h2>
-                            <p class="text-gray-600 mt-2">Wähle die Körperbereiche, die dir wichtig sind</p>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Welche Bereiche willst du trainieren?</h2>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2">Wähle die Körperbereiche, die dir wichtig sind</p>
                         </div>
                         
                         <div class="space-y-3">
@@ -1864,26 +1864,26 @@
                     <div class="space-y-6">
                         <div class="text-center">
                             <div class="text-4xl mb-4">📅</div>
-                            <h2 class="text-xl font-bold text-gray-800">Wie oft und wie lange?</h2>
-                            <p class="text-gray-600 mt-2">Lass uns deinen Zeitplan festlegen</p>
+                            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Wie oft und wie lange?</h2>
+                            <p class="text-gray-600 dark:text-gray-400 mt-2">Lass uns deinen Zeitplan festlegen</p>
                         </div>
                         
                         <div class="space-y-6">
                             <div>
-                                <h3 class="font-semibold text-gray-800 mb-3">Wie oft pro Woche willst du trainieren?</h3>
+                                <h3 class="font-semibold text-gray-800 dark:text-gray-100 mb-3">Wie oft pro Woche willst du trainieren?</h3>
                                 <div class="grid grid-cols-2 gap-3">
                                     ${['2', '3', '4', '5'].map(days => `
-                                      <div class="cursor-pointer text-center p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${frequency === days ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                                      <div class="cursor-pointer text-center p-4 border-2 rounded-lg transition-all hover:border-blue-300 ${frequency === days ? 'border-blue-500 bg-blue-50' : 'border-gray-200 dark:border-gray-700'}"
                                            onclick="app.setFrequency('${days}')">
-                                        <div class="text-xl font-bold text-gray-800">${days}x</div>
-                                        <div class="text-xs text-gray-600">${days === '2' ? 'Entspannt' : days === '3' ? 'Optimal' : days === '4' ? 'Gut' : 'Intensiv'}</div>
+                                        <div class="text-xl font-bold text-gray-800 dark:text-gray-100">${days}x</div>
+                                        <div class="text-xs text-gray-600 dark:text-gray-400">${days === '2' ? 'Entspannt' : days === '3' ? 'Optimal' : days === '4' ? 'Gut' : 'Intensiv'}</div>
                                       </div>
                                     `).join('')}
                                 </div>
                             </div>
 
                             <div>
-                                <h3 class="font-semibold text-gray-800 mb-3">Wie lange pro Trainingseinheit?</h3>
+                                <h3 class="font-semibold text-gray-800 dark:text-gray-100 mb-3">Wie lange pro Trainingseinheit?</h3>
                                 <div class="space-y-2">
                                     ${[
                                       { id: '30min', title: '30 Minuten', desc: 'Kurz und knackig' },
@@ -1914,8 +1914,8 @@
                     <div class="space-y-6">
                       <div class="text-center">
                         <div class="text-4xl mb-4">📋</div>
-                        <h2 class="text-xl font-bold text-gray-800">Perfekt, ${name || 'User'}!</h2>
-                        <p class="text-gray-600">Dein personalisierter Trainingsplan ist bereit</p>
+                        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Perfekt, ${name || 'User'}!</h2>
+                        <p class="text-gray-600 dark:text-gray-400">Dein personalisierter Trainingsplan ist bereit</p>
                       </div>
 
                       <div class="bg-blue-50 rounded-lg p-4">
@@ -1991,12 +1991,12 @@
                           <div class="space-y-3">
                             <div class="p-3 bg-blue-50 rounded-lg">
                               <div class="font-semibold">📋 ${workout.planDay}</div>
-                              <div class="text-sm text-gray-600">${workout.exercises.length} Übungen</div>
+                              <div class="text-sm text-gray-600 dark:text-gray-400">${workout.exercises.length} Übungen</div>
                               <div class="text-xs text-gray-500">Status: ${workout.isCompleted ? '✅ Abgeschlossen' : '⏳ Offen'}</div>
                             </div>
 
                             <div class="flex space-x-2">
-                              <button onclick="app.viewWorkout()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-semibold">
+                              <button onclick="app.viewWorkout()" class="flex-1 bg-blue-600 dark:bg-blue-500 text-white py-2 rounded-lg font-semibold">
                                 ${workout.isCompleted ? '👁️ Anzeigen' : '🏋️ Trainieren'}
                               </button>
                               <button onclick="app.removeWorkout()" class="px-4 bg-red-100 text-red-700 py-2 rounded-lg font-semibold">🗑️</button>
@@ -2004,7 +2004,7 @@
                           </div>
                         ` : `
                           <div class="space-y-3">
-                            <p class="text-gray-600">Noch kein Training für diesen Tag geplant.</p>
+                            <p class="text-gray-600 dark:text-gray-400">Noch kein Training für diesen Tag geplant.</p>
                             <button onclick="app.addWorkoutToSelectedDay()" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold">➕ Training hinzufügen</button>
                           </div>
                         `}
@@ -2087,7 +2087,7 @@
                 
                 return `
                     <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-                        <div class="bg-white shadow-lg">
+                        <div class="bg-white dark:bg-gray-900 shadow-lg">
                             <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                                 <button onclick="app.currentView='overview'; app.render();" class="text-blue-100 hover:text-white mb-2">
                                     ← Zurück zur Übersicht
@@ -2098,10 +2098,10 @@
                         </div>
 
                         <div class="p-4">
-                            <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                            <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 mb-4">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h2 class="text-lg font-semibold text-gray-800">${day.title}</h2>
-                                    <span class="text-sm text-gray-600">${day.duration}</span>
+                                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${day.title}</h2>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">${day.duration}</span>
                                 </div>
                                 
                                 <div class="mb-4 p-3 bg-blue-50 rounded-lg">
@@ -2111,7 +2111,7 @@
                                 
                                 <div class="mb-4">
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm text-gray-600">Fortschritt</span>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400">Fortschritt</span>
                                         <span class="text-sm font-semibold text-blue-600">${completionPercentage}%</span>
                                     </div>
                                     <div class="w-full bg-gray-200 rounded-full h-3">
@@ -2126,7 +2126,7 @@
                                         const isExpanded = this.expandedExercises[`${this.selectedDay}-${index}`];
 
                                         return `
-                                          <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
+                                          <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200 dark:border-gray-700'}">
                                             <div class="flex items-center p-3">
                                               <button onclick="app.toggleExercise('${workout.id}', ${index})" class="mr-3">
                                                 ${isCompleted ?
@@ -2135,7 +2135,7 @@
                                                 }
                                               </button>
                                               <div class="flex-1">
-                                                <span class="text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}">${exercise}</span>
+                                                <span class="text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800 dark:text-gray-100'}">${exercise}</span>
                                                 ${exerciseDetail ? `
                                                   <div class="text-xs text-blue-600 mt-1">
                                                     🎯 ${exerciseDetail.muskelgruppen.join(', ')} • 📊 ${exerciseDetail.schwierigkeit}
