@@ -22,6 +22,7 @@
   </style>
 </head>
 <body>
+  <div id="theme-toggle"></div>
   <div id="app"></div>
 
   <script>
@@ -37,8 +38,13 @@
   </script>
   
   <script type="module">
-    import(`./src/core/App.js?v=${window.CACHE_VERSION}`).then(({ App }) => {
+    Promise.all([
+      import(`./src/core/App.js?v=${window.CACHE_VERSION}`),
+      import(`./src/core/ThemeToggle.js?v=${window.CACHE_VERSION}`)
+    ]).then(([{ App }, { ThemeToggle }]) => {
       const app = new App();
+      const toggle = new ThemeToggle();
+      toggle.mount(document.getElementById('theme-toggle'));
       console.log('App instance created');
     });
   </script>

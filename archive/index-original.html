@@ -513,9 +513,9 @@
             const completionPercentage = getCompletionPercentage(selectedDay, workout);
 
             const timerSection = `
-                <div class="bg-white rounded-lg shadow-md p-4 mb-4 landscape-timer">
+                <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 mb-4 landscape-timer">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="font-semibold text-gray-800 flex items-center">
+                        <h3 class="font-semibold text-gray-800 dark:text-gray-100 flex items-center">
                             <svg class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Satzpause Timer
                         </h3>
@@ -558,7 +558,7 @@
                 const explanation = exerciseExplanations[exercise];
                 
                 return `
-                    <div class="rounded-lg border-2 transition-all landscape-exercise-item ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
+                    <div class="rounded-lg border-2 transition-all landscape-exercise-item ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200 dark:border-gray-700'}">
                         <div class="flex items-start p-3">
                             <button onclick="toggleExercise(${selectedDay}, ${index});" class="mr-2 p-1 rounded-full hover:bg-blue-100 transition-colors cursor-pointer flex-shrink-0">
                                 ${isCompleted ? 
@@ -567,7 +567,7 @@
                                 }
                             </button>
                             <div class="flex-1 min-w-0">
-                                <span class="block text-sm leading-tight ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}">${exercise}</span>
+                                <span class="block text-sm leading-tight ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800 dark:text-gray-100'}">${exercise}</span>
                             </div>
                             ${explanation ? `
                                 <button onclick="toggleExpanded(${selectedDay}, ${index});" class="ml-1 p-1 rounded-full hover:bg-blue-100 transition-colors flex-shrink-0">
@@ -592,20 +592,20 @@
 
             return `
                 <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen landscape-container" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
-                    <div class="bg-white shadow-lg landscape-sidebar">
+                    <div class="bg-white dark:bg-gray-900 shadow-lg landscape-sidebar">
                         <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                             <div class="flex items-center justify-between mb-2">
                                 <button onclick="currentView='overview'; render();" class="text-blue-100 hover:text-white">
                                     ← Zurück zur Übersicht
                                 </button>
                                 <div class="flex items-center space-x-3">
-                                    <button onclick="goPreviousDay()" class="p-1 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors ${selectedDay === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${selectedDay === 0 ? 'disabled' : ''}>
+                                    <button onclick="goPreviousDay()" class="p-1 rounded-full hover:bg-white dark:bg-gray-900 hover:bg-opacity-20 transition-colors ${selectedDay === 0 ? 'opacity-30 cursor-not-allowed' : ''}" ${selectedDay === 0 ? 'disabled' : ''}>
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                                     </button>
-                                    <span class="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                                    <span class="text-sm bg-white dark:bg-gray-900 bg-opacity-20 px-3 py-1 rounded-full">
                                         ${selectedDay + 1}/${dates.length}
                                     </span>
-                                    <button onclick="goToNextDay()" class="p-1 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors ${selectedDay === dates.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${selectedDay === dates.length - 1 ? 'disabled' : ''}>
+                                    <button onclick="goToNextDay()" class="p-1 rounded-full hover:bg-white dark:bg-gray-900 hover:bg-opacity-20 transition-colors ${selectedDay === dates.length - 1 ? 'opacity-30 cursor-not-allowed' : ''}" ${selectedDay === dates.length - 1 ? 'disabled' : ''}>
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                     </button>
                                 </div>
@@ -618,10 +618,10 @@
                     <div class="p-4 landscape-main">
                         ${timerSection}
                         
-                        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                        <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 mb-4">
                             <div class="flex items-center justify-between mb-3">
-                                <h2 class="text-lg font-semibold text-gray-800">${workout.title}</h2>
-                                <span class="text-sm text-gray-600">${workout.duration}</span>
+                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${workout.title}</h2>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">${workout.duration}</span>
                             </div>
                             
                             ${workout.focus ? `
@@ -632,7 +632,7 @@
                             
                             <div class="mb-4">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-600">Fortschritt</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Fortschritt</span>
                                     <span class="text-sm font-semibold text-blue-600">${completionPercentage}%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2">
@@ -644,7 +644,7 @@
                                 ${exercisesList}
                             </div>
 
-                            <button onclick="toggleDay(${selectedDay})" class="w-full mt-4 py-3 rounded-lg font-semibold transition-all ${completedDays[selectedDay] ? 'bg-green-500 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'}">
+                            <button onclick="toggleDay(${selectedDay})" class="w-full mt-4 py-3 rounded-lg font-semibold transition-all ${completedDays[selectedDay] ? 'bg-green-500 text-white' : 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700'}">
                                 ${completedDays[selectedDay] ? '✓ Tag abgeschlossen' : 'Tag als abgeschlossen markieren'}
                             </button>
                             
@@ -663,7 +663,7 @@
 
             return `
                 <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-                    <div class="bg-white shadow-lg">
+                    <div class="bg-white dark:bg-gray-900 shadow-lg">
                         <div class="p-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -673,13 +673,13 @@
                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="3" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m12 1 2 2M12 23l-2-2M20 12l-2 2"></path></svg>
                             </div>
                             
-                            <div class="mt-4 bg-white bg-opacity-20 rounded-lg p-3">
+                            <div class="mt-4 bg-white dark:bg-gray-900 bg-opacity-20 rounded-lg p-3">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-sm">Gesamtfortschritt</span>
                                     <span class="text-sm font-semibold">${totalProgress}%</span>
                                 </div>
-                                <div class="w-full bg-white bg-opacity-30 rounded-full h-2">
-                                    <div class="bg-white h-2 rounded-full transition-all duration-500" style="width: ${totalProgress}%"></div>
+                                <div class="w-full bg-white dark:bg-gray-900 bg-opacity-30 rounded-full h-2">
+                                    <div class="bg-white dark:bg-gray-900 h-2 rounded-full transition-all duration-500" style="width: ${totalProgress}%"></div>
                                 </div>
                             </div>
                         </div>
@@ -695,7 +695,7 @@
                                         <p class="text-sm opacity-90">${currentDay.workout.title}</p>
                                     </div>
                                 </div>
-                                <button onclick="selectedDay=${currentDay.dayIndex}; currentView='day'; render();" class="mt-2 bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+                                <button onclick="selectedDay=${currentDay.dayIndex}; currentView='day'; render();" class="mt-2 bg-white dark:bg-gray-900 bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
                                     Training starten
                                 </button>
                             </div>
@@ -710,14 +710,14 @@
                                 const isToday = currentDay && day.shortDate === currentDay.shortDate;
                                 
                                 return `
-                                    <div class="bg-white rounded-lg shadow-md p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : isToday ? 'border-blue-300 bg-blue-50' : 'border-gray-200'}" onclick="selectedDay=${index}; currentView='day'; render();">
+                                    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : isToday ? 'border-blue-300 bg-blue-50' : 'border-gray-200 dark:border-gray-700'}" onclick="selectedDay=${index}; currentView='day'; render();">
                                         <div class="flex items-center justify-between mb-2">
                                             <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${isCompleted ? 'bg-green-500 text-white' : isToday ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'}">
+                                                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${isCompleted ? 'bg-green-500 text-white' : isToday ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600 dark:text-gray-400'}">
                                                     ${day.shortDate.split('.')[0]}
                                                 </div>
                                                 <div>
-                                                    <h3 class="font-semibold text-gray-800">${day.realDay}</h3>
+                                                    <h3 class="font-semibold text-gray-800 dark:text-gray-100">${day.realDay}</h3>
                                                     <p class="text-xs text-gray-500">Woche ${day.week} • ${day.workoutDay}-Training</p>
                                                 </div>
                                             </div>
@@ -739,7 +739,7 @@
                                                     <div class="h-1.5 rounded-full transition-all duration-300 ${isCompleted ? 'bg-green-500' : 'bg-blue-500'}" style="width: ${completionPercentage}%"></div>
                                                 </div>
                                             </div>
-                                            <span class="text-xs font-semibold text-gray-600">${completionPercentage}%</span>
+                                            <span class="text-xs font-semibold text-gray-600 dark:text-gray-400">${completionPercentage}%</span>
                                         </div>
                                     </div>
                                 `;
@@ -747,8 +747,8 @@
                         </div>
                     </div>
 
-                    <div class="p-4 bg-white border-t">
-                        <div class="text-center text-sm text-gray-600">
+                    <div class="p-4 bg-white dark:bg-gray-900 border-t">
+                        <div class="text-center text-sm text-gray-600 dark:text-gray-400">
                             <div class="flex items-center justify-center mb-2">
                                 <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                                 <span>Bleib dran! Du schaffst das! 💪</span>

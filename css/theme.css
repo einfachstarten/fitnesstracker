@@ -1055,6 +1055,9 @@
 .exercise-header:hover {
   background: #f8fafc;
 }
+.dark .exercise-header:hover {
+  background: #374151;
+}
 
 .exercise-checkbox {
   position: relative;
@@ -1179,3 +1182,23 @@
 .training-card.theme-pull:not(.completed)  { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
 .training-card.theme-legs:not(.completed)  { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important; }
 .training-card.theme-cardio:not(.completed) { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%) !important; }
+.dark .training-card.theme-push:not(.completed)  { background: linear-gradient(135deg, #b45364 0%, #c06f91 100%) !important; }
+.dark .training-card.theme-pull:not(.completed)  { background: linear-gradient(135deg, #4756b6 0%, #5b449b 100%) !important; }
+.dark .training-card.theme-legs:not(.completed)  { background: linear-gradient(135deg, #0f766e 0%, #15803d 100%) !important; }
+.dark .training-card.theme-cardio:not(.completed) { background: linear-gradient(135deg, #cfa36f 0%, #b97050 100%) !important; }
+
+
+/* Theme toggle */
+.theme-toggle-btn {
+  background: #3b82f6;
+  color: white;
+  border-radius: 9999px;
+  padding: 8px;
+  transition: background 0.3s ease;
+}
+.dark .theme-toggle-btn {
+  background: #2563eb;
+}
+.theme-toggle-btn svg {
+  display: block;
+}

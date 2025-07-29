@@ -269,7 +269,7 @@
 
             return `
                 <div class="max-w-md mx-auto bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
-                    <div class="bg-white shadow-lg">
+                    <div class="bg-white dark:bg-gray-900 shadow-lg">
                         <div class="p-4 emoji-bg text-white">
                             <button onclick="currentView='overview'; render();" class="text-green-100 hover:text-white mb-2">
                                 ← Zurück zur Übersicht
@@ -280,10 +280,10 @@
                     </div>
 
                     <div class="p-4">
-                        <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                        <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 mb-4">
                             <div class="flex items-center justify-between mb-3">
-                                <h2 class="text-lg font-semibold text-gray-800">${workout.title}</h2>
-                                <span class="text-sm text-gray-600">${workout.duration}</span>
+                                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100">${workout.title}</h2>
+                                <span class="text-sm text-gray-600 dark:text-gray-400">${workout.duration}</span>
                             </div>
                             
                             <div class="mb-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
@@ -293,7 +293,7 @@
                             
                             <div class="mb-4">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-gray-600">Fortschritt</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">Fortschritt</span>
                                     <span class="text-sm font-semibold text-green-600">${completionPercentage}%</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-3">
@@ -378,7 +378,7 @@
                                     }
                                     
                                     return `
-                                        <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}">
+                                        <div class="rounded-lg border-2 transition-all ${isCompleted ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200 dark:border-gray-700'}">
                                             <div class="flex items-center p-3 cursor-pointer hover:border-green-300" onclick="toggleExercise(${selectedDay}, ${index})">
                                                 <div class="mr-3">
                                                     ${isCompleted ? 
@@ -386,7 +386,7 @@
                                                         '<svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"></circle></svg>'
                                                     }
                                                 </div>
-                                                <span class="flex-1 text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800'}">${exercise}</span>
+                                                <span class="flex-1 text-sm font-medium ${isCompleted ? 'line-through text-gray-500' : 'text-gray-800 dark:text-gray-100'}">${exercise}</span>
                                             </div>
                                             
                                             <div class="px-3 pb-3">
@@ -418,7 +418,7 @@
 
             return `
                 <div class="max-w-md mx-auto bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen">
-                    <div class="bg-white shadow-lg">
+                    <div class="bg-white dark:bg-gray-900 shadow-lg">
                         <div class="p-4 emoji-bg text-white">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -428,13 +428,13 @@
                                 <div class="text-4xl">🏋️‍♂️</div>
                             </div>
                             
-                            <div class="mt-4 bg-white bg-opacity-20 rounded-lg p-3">
+                            <div class="mt-4 bg-white dark:bg-gray-900 bg-opacity-20 rounded-lg p-3">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-sm">Gesamtfortschritt</span>
                                     <span class="text-sm font-bold">${totalProgress}%</span>
                                 </div>
-                                <div class="w-full bg-white bg-opacity-30 rounded-full h-3">
-                                    <div class="bg-white h-3 rounded-full transition-all duration-500" style="width: ${totalProgress}%"></div>
+                                <div class="w-full bg-white dark:bg-gray-900 bg-opacity-30 rounded-full h-3">
+                                    <div class="bg-white dark:bg-gray-900 h-3 rounded-full transition-all duration-500" style="width: ${totalProgress}%"></div>
                                 </div>
                                 <div class="mt-2 text-xs text-green-100">
                                     ${totalProgress === 100 ? '🏆 Krass! Alle 7 Tage geschafft!' : 
@@ -459,21 +459,21 @@
                     </div>
 
                     <div class="p-4">
-                        <h2 class="text-lg font-bold text-gray-800 mb-3">💪 Deine 7 Trainingstage</h2>
+                        <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">💪 Deine 7 Trainingstage</h2>
                         <div class="grid grid-cols-1 gap-3">
                             ${dates.map((day, index) => {
                                 const isCompleted = completedDays[index];
                                 const completionPercentage = getCompletionPercentage(index, day.workout);
                                 
                                 return `
-                                    <div class="bg-white rounded-lg shadow-md p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200 hover:border-green-300'}" onclick="selectedDay=${index}; currentView='day'; render();">
+                                    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-md p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${isCompleted ? 'border-green-200 bg-green-50' : 'border-gray-200 dark:border-gray-700 hover:border-green-300'}" onclick="selectedDay=${index}; currentView='day'; render();">
                                         <div class="flex items-center justify-between mb-3">
                                             <div class="flex items-center">
                                                 <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold mr-3 ${isCompleted ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-green-400 to-emerald-400 text-white'}">
                                                     ${index + 1}
                                                 </div>
                                                 <div>
-                                                    <h3 class="font-bold text-gray-800">${day.dayName}</h3>
+                                                    <h3 class="font-bold text-gray-800 dark:text-gray-100">${day.dayName}</h3>
                                                     <p class="text-xs text-gray-500">Trainingseinheit ${index + 1}</p>
                                                 </div>
                                             </div>
@@ -497,7 +497,7 @@
                                                     <div class="h-2 rounded-full transition-all duration-300 ${isCompleted ? 'bg-green-500' : 'bg-gradient-to-r from-green-400 to-emerald-400'}" style="width: ${completionPercentage}%"></div>
                                                 </div>
                                             </div>
-                                            <span class="text-xs font-bold text-gray-600">${completionPercentage}%</span>
+                                            <span class="text-xs font-bold text-gray-600 dark:text-gray-400">${completionPercentage}%</span>
                                         </div>
                                     </div>
                                 `;
@@ -505,8 +505,8 @@
                         </div>
                     </div>
 
-                    <div class="p-4 bg-white border-t">
-                        <div class="text-center text-sm text-gray-600">
+                    <div class="p-4 bg-white dark:bg-gray-900 border-t">
+                        <div class="text-center text-sm text-gray-600 dark:text-gray-400">
                             <div class="flex items-center justify-center mb-2">
                                 <div class="text-2xl mr-2">💪</div>
                                 <span class="font-semibold">Du machst das super, Benni!</span>
